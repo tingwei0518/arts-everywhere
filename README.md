@@ -1,1 +1,1 @@
-# my-project
+# arts-everywhere

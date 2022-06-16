@@ -8,12 +8,12 @@ import { initializeApp } from 'firebase/app';
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: 'personalproject-ad825.firebaseapp.com',
-  projectId: 'personalproject-ad825',
-  storageBucket: 'personalproject-ad825.appspot.com',
-  messagingSenderId: '1085704017674',
-  appId: '1:1085704017674:web:e3db6422254586bbd2ccf3',
-  measurementId: 'G-KSE5EVQFR0',
+  authDomain: 'arts-everywhere-108b3.firebaseapp.com',
+  projectId: 'arts-everywhere-108b3',
+  storageBucket: 'arts-everywhere-108b3.appspot.com',
+  messagingSenderId: '548994073184',
+  appId: '1:548994073184:web:7051a83d742c662e8c7905',
+  measurementId: 'G-JR1JF97MKE',
 };
 
 // Initialize Firebase
