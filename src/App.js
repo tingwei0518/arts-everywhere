@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Entry from './pages/Entry';
+import FilterPage from './pages/FilterPage';
 import './App.css';
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Entry />} />
+          <Route path="/" element={<FilterPage />} />
         </Routes>
       </BrowserRouter>
     </div>
