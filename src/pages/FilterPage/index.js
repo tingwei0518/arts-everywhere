@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -13,6 +13,12 @@ function FilterPage() {
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
   const distance = 5;
+
+  const getIsRainy = () => {
+    fetch('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-0DC422DA-5DF2-46DD-819A-A5348111FC62&format=JSON&locationName=%E8%87%BA%E5%8C%97%E5%B8%82&elementName=PoP')
+      .then((response) => response.json())
+      .then((json) => console.log(json));
+  };
 
   async function getIdQuery(UID) {
     const artsEventsRef = collection(db, 'artsEvents');
@@ -47,8 +53,6 @@ function FilterPage() {
     fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_GEOCODING_API_KEY}`)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
-        console.log(json.plus_code.compound_code.slice(11, 14));
         setLocation(json.plus_code.compound_code.slice(11, 14));
       });
 
@@ -62,14 +66,23 @@ function FilterPage() {
     console.log('Unable to retrieve your location');
   };
 
-  const getUserGeolocation = () => {
+  // const getUserGeolocation = () => {
+  //   if (!navigator.geolocation) {
+  //     console.log('Geolocation is not supported by your browser');
+  //   } else {
+  //     console.log('Locating…');
+  //     navigator.geolocation.getCurrentPosition(success, error);
+  //   }
+  // };
+  useEffect(() => {
     if (!navigator.geolocation) {
       console.log('Geolocation is not supported by your browser');
     } else {
       console.log('Locating…');
       navigator.geolocation.getCurrentPosition(success, error);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const dateHandeler = (dates) => {
     const [start, end] = dates;
@@ -158,11 +171,10 @@ function FilterPage() {
     }
   };
 
-  const getFilteredEvent = () => {
+  const getFilteredEvents = () => {
     fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
         const {
           minLat, maxLat, minLng, maxLng,
         } = getMaxMinLatLon(latitude, longitude);
@@ -170,14 +182,51 @@ function FilterPage() {
           data.showInfo.forEach((info) => {
             if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
               && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
-              const startDateString = new Date(new Date(startDate).toLocaleDateString('en-US')).getTime();
-              const endDateString = new Date(new Date(endDate).toLocaleDateString('en-US')).getTime();
-              const timeSlice = new Date(info.time.slice(0, 10));
-              const endTimeSlice = new Date(info.endTime.slice(0, 10));
-              // if ((startDateString >= timeSlice && startDateString <= endTimeSlice)
-              //   || (endDateString >= timeSlice && endDateString <= endTimeSlice)) {
-              if ((timeSlice >= startDateString && timeSlice <= endDateString)
-                && (endTimeSlice >= startDateString && endTimeSlice <= endDateString)) {
+              const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('en-US')).getTime();
+              const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('en-US')).getTime();
+              const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+              const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+              // if ((startDateTimeStamp >= infoStartTimeStamp
+              //   && startDateTimeStamp <= infoEndTimeStamp)
+              //   || (endDateTimeStamp >= infoStartTimeStamp
+              //     && endDateTimeStamp <= infoEndTimeStamp)) {
+              if ((infoStartTimeStamp >= startDateTimeStamp
+                && infoStartTimeStamp <= endDateTimeStamp)
+                && (infoEndTimeStamp >= startDateTimeStamp
+                  && infoEndTimeStamp <= endDateTimeStamp)) {
+                getIdQuery(data.UID);
+              }
+            }
+          });
+        });
+      });
+  };
+
+  const getRecentEvents = () => {
+    setStartDate(new Date());
+    setEndDate(null);
+    fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
+      .then((response) => response.json())
+      .then((json) => {
+        const {
+          minLat, maxLat, minLng, maxLng,
+        } = getMaxMinLatLon(latitude, longitude);
+        json.forEach((data) => {
+          data.showInfo.forEach((info) => {
+            if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
+              && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
+              const todayTimeStamp = new Date(new Date().toLocaleDateString('en-US'));
+              const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
+              const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+              const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+              // if ((todayTimeStamp >= infoStartTimeStamp
+              //   && todayTimeStamp <= infoEndTimeStamp)
+              //   || (afterSevenDays >= infoStartTimeStamp
+              //     && afterSevenDays <= infoEndTimeStamp)) {
+              if ((infoStartTimeStamp >= todayTimeStamp
+                && infoStartTimeStamp <= afterSevenDays)
+                && (infoEndTimeStamp >= todayTimeStamp
+                  && infoEndTimeStamp <= afterSevenDays)) {
                 getIdQuery(data.UID);
               }
             }
@@ -188,7 +237,6 @@ function FilterPage() {
 
   return (
     <>
-      <button type="button" onClick={getUserGeolocation}>定位</button>
       <select value={location} onChange={(e) => locationHandeler(e)}>
         <option value="台北市">台北市</option>
         <option value="基隆市">基隆市</option>
@@ -210,6 +258,13 @@ function FilterPage() {
         <option value="台東縣">台東縣</option>
         <option value="花蓮縣">花蓮縣</option>
       </select>
+      <br />
+      <br />
+      <br />
+      <button type="button" onClick={getRecentEvents}>拿一周內附近的展演資料</button>
+      <br />
+      <br />
+      <br />
       <DatePicker
         selected={startDate}
         onChange={dateHandeler}
@@ -218,7 +273,8 @@ function FilterPage() {
         selectsRange
         inline
       />
-      <button type="button" onClick={getFilteredEvent}>拿展演資料</button>
+      <button type="button" onClick={getFilteredEvents}>拿自行設定地點、時間後的展演資料</button>
+      <button type="button" onClick={getIsRainy}>天氣</button>
     </>
   );
 }
