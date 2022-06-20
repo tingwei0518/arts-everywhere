@@ -274,12 +274,29 @@ function FilterPage() {
     setSearchText(e.target.value);
   };
 
-  async function getWordsQuery() {
+  // async function getWordsQuery() {
+  //   const artsEventsRef = collection(db, 'artsEvents');
+  //   const q = query(
+  //     artsEventsRef,
+  //     where('title', '>=', searchText),
+  //     where('title', '<=', `${searchText}\uf8ff`),
+  //   );
+  //   const querySnapshot = await getDocs(q);
+  //   querySnapshot.forEach((doc) => {
+  //     console.log(doc.data());
+  //   });
+  // }
+
+  async function getKeywordQuery() {
+    const searchWords = searchText.split('');
+    console.log({ searchWords });
     const artsEventsRef = collection(db, 'artsEvents');
-    const q = query(artsEventsRef, where('title', '>=', searchText), where('title', '<=', `${searchText}\uf8ff`));
+    const q = query(artsEventsRef, where('keywords', 'array-contains', searchWords[0]));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
+      if (doc.data().title.includes(searchText)) {
+        console.log(doc.data());
+      }
     });
   }
 
@@ -331,7 +348,8 @@ function FilterPage() {
       <hr />
       <br />
       <input onChange={(e) => searchHandeler(e)} />
-      <button type="button" onClick={getWordsQuery}>搜尋</button>
+      {/* <button type="button" onClick={getWordsQuery}>搜尋</button> */}
+      <button type="button" onClick={getKeywordQuery}>keyword搜尋</button>
     </>
   );
 }
