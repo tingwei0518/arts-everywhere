@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import FilterPage from './pages/FilterPage';
+import EventDisplayPage from './pages/EventDisplayPage/EventDisplay';
 import './App.css';
 
 function App() {
@@ -7,7 +7,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<FilterPage />} />
+          <Route path="/" element={<EventDisplayPage />} />
         </Routes>
       </BrowserRouter>
     </div>

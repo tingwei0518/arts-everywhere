@@ -6,8 +6,12 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 import db from '../../utils/firebaseInit';
+import Map from '../../components/Map';
 
-function FilterPage() {
+function EventDisplay() {
+  const [events, setEvents] = useState([]);
+  console.log(events);
+  const [filteredShowInfo, setFilteredShowInfo] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [location, setLocation] = useState();
   const [isGeolocation, setIsGeolocation] = useState(false);
@@ -15,7 +19,8 @@ function FilterPage() {
   const [endDate, setEndDate] = useState(null);
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
-  const distance = 5;
+  const distance = 10;
+  const eventData = [];
   let weatherDesc = [];
 
   async function getIdQuery(UID) {
@@ -23,8 +28,10 @@ function FilterPage() {
     const q = query(artsEventsRef, where('UID', '==', `${UID}`));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      console.log(doc.data());
+      eventData.push(doc.data());
     });
+    // console.log({ eventData });
+    setEvents(eventData);
   }
 
   const getMaxMinLatLon = (lat, lng) => {
@@ -49,16 +56,11 @@ function FilterPage() {
     // latitude = 25.03867955570004;
     // longitude = 121.53237109734974;
     console.log(`Latitude is ${latitude}° Longitude is ${longitude}°`);
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_GEOCODING_API_KEY}`)
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_MAPS_API_KEY}`)
       .then((response) => response.json())
       .then((json) => {
         setLocation(json.plus_code.compound_code.split(' ')[1].slice(2, 5));
       });
-
-    // const img = new Image();
-    // img.src = `http://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=13&size=300x300&sensor=false`;
-
-    // output.appendChild(img);
   };
 
   const error = () => {
@@ -207,6 +209,7 @@ function FilterPage() {
   };
 
   const getRecentEvents = () => {
+    setFilteredShowInfo([]);
     setStartDate(new Date());
     setEndDate(null);
     fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
@@ -231,6 +234,12 @@ function FilterPage() {
                 && infoStartTimeStamp <= afterSevenDays)
                 && (infoEndTimeStamp >= todayTimeStamp
                   && infoEndTimeStamp <= afterSevenDays)) {
+                filteredShowInfo.push({
+                  info,
+                  title: data.title,
+                  UID: data.UID,
+                });
+                setFilteredShowInfo(filteredShowInfo);
                 getIdQuery(data.UID);
               }
             }
@@ -241,6 +250,7 @@ function FilterPage() {
   };
 
   const getFilteredEvents = () => {
+    setFilteredShowInfo([]);
     fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
       .then((response) => response.json())
       .then((json) => {
@@ -263,6 +273,12 @@ function FilterPage() {
                 && infoStartTimeStamp <= endDateTimeStamp)
                 && (infoEndTimeStamp >= startDateTimeStamp
                   && infoEndTimeStamp <= endDateTimeStamp)) {
+                filteredShowInfo.push({
+                  info,
+                  title: data.title,
+                  UID: data.UID,
+                });
+                setFilteredShowInfo(filteredShowInfo);
                 getIdQuery(data.UID);
               }
             }
@@ -275,22 +291,8 @@ function FilterPage() {
     setSearchText(e.target.value);
   };
 
-  // async function getWordsQuery() {
-  //   const artsEventsRef = collection(db, 'artsEvents');
-  //   const q = query(
-  //     artsEventsRef,
-  //     where('title', '>=', searchText),
-  //     where('title', '<=', `${searchText}\uf8ff`),
-  //   );
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => {
-  //     console.log(doc.data());
-  //   });
-  // }
-
   async function getKeywordQuery() {
     const searchWords = searchText.split('');
-    console.log({ searchWords });
     const artsEventsRef = collection(db, 'artsEvents');
     const q = query(artsEventsRef, where('keywords', 'array-contains', searchWords[0]));
     const querySnapshot = await getDocs(q);
@@ -331,6 +333,11 @@ function FilterPage() {
       <br />
       <br />
       <button type="button" onClick={getRecentEvents}>一周內附近的展演資料</button>
+      <Map
+        latitude={latitude}
+        longitude={longitude}
+        filteredShowInfo={filteredShowInfo}
+      />
       <br />
       <br />
       <hr />
@@ -349,10 +356,9 @@ function FilterPage() {
       <hr />
       <br />
       <input onChange={(e) => searchHandeler(e)} />
-      {/* <button type="button" onClick={getWordsQuery}>搜尋</button> */}
       <button type="button" onClick={getKeywordQuery}>keyword搜尋</button>
     </>
   );
 }
 
-export default FilterPage;
+export default EventDisplay;
