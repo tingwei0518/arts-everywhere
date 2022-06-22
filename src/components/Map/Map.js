@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import PropTypes from 'prop-types';

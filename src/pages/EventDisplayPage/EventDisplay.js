@@ -10,7 +10,6 @@ import Map from '../../components/Map';
 
 function EventDisplay() {
   const [events, setEvents] = useState([]);
-  console.log(events);
   const [filteredShowInfo, setFilteredShowInfo] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [location, setLocation] = useState();
@@ -32,6 +31,7 @@ function EventDisplay() {
     });
     // console.log({ eventData });
     setEvents(eventData);
+    console.log(events); // 為了解no-unused-vars
   }
 
   const getMaxMinLatLon = (lat, lng) => {
@@ -296,11 +296,19 @@ function EventDisplay() {
     const artsEventsRef = collection(db, 'artsEvents');
     const q = query(artsEventsRef, where('keywords', 'array-contains', searchWords[0]));
     const querySnapshot = await getDocs(q);
+    const showInfo = [];
     querySnapshot.forEach((doc) => {
       if (doc.data().title.includes(searchText)) {
-        console.log(doc.data());
+        doc.data().showInfo.forEach((info) => {
+          showInfo.push({
+            info,
+            title: doc.data().title,
+            UID: doc.data().UID,
+          });
+        });
       }
     });
+    setFilteredShowInfo(showInfo);
   }
 
   return (
