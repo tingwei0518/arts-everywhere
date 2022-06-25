@@ -1,31 +1,118 @@
 /* eslint-disable no-console */
-import { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import {
-  collection, query, where, getDocs,
-} from 'firebase/firestore';
-import db from '../../utils/firebaseInit';
+import { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components/macro';
+import api from '../../utils/api';
+import ScrollIndicator from '../../components/ScrollIndicator';
+import HomeVisual from '../../components/HomeVisual';
+import Filter from '../../components/Filter';
 import Map from '../../components/Map';
+import image2 from '../../assets/1-3.jpg';
+import bg1 from '../../assets/background1.svg';
+import bg5 from '../../assets/background5.svg';
+import bg3 from '../../assets/background3.svg';
+import bg4 from '../../assets/background6.svg';
+
+// to do
+// 首頁
+// 地圖日期那些搜尋結果（重要！！）
+// 研究一下 transform（重要！！)
+
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+`;
+
+const Wrapper = styled.div`
+  height: 100vh;
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-start;
+  scroll-snap-type: x mandatory;
+`;
+
+const Page = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: inline-block;
+  background-color: ${(props) => (props.primary ? 'grey' : '#D9D9D9')};
+  background-image: url(${(props) => (props.bg)});
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: relative;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  `;
+
+const NumberTitle = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 60px;
+  font-size: 150px;
+  font-family: Times,sans-serif; 
+  color:  ${(props) => (props.primary ? 'darkgrey' : 'white')};;
+`;
+
+const TestSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 150px 0 0 320px;
+  column-gap: 80px;
+  flex-shrink: 0;
+`;
+
+const Event = styled.div`
+  margin-top: 10px;
+`;
+
+const EventImg = styled.div`
+  box-sizing: content-box;
+  width: 200px;
+  height: 200px;
+  background-image: url(${image2});
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 40px solid white;
+  box-shadow: 12px 12px  rgba(0, 0, 0, .2);
+  margin-bottom: 40px;
+`;
+
+const EventCard = styled.div`
+width: 100px;
+height: fit-content;
+background-color: white;
+box-shadow: 6px 6px rgba(0, 0, 0, .2);
+font-size: 10px;
+`;
 
 function EventDisplay() {
   const [events, setEvents] = useState([]);
+  const [recentEvents, setRecentEvents] = useState([]);
   const [filteredShowInfo, setFilteredShowInfo] = useState([]);
+  const [recentShowInfo, setRecentShowInfo] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [location, setLocation] = useState();
+  const [location, setLocation] = useState('台北市');
   const [isGeolocation, setIsGeolocation] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(null);
+  const [endDate, setEndDate] = useState(new Date());
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
   const distance = 10;
   const eventData = [];
   let weatherDesc = [];
 
+  const fakeData = [
+    { title: '假的音樂會', date: '2020/1/22', tag: '音樂' },
+    { title: '假的舞台劇', date: '2020/1/22', tag: '戲劇' },
+    { title: '假的展覽', date: '2020/1/22', tag: '展覽' },
+  ];
+
+  const filteredInfoRef = useRef(null);
+  const scrollToElement = (ref) => {
+    ref.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   async function getIdQuery(UID) {
-    const artsEventsRef = collection(db, 'artsEvents');
-    const q = query(artsEventsRef, where('UID', '==', `${UID}`));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await api.idQuery(UID);
     querySnapshot.forEach((doc) => {
       eventData.push(doc.data());
     });
@@ -34,8 +121,18 @@ function EventDisplay() {
     console.log(events); // 為了解no-unused-vars
   }
 
+  async function getRecentIdQuery(UID) {
+    const querySnapshot = await api.idQuery(UID);
+    querySnapshot.forEach((doc) => {
+      eventData.push(doc.data());
+    });
+    // console.log({ eventData });
+    setRecentEvents(eventData);
+    console.log(recentEvents); // 為了解no-unused-vars
+  }
+
   const getMaxMinLatLon = (lat, lng) => {
-    const r = 6371.393; // 地球半徑公里
+    const r = 6371.393; // 地球半徑公里 // distance是km
     let dlng = 2 * Math.asin(Math.sin(distance / (2 * r)) / Math.cos((lat * Math.PI) / 180));
     dlng = (dlng * 180) / Math.PI; // 角度轉為弧度
     let dlat = distance / r;
@@ -56,11 +153,9 @@ function EventDisplay() {
     // latitude = 25.03867955570004;
     // longitude = 121.53237109734974;
     console.log(`Latitude is ${latitude}° Longitude is ${longitude}°`);
-    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${process.env.REACT_APP_MAPS_API_KEY}`)
-      .then((response) => response.json())
-      .then((json) => {
-        setLocation(json.plus_code.compound_code.split(' ')[1].slice(2, 5));
-      });
+    api.getReverseGeocoding(position.coords.latitude, position.coords.longitude).then((json) => {
+      setLocation(json.plus_code.compound_code.split(' ')[1].slice(2, 5));
+    });
   };
 
   const error = () => {
@@ -77,15 +172,15 @@ function EventDisplay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const dateHandeler = (dates) => {
-    const [start, end] = dates;
-    setStartDate(start);
-    setEndDate(end);
-  };
+  // const dateHandeler = (dates) => {
+  //   const [start, end] = dates;
+  //   setStartDate(start);
+  //   setEndDate(end);
+  // };
 
-  const locationHandeler = (e) => {
-    setLocation(e.target.value);
-    switch (e.target.value) {
+  const locationHandeler = (value) => {
+    setLocation(value);
+    switch (value) {
       case '基隆市':
         setLatitude(25.13279);
         setLongitude(121.74457);
@@ -167,124 +262,111 @@ function EventDisplay() {
   const getRecentWeather = () => {
     switch (location) {
       case '台北市':
-        fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=臺北市&elementName=WeatherDescription`)
-          .then((response) => response.json())
-          .then((json) => {
-            weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-            console.log('一週內天氣', weatherDesc);
-          });
+        api.getWeatherDesc('臺北市').then((json) => {
+          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
+          console.log('一週內天氣', weatherDesc);
+        });
         break;
       case '台中市':
-        fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=臺中市&elementName=WeatherDescription`)
-          .then((response) => response.json())
-          .then((json) => {
-            weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-            console.log('一週內天氣', weatherDesc);
-          });
+        api.getWeatherDesc('臺中市').then((json) => {
+          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
+          console.log('一週內天氣', weatherDesc);
+        });
         break;
       case '台南市':
-        fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=臺南市&elementName=WeatherDescription`)
-          .then((response) => response.json())
-          .then((json) => {
-            weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-            console.log('一週內天氣', weatherDesc);
-          });
+        api.getWeatherDesc('臺南市').then((json) => {
+          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
+          console.log('一週內天氣', weatherDesc);
+        });
         break;
       case '台東縣':
-        fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=臺東縣&elementName=WeatherDescription`)
-          .then((response) => response.json())
-          .then((json) => {
-            weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-            console.log('一週內天氣', weatherDesc);
-          });
+        api.getWeatherDesc('臺東縣').then((json) => {
+          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
+          console.log('一週內天氣', weatherDesc);
+        });
         break;
       default:
-        fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=${location}&elementName=WeatherDescription`)
-          .then((response) => response.json())
-          .then((json) => {
-            weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-            console.log('一週內天氣', weatherDesc);
-          });
+        api.getWeatherDesc(location).then((json) => {
+          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
+          console.log('一週內天氣', weatherDesc);
+        });
     }
   };
 
   const getRecentEvents = () => {
     setFilteredShowInfo([]);
     setStartDate(new Date());
-    setEndDate(null);
-    fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
-      .then((response) => response.json())
-      .then((json) => {
-        const {
-          minLat, maxLat, minLng, maxLng,
-        } = getMaxMinLatLon(latitude, longitude);
-        json.forEach((data) => {
-          data.showInfo.forEach((info) => {
-            if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
-              && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
-              const todayTimeStamp = new Date(new Date().toLocaleDateString('en-US'));
-              const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
-              const infoStartTimeStamp = new Date(info.time.slice(0, 10));
-              const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
-              // if ((todayTimeStamp >= infoStartTimeStamp
-              //   && todayTimeStamp <= infoEndTimeStamp)
-              //   || (afterSevenDays >= infoStartTimeStamp
-              //     && afterSevenDays <= infoEndTimeStamp)) {
-              if ((infoStartTimeStamp >= todayTimeStamp
-                && infoStartTimeStamp <= afterSevenDays)
-                && (infoEndTimeStamp >= todayTimeStamp
-                  && infoEndTimeStamp <= afterSevenDays)) {
-                filteredShowInfo.push({
-                  info,
-                  title: data.title,
-                  UID: data.UID,
-                });
-                setFilteredShowInfo(filteredShowInfo);
-                getIdQuery(data.UID);
-              }
+    setEndDate(new Date());
+    const {
+      minLat, maxLat, minLng, maxLng,
+    } = getMaxMinLatLon(latitude, longitude);
+    api.getNearbyEvents(latitude, longitude, distance).then((json) => {
+      json.forEach((data) => {
+        data.showInfo.forEach((info) => {
+          if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
+            && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
+            const todayTimeStamp = new Date(new Date().toLocaleDateString('en-US'));
+            const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
+            const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+            const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+            // if ((todayTimeStamp >= infoStartTimeStamp
+            //   && todayTimeStamp <= infoEndTimeStamp)
+            //   || (afterSevenDays >= infoStartTimeStamp
+            //     && afterSevenDays <= infoEndTimeStamp)) {
+            if ((infoStartTimeStamp >= todayTimeStamp
+              && infoStartTimeStamp <= afterSevenDays)
+              && (infoEndTimeStamp >= todayTimeStamp
+                && infoEndTimeStamp <= afterSevenDays)) {
+              recentShowInfo.push({
+                info,
+                title: data.title,
+                UID: data.UID,
+              });
+              setRecentShowInfo(recentShowInfo);
+              getRecentIdQuery(data.UID);
             }
-          });
+          }
         });
       });
+    });
     getRecentWeather();
   };
 
   const getFilteredEvents = () => {
     setFilteredShowInfo([]);
-    fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${latitude}&lon=${longitude}&range=${distance}`)
-      .then((response) => response.json())
-      .then((json) => {
-        const {
-          minLat, maxLat, minLng, maxLng,
-        } = getMaxMinLatLon(latitude, longitude);
-        json.forEach((data) => {
-          data.showInfo.forEach((info) => {
-            if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
-              && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
-              const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('en-US')).getTime();
-              const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('en-US')).getTime();
-              const infoStartTimeStamp = new Date(info.time.slice(0, 10));
-              const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
-              // if ((startDateTimeStamp >= infoStartTimeStamp
-              //   && startDateTimeStamp <= infoEndTimeStamp)
-              //   || (endDateTimeStamp >= infoStartTimeStamp
-              //     && endDateTimeStamp <= infoEndTimeStamp)) {
-              if ((infoStartTimeStamp >= startDateTimeStamp
-                && infoStartTimeStamp <= endDateTimeStamp)
-                && (infoEndTimeStamp >= startDateTimeStamp
-                  && infoEndTimeStamp <= endDateTimeStamp)) {
-                filteredShowInfo.push({
-                  info,
-                  title: data.title,
-                  UID: data.UID,
-                });
-                setFilteredShowInfo(filteredShowInfo);
-                getIdQuery(data.UID);
-              }
+    const {
+      minLat, maxLat, minLng, maxLng,
+    } = getMaxMinLatLon(latitude, longitude);
+    api.getNearbyEvents(latitude, longitude, distance).then((json) => {
+      json.forEach((data) => {
+        data.showInfo.forEach((info) => {
+          if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
+            && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
+            const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('en-US')).getTime();
+            const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('en-US')).getTime();
+            const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+            const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+            // if ((startDateTimeStamp >= infoStartTimeStamp
+            //   && startDateTimeStamp <= infoEndTimeStamp)
+            //   || (endDateTimeStamp >= infoStartTimeStamp
+            //     && endDateTimeStamp <= infoEndTimeStamp)) {
+            if ((infoStartTimeStamp >= startDateTimeStamp
+              && infoStartTimeStamp <= endDateTimeStamp)
+              && (infoEndTimeStamp >= startDateTimeStamp
+                && infoEndTimeStamp <= endDateTimeStamp)) {
+              filteredShowInfo.push({
+                info,
+                title: data.title,
+                UID: data.UID,
+              });
+              setFilteredShowInfo(filteredShowInfo);
+              getIdQuery(data.UID);
             }
-          });
+          }
         });
       });
+    });
+    scrollToElement(filteredInfoRef);
   };
 
   const searchHandeler = (e) => {
@@ -293,9 +375,7 @@ function EventDisplay() {
 
   async function getKeywordQuery() {
     const searchWords = searchText.split('');
-    const artsEventsRef = collection(db, 'artsEvents');
-    const q = query(artsEventsRef, where('keywords', 'array-contains', searchWords[0]));
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await api.keywordQuery(searchWords);
     const showInfo = [];
     querySnapshot.forEach((doc) => {
       if (doc.data().title.includes(searchText)) {
@@ -309,62 +389,133 @@ function EventDisplay() {
       }
     });
     setFilteredShowInfo(showInfo);
+    scrollToElement(filteredInfoRef);
   }
 
   return (
     <>
-      <br />
-      <div>
-        {isGeolocation ? <p>您的位置在...</p> : <p>自動定位中...</p>}
-        <select value={location} onChange={(e) => locationHandeler(e)}>
-          <option value="台北市">台北市</option>
-          <option value="基隆市">基隆市</option>
-          <option value="新北市">新北市</option>
-          <option value="宜蘭縣">宜蘭縣</option>
-          <option value="新竹市">新竹市</option>
-          <option value="新竹縣">新竹縣</option>
-          <option value="桃園市">桃園市</option>
-          <option value="苗栗縣">苗栗縣</option>
-          <option value="台中市">台中市</option>
-          <option value="彰化縣">彰化縣</option>
-          <option value="南投縣">南投縣</option>
-          <option value="嘉義市">嘉義市</option>
-          <option value="嘉義縣">嘉義縣</option>
-          <option value="雲林縣">雲林縣</option>
-          <option value="台南市">台南市</option>
-          <option value="高雄市">高雄市</option>
-          <option value="屏東縣">屏東縣</option>
-          <option value="台東縣">台東縣</option>
-          <option value="花蓮縣">花蓮縣</option>
-        </select>
-      </div>
-      <br />
-      <br />
-      <button type="button" onClick={getRecentEvents}>一周內附近的展演資料</button>
-      <Map
-        latitude={latitude}
-        longitude={longitude}
-        filteredShowInfo={filteredShowInfo}
-      />
-      <br />
-      <br />
-      <hr />
-      <br />
-      <DatePicker
-        selected={startDate}
-        onChange={dateHandeler}
-        startDate={startDate}
-        endDate={endDate}
-        selectsRange
-        inline
-      />
-      <button type="button" onClick={getFilteredEvents}>自行設定地點、時間後的展演資料</button>
-      <br />
-      <br />
-      <hr />
-      <br />
-      <input onChange={(e) => searchHandeler(e)} />
-      <button type="button" onClick={getKeywordQuery}>keyword搜尋</button>
+      <ScrollIndicator />
+      <Container>
+        <Wrapper>
+          <Page bg={bg4}>
+            <HomeVisual />
+            <Filter
+              startDate={startDate}
+              endDate={endDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              isGeolocation={isGeolocation}
+              location={location}
+              locationHandeler={locationHandeler}
+              getFilteredEvents={getFilteredEvents}
+              searchHandeler={searchHandeler}
+              getKeywordQuery={() => getKeywordQuery()}
+              filteredInfoRef={filteredInfoRef}
+              scrollToElement={scrollToElement}
+            />
+          </Page>
+          <Page>
+            <TestSection ref={filteredInfoRef} style={{ padding: '0', flexWrap: 'wrap' }}>
+              <button type="button" onClick={getRecentEvents}>一周內附近的展演資料</button>
+              <Map
+                latitude={latitude}
+                longitude={longitude}
+                filteredShowInfo={filteredShowInfo}
+                recentShowInfo={recentShowInfo}
+              />
+            </TestSection>
+          </Page>
+          <Page bg={bg1}>
+            <NumberTitle>01</NumberTitle>
+            <TestSection>
+              {
+                fakeData.slice(0, 3).map((event) => (
+                  <Event>
+                    <EventImg />
+                    <EventCard>
+                      <div>{event.title}</div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>{event.tag}</div>
+                    </EventCard>
+                  </Event>
+                ))
+              }
+            </TestSection>
+          </Page>
+          <Page bg={bg5}>
+            <NumberTitle primary>02</NumberTitle>
+            <TestSection>
+              {
+                fakeData.slice(0, 3).map((event) => (
+                  <div>
+                    <EventImg />
+                    <EventCard>
+                      <div>{event.title}</div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>{event.tag}</div>
+                    </EventCard>
+                  </div>
+                ))
+              }
+            </TestSection>
+          </Page>
+          <Page bg={bg3}>
+            <NumberTitle primary>03</NumberTitle>
+            <TestSection>
+              {
+                fakeData.slice(0, 3).map((event) => (
+                  <div>
+                    <EventImg />
+                    <EventCard>
+                      <div>{event.title}</div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>{event.tag}</div>
+                    </EventCard>
+                  </div>
+                ))
+              }
+            </TestSection>
+          </Page>
+          <Page bg={bg1}>
+            <NumberTitle>04</NumberTitle>
+            <TestSection>
+              {
+                fakeData.slice(0, 3).map((event) => (
+                  <div>
+                    <EventImg />
+                    <EventCard>
+                      <div>{event.title}</div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>
+                        {event.date}
+                      </div>
+                      <div>{event.tag}</div>
+                    </EventCard>
+                  </div>
+                ))
+              }
+            </TestSection>
+          </Page>
+          <Page bg={bg3} />
+        </Wrapper>
+      </Container>
     </>
   );
 }

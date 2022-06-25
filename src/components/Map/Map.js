@@ -4,7 +4,7 @@ import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import PropTypes from 'prop-types';
 
 function Map({
-  latitude, longitude, filteredShowInfo,
+  latitude, longitude, filteredShowInfo, recentShowInfo,
 }) {
   const center = {
     lat: latitude,
@@ -32,13 +32,26 @@ function Map({
     isLoaded ? (
       <GoogleMap
         center={center}
-        zoom={15}
+        zoom={12}
         options={{ mapId: '5c9ec1165b4386f6' }}
-        mapContainerStyle={{ height: '500px', width: '500px' }}
+        mapContainerStyle={{ height: '400px', width: '400px' }}
         onLoad={onLoad}
       >
         {
           filteredShowInfo.map((item) => (
+            <Marker
+              position={{
+                lat: Number(item.info.latitude),
+                lng: Number(item.info.longitude),
+              }}
+              map={map}
+              onClick={() => { clickMarker(item.UID); }}
+              aria-hidden="true"
+            />
+          ))
+        }
+        {
+          recentShowInfo.map((item) => (
             <Marker
               position={{
                 lat: Number(item.info.latitude),
@@ -59,6 +72,20 @@ Map.propTypes = {
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
   filteredShowInfo: PropTypes.arrayOf(PropTypes.shape({
+    UID: PropTypes.string,
+    title: PropTypes.string,
+    info: PropTypes.shape({
+      endTime: PropTypes.string,
+      latitude: PropTypes.string,
+      location: PropTypes.string,
+      locationName: PropTypes.string,
+      longitude: PropTypes.string,
+      onSales: PropTypes.string,
+      price: PropTypes.string,
+      time: PropTypes.string,
+    }).isRequired,
+  })).isRequired,
+  recentShowInfo: PropTypes.arrayOf(PropTypes.shape({
     UID: PropTypes.string,
     title: PropTypes.string,
     info: PropTypes.shape({
