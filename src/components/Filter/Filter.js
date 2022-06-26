@@ -240,7 +240,7 @@ function Filter({
           </MainFilter>
         ) : (
           <KeywordFilter>
-            <KeywordInput placeholder="請輸入關鍵字" onChange={(e) => searchHandeler(e)} />
+            <KeywordInput placeholder="請輸入您想搜尋的活動關鍵字" onChange={(e) => searchHandeler(e)} />
           </KeywordFilter>
         )}
       </div>

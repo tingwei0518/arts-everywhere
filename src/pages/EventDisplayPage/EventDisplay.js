@@ -5,17 +5,12 @@ import api from '../../utils/api';
 import ScrollIndicator from '../../components/ScrollIndicator';
 import HomeVisual from '../../components/HomeVisual';
 import Filter from '../../components/Filter';
-import Map from '../../components/Map';
+import FilterResults from '../../components/FilterResults';
 import image2 from '../../assets/1-3.jpg';
-import bg1 from '../../assets/background1.svg';
-import bg5 from '../../assets/background5.svg';
-import bg3 from '../../assets/background3.svg';
-import bg4 from '../../assets/background6.svg';
-
-// to do
-// 首頁
-// 地圖日期那些搜尋結果（重要！！）
-// 研究一下 transform（重要！！)
+import bg1 from '../../assets/big1.svg';
+import bg3 from '../../assets/big2.svg';
+import bg6 from '../../assets/background6.svg';
+import filterBg from '../../assets/filter-bg2.svg';
 
 const Container = styled.div`
   width: 100vw;
@@ -36,12 +31,17 @@ const Page = styled.div`
   display: inline-block;
   background-color: ${(props) => (props.primary ? 'grey' : '#D9D9D9')};
   background-image: url(${(props) => (props.bg)});
-  background-size: 100% 100%;
+  background-size: auto 100%;
   background-repeat: no-repeat;
   position: relative;
   flex-shrink: 0;
   scroll-snap-align: start;
-  `;
+`;
+
+const SubPage = styled(Page)`
+  width: fit-content;
+  height: 100vh;
+`;
 
 const NumberTitle = styled.div`
   position: absolute;
@@ -96,6 +96,7 @@ function EventDisplay() {
   const [endDate, setEndDate] = useState(new Date());
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
+  const [isFiltered, setIsFiltered] = useState(false);
   const distance = 10;
   const eventData = [];
   let weatherDesc = [];
@@ -161,16 +162,6 @@ function EventDisplay() {
   const error = () => {
     console.log('Unable to retrieve your location');
   };
-
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by your browser');
-    } else {
-      console.log('Locating…');
-      navigator.geolocation.getCurrentPosition(success, error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // const dateHandeler = (dates) => {
   //   const [start, end] = dates;
@@ -333,6 +324,7 @@ function EventDisplay() {
   };
 
   const getFilteredEvents = () => {
+    setSearchText('');
     setFilteredShowInfo([]);
     const {
       minLat, maxLat, minLng, maxLng,
@@ -367,6 +359,7 @@ function EventDisplay() {
       });
     });
     scrollToElement(filteredInfoRef);
+    setIsFiltered(true);
   };
 
   const searchHandeler = (e) => {
@@ -390,14 +383,30 @@ function EventDisplay() {
     });
     setFilteredShowInfo(showInfo);
     scrollToElement(filteredInfoRef);
+    setIsFiltered(true);
   }
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.log('Geolocation is not supported by your browser');
+    } else {
+      console.log('Locating…');
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    getRecentEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
       <ScrollIndicator />
       <Container>
         <Wrapper>
-          <Page bg={bg4}>
+          <Page bg={bg6}>
             <HomeVisual />
             <Filter
               startDate={startDate}
@@ -414,17 +423,19 @@ function EventDisplay() {
               scrollToElement={scrollToElement}
             />
           </Page>
-          <Page>
-            <TestSection ref={filteredInfoRef} style={{ padding: '0', flexWrap: 'wrap' }}>
-              <button type="button" onClick={getRecentEvents}>一周內附近的展演資料</button>
-              <Map
-                latitude={latitude}
-                longitude={longitude}
-                filteredShowInfo={filteredShowInfo}
-                recentShowInfo={recentShowInfo}
-              />
-            </TestSection>
-          </Page>
+          <SubPage ref={filteredInfoRef} bg={filterBg}>
+            <FilterResults
+              latitude={latitude}
+              longitude={longitude}
+              filteredShowInfo={filteredShowInfo}
+              recentShowInfo={recentShowInfo}
+              searchText={searchText}
+              startDate={startDate}
+              endDate={endDate}
+              isFiltered={isFiltered}
+              style={{ padding: '0', flexWrap: 'wrap' }}
+            />
+          </SubPage>
           <Page bg={bg1}>
             <NumberTitle>01</NumberTitle>
             <TestSection>
@@ -447,7 +458,7 @@ function EventDisplay() {
               }
             </TestSection>
           </Page>
-          <Page bg={bg5}>
+          <Page bg={bg3}>
             <NumberTitle primary>02</NumberTitle>
             <TestSection>
               {
@@ -469,7 +480,7 @@ function EventDisplay() {
               }
             </TestSection>
           </Page>
-          <Page bg={bg3}>
+          <Page>
             <NumberTitle primary>03</NumberTitle>
             <TestSection>
               {

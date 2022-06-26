@@ -31,7 +31,13 @@ const AnimationText = styled.div`
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   opacity: .8;
-}
+`;
+
+const Circle = styled.div`
+  width: 50px;
+  height: 50px;
+  background-color: rgb(255, 240, 0);
+  border-radius: 50%;
 `;
 
 function HomeVisual() {
@@ -42,6 +48,7 @@ function HomeVisual() {
       </AnimationText>
       <HomeTitle>
         <img src={title} alt="arts everywhere" style={{ width: '500px' }} />
+        <Circle />
       </HomeTitle>
     </Wrapper>
   );
