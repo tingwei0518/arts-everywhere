@@ -12,7 +12,6 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding-bottom: 70px;
-  row-gap: 20px;
 `;
 
 const Block = styled.div`
@@ -23,6 +22,7 @@ const Block = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 30px;
 `;
 
 const bonbon = keyframes`

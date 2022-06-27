@@ -39,6 +39,7 @@ const DropDownContainer = styled.div`
 `;
 
 const DropDownHeader = styled.div`
+  height: 40px; 
   margin-bottom: 0;
   padding-bottom: 5px;
   font-size: 1.2rem;
@@ -158,6 +159,7 @@ const DatePickerWrapper = styled(({
   input {
     font-size: 1.2rem;
     width: fit-content;
+    height: 40px;
     padding: 0;
     padding-bottom: 10px;
     color: black;
