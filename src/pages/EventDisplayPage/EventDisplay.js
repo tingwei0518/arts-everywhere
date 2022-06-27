@@ -6,7 +6,7 @@ import ScrollIndicator from '../../components/ScrollIndicator';
 import HomeVisual from '../../components/HomeVisual';
 import Filter from '../../components/Filter';
 import FilterResults from '../../components/FilterResults';
-import image2 from '../../assets/1-3.jpg';
+import DisplayArea from '../../components/DisplayArea';
 import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
 import bg6 from '../../assets/background6.svg';
@@ -39,49 +39,9 @@ const Page = styled.div`
 `;
 
 const SubPage = styled(Page)`
-  width: fit-content;
+  width: auto;
   height: 100vh;
-`;
-
-const NumberTitle = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 60px;
-  font-size: 150px;
-  font-family: Times,sans-serif; 
-  color:  ${(props) => (props.primary ? 'darkgrey' : 'white')};;
-`;
-
-const TestSection = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 150px 0 0 320px;
-  column-gap: 80px;
-  flex-shrink: 0;
-`;
-
-const Event = styled.div`
-  margin-top: 10px;
-`;
-
-const EventImg = styled.div`
-  box-sizing: content-box;
-  width: 200px;
-  height: 200px;
-  background-image: url(${image2});
-  background-size: cover;
-  background-repeat: no-repeat;
-  border: 40px solid white;
-  box-shadow: 12px 12px  rgba(0, 0, 0, .2);
-  margin-bottom: 40px;
-`;
-
-const EventCard = styled.div`
-width: 100px;
-height: fit-content;
-background-color: white;
-box-shadow: 6px 6px rgba(0, 0, 0, .2);
-font-size: 10px;
+  background-size: auto 100%;
 `;
 
 function EventDisplay() {
@@ -100,14 +60,13 @@ function EventDisplay() {
   const distance = 10;
   const eventData = [];
   let weatherDesc = [];
-
-  const fakeData = [
-    { title: '假的音樂會', date: '2020/1/22', tag: '音樂' },
-    { title: '假的舞台劇', date: '2020/1/22', tag: '戲劇' },
-    { title: '假的展覽', date: '2020/1/22', tag: '展覽' },
-  ];
+  const pageText = {
+    filtered: '根據您所選擇的時間與地點，精心為您篩選藝文活動。',
+    recent: '不曉得該如何安排空閒時間嗎？可以參考看看這一週內，有哪些精彩的藝文活動。',
+  };
 
   const filteredInfoRef = useRef(null);
+  const filteredEventsRef = useRef(null);
   const scrollToElement = (ref) => {
     ref.current.scrollIntoView({ behavior: 'smooth' });
   };
@@ -119,7 +78,6 @@ function EventDisplay() {
     });
     // console.log({ eventData });
     setEvents(eventData);
-    console.log(events); // 為了解no-unused-vars
   }
 
   async function getRecentIdQuery(UID) {
@@ -127,9 +85,8 @@ function EventDisplay() {
     querySnapshot.forEach((doc) => {
       eventData.push(doc.data());
     });
-    // console.log({ eventData });
+    console.log({ eventData });
     setRecentEvents(eventData);
-    console.log(recentEvents); // 為了解no-unused-vars
   }
 
   const getMaxMinLatLon = (lat, lng) => {
@@ -162,12 +119,6 @@ function EventDisplay() {
   const error = () => {
     console.log('Unable to retrieve your location');
   };
-
-  // const dateHandeler = (dates) => {
-  //   const [start, end] = dates;
-  //   setStartDate(start);
-  //   setEndDate(end);
-  // };
 
   const locationHandeler = (value) => {
     setLocation(value);
@@ -291,13 +242,14 @@ function EventDisplay() {
     const {
       minLat, maxLat, minLng, maxLng,
     } = getMaxMinLatLon(latitude, longitude);
+    const todayTimeStamp = new Date(new Date().toLocaleDateString('zh-TW'));
+    const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
+    setEndDate(afterSevenDays);
     api.getNearbyEvents(latitude, longitude, distance).then((json) => {
       json.forEach((data) => {
         data.showInfo.forEach((info) => {
           if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
             && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
-            const todayTimeStamp = new Date(new Date().toLocaleDateString('en-US'));
-            const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
             const infoStartTimeStamp = new Date(info.time.slice(0, 10));
             const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
             // if ((todayTimeStamp >= infoStartTimeStamp
@@ -315,6 +267,7 @@ function EventDisplay() {
               });
               setRecentShowInfo(recentShowInfo);
               getRecentIdQuery(data.UID);
+              console.log(data.UID);
             }
           }
         });
@@ -329,13 +282,13 @@ function EventDisplay() {
     const {
       minLat, maxLat, minLng, maxLng,
     } = getMaxMinLatLon(latitude, longitude);
+    const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('zh-TW')).getTime();
+    const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('zh-TW')).getTime();
     api.getNearbyEvents(latitude, longitude, distance).then((json) => {
       json.forEach((data) => {
         data.showInfo.forEach((info) => {
           if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
             && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
-            const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('en-US')).getTime();
-            const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('en-US')).getTime();
             const infoStartTimeStamp = new Date(info.time.slice(0, 10));
             const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
             // if ((startDateTimeStamp >= infoStartTimeStamp
@@ -370,8 +323,10 @@ function EventDisplay() {
     const searchWords = searchText.split('');
     const querySnapshot = await api.keywordQuery(searchWords);
     const showInfo = [];
+    const keywordEvents = [];
     querySnapshot.forEach((doc) => {
       if (doc.data().title.includes(searchText)) {
+        keywordEvents.push(doc.data());
         doc.data().showInfo.forEach((info) => {
           showInfo.push({
             info,
@@ -382,6 +337,7 @@ function EventDisplay() {
       }
     });
     setFilteredShowInfo(showInfo);
+    setEvents(keywordEvents);
     scrollToElement(filteredInfoRef);
     setIsFiltered(true);
   }
@@ -423,7 +379,7 @@ function EventDisplay() {
               scrollToElement={scrollToElement}
             />
           </Page>
-          <SubPage ref={filteredInfoRef} bg={filterBg}>
+          <SubPage ref={filteredInfoRef} bg={filterBg} style={{ display: 'flex', justifyContent: 'center' }}>
             <FilterResults
               latitude={latitude}
               longitude={longitude}
@@ -433,97 +389,21 @@ function EventDisplay() {
               startDate={startDate}
               endDate={endDate}
               isFiltered={isFiltered}
+              filteredEventsRef={filteredEventsRef}
+              scrollToElement={scrollToElement}
               style={{ padding: '0', flexWrap: 'wrap' }}
             />
           </SubPage>
-          <Page bg={bg1}>
-            <NumberTitle>01</NumberTitle>
-            <TestSection>
-              {
-                fakeData.slice(0, 3).map((event) => (
-                  <Event>
-                    <EventImg />
-                    <EventCard>
-                      <div>{event.title}</div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>{event.tag}</div>
-                    </EventCard>
-                  </Event>
-                ))
-              }
-            </TestSection>
+          {(isFiltered && events.length !== 0) ? (
+            <Page bg={bg1} ref={filteredEventsRef}>
+              <DisplayArea title="Filtered" events={events} text={pageText.filtered} primary={false} />
+            </Page>
+          ) : ''}
+          <Page bg={bg3} ref={filteredEventsRef}>
+            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} primary />
           </Page>
-          <Page bg={bg3}>
-            <NumberTitle primary>02</NumberTitle>
-            <TestSection>
-              {
-                fakeData.slice(0, 3).map((event) => (
-                  <div>
-                    <EventImg />
-                    <EventCard>
-                      <div>{event.title}</div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>{event.tag}</div>
-                    </EventCard>
-                  </div>
-                ))
-              }
-            </TestSection>
-          </Page>
-          <Page>
-            <NumberTitle primary>03</NumberTitle>
-            <TestSection>
-              {
-                fakeData.slice(0, 3).map((event) => (
-                  <div>
-                    <EventImg />
-                    <EventCard>
-                      <div>{event.title}</div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>{event.tag}</div>
-                    </EventCard>
-                  </div>
-                ))
-              }
-            </TestSection>
-          </Page>
-          <Page bg={bg1}>
-            <NumberTitle>04</NumberTitle>
-            <TestSection>
-              {
-                fakeData.slice(0, 3).map((event) => (
-                  <div>
-                    <EventImg />
-                    <EventCard>
-                      <div>{event.title}</div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>
-                        {event.date}
-                      </div>
-                      <div>{event.tag}</div>
-                    </EventCard>
-                  </div>
-                ))
-              }
-            </TestSection>
-          </Page>
+          <Page />
+          <Page bg={bg1} />
           <Page bg={bg3} />
         </Wrapper>
       </Container>

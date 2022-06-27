@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import styled from 'styled-components/macro';
+import styled, { keyframes, css } from 'styled-components/macro';
 import title from '../../assets/title.svg';
+import doubleNext from '../../images/double_next.png';
 import Map from '../Map';
 
 const Wrapper = styled.div`
@@ -10,7 +11,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 60px;
   padding-bottom: 70px;
   row-gap: 20px;
 `;
@@ -25,25 +25,64 @@ const Block = styled.div`
   justify-content: space-between;
 `;
 
+const bonbon = keyframes`
+  0%   {transform: translateY(0%)}
+  15%  {transform: translateY(-30%)}
+  30%  {transform: translateY(0%)}
+  55%  {transform: translateY(-10%)}
+  100% {transform: translateY(0%)}
+`;
+
+const animation = (props) => css`
+    ${bonbon} ${props.animationLength} linear 2s infinite;
+`;
+
+const AnimationBtn = styled.div`
+  animation: ${animation};
+  cursor: pointer;
+`;
+
 function FilterResults({
-  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate, searchText, isFiltered,
+  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate,
+  searchText, isFiltered, filteredEventsRef, scrollToElement,
 }) {
   return (
     <Wrapper>
       <Block>
-        <img src={title} alt="arts everywhere" style={{ width: '250px' }} />
+        <div style={{
+          width: '100%', display: 'flex', alignItems: 'center', columnGap: '20px',
+        }}
+        >
+          <img src={title} alt="arts everywhere" style={{ width: '250px' }} />
+          <AnimationBtn onClick={() => scrollToElement(filteredEventsRef)}>
+            <div style={{ fontSize: '.5rem' }}>click!</div>
+            <img src={doubleNext} alt="next page" aria-hidden="true" style={{ width: '30px' }} />
+          </AnimationBtn>
+        </div>
         {
           !searchText ? (
             <div>
-              篩選時間
-              {startDate.toLocaleDateString('en-US')}
-              —
-              {endDate.toLocaleDateString('en-US')}
+              <span>
+                篩選時間
+              </span>
+              <span style={{ fontWeight: 'bold', borderBottom: '1px solid black' }}>
+                {' '}
+                {startDate.toLocaleDateString('zh-TW')}
+                {' '}
+                -
+                {' '}
+                {endDate.toLocaleDateString('zh-TW')}
+              </span>
             </div>
           ) : (
             <div>
-              篩選關鍵字—
-              {searchText}
+              <span>
+                篩選關鍵字—
+                {' '}
+              </span>
+              <span style={{ fontWeight: 'bold', borderBottom: '1px solid black' }}>
+                {searchText}
+              </span>
             </div>
           )
         }
@@ -92,6 +131,8 @@ FilterResults.propTypes = {
   startDate: PropTypes.instanceOf(Date).isRequired,
   endDate: PropTypes.instanceOf(Date).isRequired,
   isFiltered: PropTypes.bool.isRequired,
+  filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  scrollToElement: PropTypes.func.isRequired,
 };
 
 export default FilterResults;

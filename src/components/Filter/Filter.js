@@ -129,6 +129,7 @@ const DatePickerWrapper = styled(({
 }) => (
   <>
     <DatePicker
+      dateFormat="yyyy/MM/dd"
       selected={startDate}
       onChange={(date) => setStartDate(date)}
       selectsStart
@@ -140,6 +141,7 @@ const DatePickerWrapper = styled(({
     />
     <div>—</div>
     <DatePicker
+      dateFormat="yyyy/MM/dd"
       selected={endDate}
       onChange={(date) => setEndDate(date)}
       selectsEnd
