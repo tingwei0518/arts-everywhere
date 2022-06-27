@@ -246,20 +246,24 @@ function EventDisplay() {
     const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
     setEndDate(afterSevenDays);
     api.getNearbyEvents(latitude, longitude, distance).then((json) => {
+      console.log('getNearbyEvents');
       json.forEach((data) => {
+        console.log('json foreach');
         data.showInfo.forEach((info) => {
           if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
             && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
             const infoStartTimeStamp = new Date(info.time.slice(0, 10));
             const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
-            // if ((todayTimeStamp >= infoStartTimeStamp
-            //   && todayTimeStamp <= infoEndTimeStamp)
-            //   || (afterSevenDays >= infoStartTimeStamp
-            //     && afterSevenDays <= infoEndTimeStamp)) {
-            if ((infoStartTimeStamp >= todayTimeStamp
-              && infoStartTimeStamp <= afterSevenDays)
-              && (infoEndTimeStamp >= todayTimeStamp
-                && infoEndTimeStamp <= afterSevenDays)) {
+            console.log('showInfo.forEach');
+            if ((todayTimeStamp >= infoStartTimeStamp
+              && todayTimeStamp <= infoEndTimeStamp)
+              || (afterSevenDays >= infoStartTimeStamp
+                && afterSevenDays <= infoEndTimeStamp)) {
+              // if ((infoStartTimeStamp >= todayTimeStamp
+              //   && infoStartTimeStamp <= afterSevenDays)
+              //   && (infoEndTimeStamp >= todayTimeStamp
+              //     && infoEndTimeStamp <= afterSevenDays)) {
+              console.log('recentShowInfo');
               recentShowInfo.push({
                 info,
                 title: data.title,

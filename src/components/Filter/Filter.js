@@ -213,7 +213,7 @@ function Filter({
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {!filterToggle ? (
           <MainFilter>
-            <div style={{ display: 'flex', flexDirection: 'row', columnGap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', marginRight: '10px' }}>
               <DatePickerWrapper
                 popperContainer={Popper}
                 calendarContainer={Calendar}

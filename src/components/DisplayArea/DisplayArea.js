@@ -150,8 +150,9 @@ function DisplayArea({
               <Event>
                 <EventImg
                   src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  primary={primary}
                 />
-                <EventCard>
+                <EventCard primary={primary}>
                   <EventTag>
                     {eventCategory[Number(event.category)]}
                   </EventTag>
