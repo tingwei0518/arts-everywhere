@@ -1,3 +1,3 @@
-import EventDisplay from './EventDisplay';
+import EventDisplayPage from './EventDisplayPage';
 
-export default EventDisplay;
+export default EventDisplayPage;

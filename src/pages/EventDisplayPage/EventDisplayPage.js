@@ -57,6 +57,7 @@ function EventDisplay() {
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
   const [isFiltered, setIsFiltered] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const distance = 10;
   const eventData = [];
   let weatherDesc = [];
@@ -349,6 +350,14 @@ function EventDisplay() {
     setIsFiltered(true);
   }
 
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
     if (!navigator.geolocation) {
       console.log('Geolocation is not supported by your browser');
@@ -403,11 +412,11 @@ function EventDisplay() {
           </SubPage>
           {(isFiltered && events.length !== 0) ? (
             <Page bg={bg1} ref={filteredEventsRef}>
-              <DisplayArea title="Filtered" events={events} text={pageText.filtered} primary={false} />
+              <DisplayArea title="Filtered" events={events} text={pageText.filtered} openModal={openModal} primary={false} />
             </Page>
           ) : ''}
           <Page bg={bg3} ref={filteredEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} primary />
+            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showModal={showModal} openModal={openModal} closeModal={closeModal} primary />
           </Page>
           <Page />
           <Page bg={bg1} />

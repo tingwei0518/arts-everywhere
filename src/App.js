@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import EventDisplayPage from './pages/EventDisplayPage/EventDisplay';
+import EventDisplayPage from './pages/EventDisplayPage/EventDisplayPage';
 import FontStyles from './fontStyles';
 // import './App.css';
 

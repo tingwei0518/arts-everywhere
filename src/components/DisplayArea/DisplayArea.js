@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
+import EventModal from '../EventModal';
 import next from '../../images/next.png';
 import prev from '../../images/prev.png';
 import image1 from '../../assets/1-4.jpg';
@@ -118,7 +119,7 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, text, events, primary,
+  title, text, events, primary, showModal, openModal, closeModal,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -151,25 +152,29 @@ function DisplayArea({
         <Events>
           {
             events.slice(currentIndex, currentIndex + 3).map((event) => (
-              <Event>
-                <EventImg
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-                  primary={primary}
-                />
-                <EventCard primary={primary}>
-                  <EventTag>
-                    {eventCategory[Number(event.category)]}
-                  </EventTag>
-                  <EventTitle>{event.title}</EventTitle>
-                  <EventDate>
-                    {event.startDate}
-                    {' '}
-                    -
-                    {' '}
-                    {event.endDate}
-                  </EventDate>
-                </EventCard>
-              </Event>
+              <>
+                <Event>
+                  <EventImg
+                    src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                    onClick={openModal}
+                    primary={primary}
+                  />
+                  <EventCard primary={primary}>
+                    <EventTag>
+                      {eventCategory[Number(event.category)]}
+                    </EventTag>
+                    <EventTitle>{event.title}</EventTitle>
+                    <EventDate>
+                      {event.startDate}
+                      {' '}
+                      -
+                      {' '}
+                      {event.endDate}
+                    </EventDate>
+                  </EventCard>
+                </Event>
+                <EventModal event={event} showModal={showModal} closeModal={closeModal} />
+              </>
             ))
           }
         </Events>
@@ -224,6 +229,9 @@ DisplayArea.propTypes = {
     keywords: PropTypes.arrayOf(PropTypes.string),
   })).isRequired,
   primary: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
+  openModal: PropTypes.func.isRequired,
+  closeModal: PropTypes.func.isRequired,
 };
 
 export default DisplayArea;
