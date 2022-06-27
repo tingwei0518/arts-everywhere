@@ -65,12 +65,16 @@ const Events = styled.div`
   width: 900px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 0 40px;
 `;
 
 const Event = styled.div`
   margin-top: 20px;
+  margin-left: 55px;
+  &:first-child {
+    margin-left: 0;
+  }
 `;
 
 const EventImg = styled.div`

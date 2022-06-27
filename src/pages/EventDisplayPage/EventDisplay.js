@@ -246,15 +246,13 @@ function EventDisplay() {
     const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
     setEndDate(afterSevenDays);
     api.getNearbyEvents(latitude, longitude, distance).then((json) => {
-      console.log('getNearbyEvents');
+      let infoUid = 0;
       json.forEach((data) => {
-        console.log('json foreach');
         data.showInfo.forEach((info) => {
           if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
             && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
             const infoStartTimeStamp = new Date(info.time.slice(0, 10));
             const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
-            console.log('showInfo.forEach');
             if ((todayTimeStamp >= infoStartTimeStamp
               && todayTimeStamp <= infoEndTimeStamp)
               || (afterSevenDays >= infoStartTimeStamp
@@ -263,15 +261,16 @@ function EventDisplay() {
               //   && infoStartTimeStamp <= afterSevenDays)
               //   && (infoEndTimeStamp >= todayTimeStamp
               //     && infoEndTimeStamp <= afterSevenDays)) {
-              console.log('recentShowInfo');
               recentShowInfo.push({
                 info,
                 title: data.title,
                 UID: data.UID,
               });
               setRecentShowInfo(recentShowInfo);
-              getRecentIdQuery(data.UID);
-              console.log(data.UID);
+              if (data.UID !== infoUid) {
+                getRecentIdQuery(data.UID);
+              }
+              infoUid = data.UID;
             }
           }
         });
@@ -289,6 +288,7 @@ function EventDisplay() {
     const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('zh-TW')).getTime();
     const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('zh-TW')).getTime();
     api.getNearbyEvents(latitude, longitude, distance).then((json) => {
+      let infoUid = 0;
       json.forEach((data) => {
         data.showInfo.forEach((info) => {
           if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
@@ -309,7 +309,10 @@ function EventDisplay() {
                 UID: data.UID,
               });
               setFilteredShowInfo(filteredShowInfo);
-              getIdQuery(data.UID);
+              if (data.UID !== infoUid) {
+                getIdQuery(data.UID);
+              }
+              infoUid = data.UID;
             }
           }
         });
