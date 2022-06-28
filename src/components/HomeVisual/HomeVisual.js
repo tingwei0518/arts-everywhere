@@ -4,6 +4,7 @@ import title from '../../assets/title.svg';
 
 const Wrapper = styled.div`
   width: 100vw;
+  min-width: 1360px;
   height: 100vh;
   background-color: rgba(255, 255, 255, 0.8);
   display: flex;

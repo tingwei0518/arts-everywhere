@@ -11,7 +11,7 @@
 <path d="M477.445 650.283L375.805 657.543L343.479 661.108L477.22 663.243L477.445 650.283Z" fill="#324E8E" fill-opacity="0.15"/>
 <path d="M558 118C481.87 141.564 316 74 266 1" stroke="black"/>
 <line x1="82.5" y1="42" x2="82.5" y2="1" stroke="black"/>
-<line x1="476.5" y1="42" x2="476.5" y2="1" stroke="black"/>
+<line x1="452.5" y1="42" x2="452.5" y2="1" stroke="black"/>
 <defs>
 <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_84_237" transform="translate(-0.18264 -1.28942) scale(0.00180832 0.00215983)"/>

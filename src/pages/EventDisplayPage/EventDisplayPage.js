@@ -26,7 +26,8 @@ const Wrapper = styled.div`
 `;
 
 const Page = styled.div`
-  width: 100vw;
+  width: auto;
+  min-width: 1360px;
   height: 100vh;
   display: inline-block;
   background-color: ${(props) => (props.primary ? 'grey' : '#D9D9D9')};
@@ -38,10 +39,16 @@ const Page = styled.div`
   scroll-snap-align: start;
 `;
 
-const SubPage = styled(Page)`
-  width: auto;
+const SubPage = styled.div`
+  min-width: 560px;
   height: 100vh;
+  display: inline-block;
+  background-image: url(${(props) => (props.bg)});
   background-size: auto 100%;
+  background-repeat: no-repeat;
+  position: relative;
+  flex-shrink: 0;
+  scroll-snap-align: start;
 `;
 
 function EventDisplay() {
@@ -57,10 +64,9 @@ function EventDisplay() {
   const [latitude, setLatitude] = useState(25.09108);
   const [longitude, setLongitude] = useState(121.5598);
   const [isFiltered, setIsFiltered] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showUid, setShowUid] = useState('');
   const distance = 10;
   const eventData = [];
-  let weatherDesc = [];
   const pageText = {
     filtered: '根據您所選擇的時間與地點，精心為您篩選藝文活動。',
     recent: '不曉得該如何安排空閒時間嗎？可以參考看看這一週內，有哪些精彩的藝文活動。',
@@ -86,7 +92,7 @@ function EventDisplay() {
     querySnapshot.forEach((doc) => {
       eventData.push(doc.data());
     });
-    console.log({ eventData });
+    // console.log({ eventData });
     setRecentEvents(eventData);
   }
 
@@ -202,40 +208,6 @@ function EventDisplay() {
     }
   };
 
-  const getRecentWeather = () => {
-    switch (location) {
-      case '台北市':
-        api.getWeatherDesc('臺北市').then((json) => {
-          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-          console.log('一週內天氣', weatherDesc);
-        });
-        break;
-      case '台中市':
-        api.getWeatherDesc('臺中市').then((json) => {
-          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-          console.log('一週內天氣', weatherDesc);
-        });
-        break;
-      case '台南市':
-        api.getWeatherDesc('臺南市').then((json) => {
-          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-          console.log('一週內天氣', weatherDesc);
-        });
-        break;
-      case '台東縣':
-        api.getWeatherDesc('臺東縣').then((json) => {
-          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-          console.log('一週內天氣', weatherDesc);
-        });
-        break;
-      default:
-        api.getWeatherDesc(location).then((json) => {
-          weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-          console.log('一週內天氣', weatherDesc);
-        });
-    }
-  };
-
   const getRecentEvents = () => {
     setFilteredShowInfo([]);
     setStartDate(new Date());
@@ -277,7 +249,6 @@ function EventDisplay() {
         });
       });
     });
-    getRecentWeather();
   };
 
   const getFilteredEvents = () => {
@@ -350,14 +321,6 @@ function EventDisplay() {
     setIsFiltered(true);
   }
 
-  const openModal = () => {
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
   useEffect(() => {
     if (!navigator.geolocation) {
       console.log('Geolocation is not supported by your browser');
@@ -410,13 +373,15 @@ function EventDisplay() {
               style={{ padding: '0', flexWrap: 'wrap' }}
             />
           </SubPage>
-          {(isFiltered && events.length !== 0) ? (
-            <Page bg={bg1} ref={filteredEventsRef}>
-              <DisplayArea title="Filtered" events={events} text={pageText.filtered} openModal={openModal} primary={false} />
-            </Page>
-          ) : ''}
+          {
+            (isFiltered && events.length !== 0) && (
+              <Page bg={bg1} ref={filteredEventsRef}>
+                <DisplayArea title="Filtered" events={events} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} />
+              </Page>
+            )
+          }
           <Page bg={bg3} ref={filteredEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showModal={showModal} openModal={openModal} closeModal={closeModal} primary />
+            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary />
           </Page>
           <Page />
           <Page bg={bg1} />

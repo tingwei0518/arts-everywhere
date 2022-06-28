@@ -119,20 +119,16 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, text, events, primary, showModal, openModal, closeModal,
+  title, text, events, primary, showUid, setShowUid, location,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextBatch = () => {
-    if (currentIndex <= events.length - 5) {
-      setCurrentIndex((prevCurrentIndex) => prevCurrentIndex + 3);
-    }
+    setCurrentIndex((prevCurrentIndex) => prevCurrentIndex + 3);
   };
 
   const prevBatch = () => {
-    if (currentIndex >= 3) {
-      setCurrentIndex((prevCurrentIndex) => prevCurrentIndex - 3);
-    }
+    setCurrentIndex((prevCurrentIndex) => prevCurrentIndex - 3);
   };
 
   return (
@@ -140,53 +136,70 @@ function DisplayArea({
       <PageTitle primary={primary}>{title}</PageTitle>
       <EventSection>
         <SectionText primary={primary}>{text}</SectionText>
-        <img
-          onClick={prevBatch}
-          src={prev}
-          alt="previous page"
-          aria-hidden="true"
-          style={{
-            width: '45px', height: '45px', marginTop: '200px', marginLeft: '20px', cursor: 'pointer',
-          }}
-        />
+        {
+          currentIndex >= 3
+            ? (
+              <img
+                onClick={prevBatch}
+                src={prev}
+                alt="previous page"
+                aria-hidden="true"
+                style={{
+                  width: '45px', height: '45px', marginTop: '200px', marginLeft: '20px', cursor: 'pointer',
+                }}
+              />
+            ) : <div style={{ width: '45px', height: '45px', marginLeft: '20px' }} />
+        }
         <Events>
           {
             events.slice(currentIndex, currentIndex + 3).map((event) => (
-              <>
-                <Event>
-                  <EventImg
-                    src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-                    onClick={openModal}
-                    primary={primary}
-                  />
-                  <EventCard primary={primary}>
-                    <EventTag>
-                      {eventCategory[Number(event.category)]}
-                    </EventTag>
-                    <EventTitle>{event.title}</EventTitle>
-                    <EventDate>
-                      {event.startDate}
-                      {' '}
-                      -
-                      {' '}
-                      {event.endDate}
-                    </EventDate>
-                  </EventCard>
-                </Event>
-                <EventModal event={event} showModal={showModal} closeModal={closeModal} />
-              </>
+              <Event>
+                <EventImg
+                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  onClick={() => setShowUid(event.UID)}
+                  primary={primary}
+                />
+                <EventCard primary={primary} onClick={() => setShowUid(event.UID)}>
+                  <EventTag>
+                    {eventCategory[Number(event.category)]}
+                  </EventTag>
+                  <EventTitle>{event.title}</EventTitle>
+                  <EventDate>
+                    {event.startDate}
+                    {' '}
+                    -
+                    {' '}
+                    {event.endDate}
+                  </EventDate>
+                </EventCard>
+                {
+                  showUid === event.UID
+                  && (
+                    <EventModal
+                      event={event}
+                      setShowUid={setShowUid}
+                      location={location}
+                    />
+                  )
+                }
+              </Event>
             ))
           }
         </Events>
-        <img
-          onClick={nextBatch}
-          src={next}
-          alt="next batch"
-          aria-hidden="true"
-          style={{
-            width: '45px', height: '45px', marginTop: '200px', cursor: 'pointer',
-          }}
-        />
+        {
+          currentIndex <= events.length - 4
+            ? (
+              <img
+                onClick={nextBatch}
+                src={next}
+                alt="next batch"
+                aria-hidden="true"
+                style={{
+                  width: '45px', height: '45px', marginTop: '200px', cursor: 'pointer',
+                }}
+              />
+            ) : <div style={{ width: '45px', height: '45px' }} />
+        }
       </EventSection>
     </Wrapper>
   );
@@ -229,9 +242,9 @@ DisplayArea.propTypes = {
     keywords: PropTypes.arrayOf(PropTypes.string),
   })).isRequired,
   primary: PropTypes.bool.isRequired,
-  showModal: PropTypes.bool.isRequired,
-  openModal: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  showUid: PropTypes.string.isRequired,
+  setShowUid: PropTypes.func.isRequired,
+  location: PropTypes.string.isRequired,
 };
 
 export default DisplayArea;

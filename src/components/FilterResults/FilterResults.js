@@ -5,7 +5,7 @@ import doubleNext from '../../images/double_next.png';
 import Map from '../Map';
 
 const Wrapper = styled.div`
-  width: 600px;
+  width: 560px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -50,12 +50,12 @@ function FilterResults({
     <Wrapper>
       <Block>
         <div style={{
-          width: '100%', display: 'flex', alignItems: 'center', columnGap: '20px',
+          width: '100%', display: 'flex', alignItems: 'center',
         }}
         >
-          <img src={title} alt="arts everywhere" style={{ width: '250px' }} />
+          <img src={title} alt="arts everywhere" style={{ width: '250px', marginRight: '20px' }} />
           <AnimationBtn onClick={() => scrollToElement(filteredEventsRef)}>
-            <div style={{ fontSize: '.5rem' }}>click!</div>
+            <div style={{ fontSize: '.5rem' }}>go!</div>
             <img src={doubleNext} alt="next page" aria-hidden="true" style={{ width: '30px' }} />
           </AnimationBtn>
         </div>
