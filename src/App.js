@@ -1,13 +1,37 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import FilterPage from './pages/FilterPage';
-import './App.css';
+import { createGlobalStyle } from 'styled-components';
+import EventDisplayPage from './pages/EventDisplayPage/EventDisplayPage';
+import FontStyles from './fontStyles';
+// import './App.css';
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    box-sizing: border-box;
+  };
+  body {
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    overflow-y: hidden;
+    overflow-x: auto;
+    overscroll-behavior: none;
+    background-color: lightgrey; 
+    width:100vw;
+    height: 100vh;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+`;
 
 function App() {
   return (
     <div className="App">
+      <FontStyles />
+      <GlobalStyle />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<FilterPage />} />
+          <Route path="/" element={<EventDisplayPage />} />
         </Routes>
       </BrowserRouter>
     </div>
