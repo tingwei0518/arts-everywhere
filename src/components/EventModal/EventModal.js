@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-// import api from '../../utils/api';
+import api from '../../utils/api';
 import close from '../../images/close.png';
 import share from '../../images/share.png';
 import image1 from '../../assets/1-4.jpg';
@@ -45,6 +45,7 @@ const Wrapper = styled.div`
   left: 0;
   justify-content: center;
   align-items: center;
+  z-index: 2;
 `;
 
 const Modal = styled.div`
@@ -143,6 +144,12 @@ const ModalImage = styled.div`
   background-repeat: no-repeat;
 `;
 
+// const SubInfo = styled.div`
+//   width: 28%;
+//   display: flex;
+//   flex-direction: column;
+// `;
+
 const SessionTable = styled.div`
   width: 28%;
 `;
@@ -188,40 +195,66 @@ const Button = styled.button`
 
 function EventModal({ event, setShowUid, location }) {
   const [weatherLocation, setWeatherLocation] = useState(location);
-  // let weatherDesc = [];
-  const weatherDesc = [];
+  const [weatherDesc, setWeatherDesc] = useState([]);
+  // const todayTimeStamp = new Date(new Date().toLocaleDateString('zh-TW'));
+  // const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
+  // console.log({ weatherLocation });
+  // console.log({ weatherDesc });
+
+  // const checkDate = () => {
+  //   const weatherDateDesc = [];
+  //   event.showInfo.forEach((info) => {
+  //     if (info.location.slice(0, 3) === weatherLocation) {
+  //       const eventStartTimeStamp = new Date(info.time.split(' ')[0]);
+  //       const eventEndTimeStamp = new Date(info.endTime.split(' ')[0]);
+  //       if ((eventStartTimeStamp >= todayTimeStamp && eventStartTimeStamp <= afterSevenDays)
+  //         || (todayTimeStamp <= eventEndTimeStamp)) {
+  //         weatherDesc.forEach((desc) => {
+  //           const dateWeather = {};
+  //           const startTime = desc.startTime.split(' ')[0];
+  //           const weather = desc.elementValue[0].value;
+  //           dateWeather[startTime] = startTime;
+  //           dateWeather[weather] = weather;
+  //           weatherDateDesc.push(dateWeather);
+  //         });
+  //       }
+  //     }
+  //   });
+  //   console.log(weatherDateDesc);
+  // };
 
   const getLocationWeather = () => {
     switch (weatherLocation) {
       case '台北市':
-        // api.getWeatherDesc('臺北市').then((json) => {
-        //   weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-        console.log('臺北市', weatherDesc);
-        // });
+        api.getWeatherDesc('臺北市').then((json) => {
+          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
+          console.log('臺北市', weatherDesc);
+          // checkDate();
+        });
         break;
       case '台中市':
-        // api.getWeatherDesc('臺中市').then((json) => {
-        //   weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-        console.log('臺中市', weatherDesc);
-        // });
+        api.getWeatherDesc('臺中市').then((json) => {
+          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
+          console.log('臺中市', weatherDesc);
+        });
         break;
       case '台南市':
-        // api.getWeatherDesc('臺南市').then((json) => {
-        //   weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-        console.log('臺南市', weatherDesc);
-        // });
+        api.getWeatherDesc('臺南市').then((json) => {
+          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
+          console.log('臺南市', weatherDesc);
+        });
         break;
       case '台東縣':
-        // api.getWeatherDesc('臺東縣').then((json) => {
-        //   weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-        console.log('臺東縣', weatherDesc);
-        // });
+        api.getWeatherDesc('臺東縣').then((json) => {
+          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
+          console.log('臺東縣', weatherDesc);
+        });
         break;
       default:
-        // api.getWeatherDesc(weatherLocation).then((json) => {
-        //   weatherDesc = json.records.locations[0].location[0].weatherElement[0].time;
-        console.log(weatherLocation, weatherDesc);
-      // });
+        api.getWeatherDesc(weatherLocation).then((json) => {
+          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
+          console.log(weatherLocation, weatherDesc);
+        });
     }
   };
 
@@ -234,7 +267,7 @@ function EventModal({ event, setShowUid, location }) {
     getLocationWeather();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weatherLocation]);
-  console.log({ event });
+
   return (
     <Wrapper>
       <Modal>
@@ -297,12 +330,13 @@ function EventModal({ event, setShowUid, location }) {
           <ModalImage
             src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
           />
+          {/* <SubInfo> */}
           <SessionTable>
             <TableTitle>活動場次</TableTitle>
             <SessionLists>
               {
                 event.showInfo.map((info) => (
-                  <Session onClick={() => getAddressWeather(info.location)}>
+                  <Session>
                     <div>
                       <div>
                         {info.time}
@@ -313,7 +347,9 @@ function EventModal({ event, setShowUid, location }) {
                         {' '}
                         {info.endTime}
                       </div>
-                      <Tag>{info.location.slice(0, 3)}</Tag>
+                      <Tag onClick={() => getAddressWeather(info.location)}>
+                        {info.location.slice(0, 3)}
+                      </Tag>
                       <div style={{ marginTop: '10px' }}>{info.locationName}</div>
                     </div>
                     <Button>
@@ -324,6 +360,17 @@ function EventModal({ event, setShowUid, location }) {
               }
             </SessionLists>
           </SessionTable>
+          {/* <div>test</div>
+            <div>
+              {
+                weatherDesc.map(() => (
+                  <div>
+                    test
+                  </div>
+                ))
+              }
+            </div> */}
+          {/* </SubInfo> */}
         </InfoSection>
       </Modal>
     </Wrapper>

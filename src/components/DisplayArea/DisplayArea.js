@@ -67,12 +67,12 @@ const Events = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  margin: 0 40px;
+  padding: 0 35px;
 `;
 
 const Event = styled.div`
   margin-top: 20px;
-  margin-left: 55px;
+  margin-left: 40px;
   &:first-child {
     margin-left: 0;
   }

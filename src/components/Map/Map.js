@@ -32,7 +32,7 @@ function Map({ latitude, longitude, showInfo }) {
         center={center}
         zoom={12}
         options={{ mapId: '5c9ec1165b4386f6' }}
-        mapContainerStyle={{ height: '55%', width: '55%' }}
+        mapContainerStyle={{ height: '55%', width: '60%' }}
         onLoad={onLoad}
       >
         {

@@ -40,7 +40,7 @@ const Page = styled.div`
 `;
 
 const SubPage = styled.div`
-  min-width: 560px;
+  min-width: 600px;
   height: 100vh;
   display: inline-block;
   background-image: url(${(props) => (props.bg)});
@@ -72,8 +72,13 @@ function EventDisplay() {
     recent: '不曉得該如何安排空閒時間嗎？可以參考看看這一週內，有哪些精彩的藝文活動。',
   };
 
+  const homeRef = useRef(null);
   const filteredInfoRef = useRef(null);
   const filteredEventsRef = useRef(null);
+  const recentEventsRef = useRef(null);
+  const popularEventsRef = useRef(null);
+  const userEventsRef = useRef(null);
+  const userEventsEditor = useRef(null);
   const scrollToElement = (ref) => {
     ref.current.scrollIntoView({ behavior: 'smooth' });
   };
@@ -338,10 +343,20 @@ function EventDisplay() {
 
   return (
     <>
-      <ScrollIndicator />
+      <ScrollIndicator
+        isFiltered={isFiltered}
+        scrollToElement={scrollToElement}
+        homeRef={homeRef}
+        filteredInfoRef={filteredInfoRef}
+        filteredEventsRef={filteredEventsRef}
+        recentEventsRef={recentEventsRef}
+        popularEventsRef={popularEventsRef}
+        userEventsRef={userEventsRef}
+        userEventsEditor={userEventsEditor}
+      />
       <Container>
         <Wrapper>
-          <Page bg={bg6}>
+          <Page bg={bg6} ref={homeRef}>
             <HomeVisual />
             <Filter
               startDate={startDate}
@@ -380,12 +395,12 @@ function EventDisplay() {
               </Page>
             )
           }
-          <Page bg={bg3} ref={filteredEventsRef}>
+          <Page bg={bg3} ref={recentEventsRef || filteredEventsRef}>
             <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary />
           </Page>
-          <Page />
-          <Page bg={bg1} />
-          <Page bg={bg3} />
+          <Page ref={popularEventsRef} />
+          <Page bg={bg1} ref={userEventsRef} />
+          <Page bg={bg3} ref={userEventsEditor} />
         </Wrapper>
       </Container>
     </>

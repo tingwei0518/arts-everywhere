@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 
 const HomeTitle = styled.div`
   position: absolute;
-  bottom: 45px;
+  bottom: 80px;
   left: 45px;
 `;
 
@@ -34,13 +34,6 @@ const AnimationText = styled.div`
   opacity: .8;
 `;
 
-const Circle = styled.div`
-  width: 50px;
-  height: 50px;
-  background-color: rgb(255, 240, 0);
-  border-radius: 50%;
-`;
-
 function HomeVisual() {
   return (
     <Wrapper>
@@ -49,7 +42,6 @@ function HomeVisual() {
       </AnimationText>
       <HomeTitle>
         <img src={title} alt="arts everywhere" style={{ width: '500px' }} />
-        <Circle />
       </HomeTitle>
     </Wrapper>
   );

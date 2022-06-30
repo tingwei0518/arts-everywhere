@@ -12,10 +12,11 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding-bottom: 70px;
+  margin-left: 5px;
 `;
 
 const Block = styled.div`
-  width: 50%;
+  width: fit-content;
   height: 25%;
   text-align: center;
   display: flex;
@@ -34,7 +35,7 @@ const bonbon = keyframes`
 `;
 
 const animation = (props) => css`
-    ${bonbon} ${props.animationLength} linear 2s infinite;
+  ${bonbon} ${props.animationLength} linear 2s infinite;
 `;
 
 const AnimationBtn = styled.div`
