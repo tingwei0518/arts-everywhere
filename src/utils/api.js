@@ -22,6 +22,10 @@ const api = {
     return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${process.env.REACT_APP_MAPS_API_KEY}`)
       .then((response) => response.json());
   },
+  getOneDayWeatherDesc(location, timeFrom, timeTo) {
+    return fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=${location}&elementName=WeatherDescription&timeFrom=${timeFrom}&timeTo=${timeTo}`)
+      .then((response) => response.json());
+  },
   getWeatherDesc(location) {
     return fetch(`https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=${process.env.REACT_APP_WEATHER_API_KEY}&format=JSON&locationName=${location}&elementName=WeatherDescription`)
       .then((response) => response.json());

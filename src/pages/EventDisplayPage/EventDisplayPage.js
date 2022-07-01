@@ -400,7 +400,51 @@ function EventDisplay() {
           </Page>
           <Page ref={popularEventsRef} />
           <Page bg={bg1} ref={userEventsRef} />
-          <Page bg={bg3} ref={userEventsEditor} />
+          <Page bg={bg3} ref={userEventsEditor}>
+            <h1>活動刊登</h1>
+            <label htmlFor="title">
+              活動名稱
+              <input type="text" name="title" id="title" required />
+            </label>
+
+            <label htmlFor="category">
+              活動類型
+              <input type="text" name="category" id="category" required />
+            </label>
+
+            <label htmlFor="desc">
+              活動細節
+              <textarea type="text" name="desc" id="desc" required />
+            </label>
+
+            <label htmlFor="website">
+              活動網站
+              <input type="text" name="website" id="website" />
+            </label>
+
+            <label htmlFor="session">
+              活動場次
+              <input type="text" name="session" id="session" />
+            </label>
+
+            <label
+              htmlFor="photo"
+              style={{
+                width: '400px',
+                height: '300px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgb(238, 238, 238)',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              <input type="file" accept="image/*" name="photo" id="photo" required />
+            </label>
+
+            <button type="submit">送出</button>
+          </Page>
         </Wrapper>
       </Container>
     </>

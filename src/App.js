@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import EventDisplayPage from './pages/EventDisplayPage/EventDisplayPage';
+import EventDisplayPage from './pages/EventDisplayPage';
+import LogInPage from './pages/LogInPage';
 import FontStyles from './fontStyles';
 // import './App.css';
 
@@ -32,6 +33,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<EventDisplayPage />} />
+          <Route path="/member" element={<LogInPage />} />
         </Routes>
       </BrowserRouter>
     </div>

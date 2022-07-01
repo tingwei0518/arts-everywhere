@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
+import Menu from '../Menu';
 
 const Wrapper = styled.div`
   width: 95vw;
@@ -16,7 +17,7 @@ const Wrapper = styled.div`
   z-index: 1;
 `;
 
-const Menu = styled.div`
+const MenuBtn = styled.div`
   width: 52px;
   height: 52px;
   background-color: rgb(255, 240, 0);
@@ -28,6 +29,22 @@ const Menu = styled.div`
   font-family: Times,sans-serif; 
   color: black;
   cursor: pointer;
+  z-index: 4;
+`;
+
+const ScrollIndicatorWrapper = styled.div`
+  background-color: rgba(0, 0, 0, .5); 
+  height: 3px; 
+  display: flex;
+  align-items: center;
+  border-radius: 0 4px 4px 0; 
+  width: 100%;
+`;
+
+const MainScrollIndicator = styled.div`
+  background-color: black; 
+  height: 3px; 
+  border-radius: 0 4px 4px 0;
 `;
 
 const Point = styled.div`
@@ -39,35 +56,24 @@ const Point = styled.div`
   justify-content: center;
   cursor: pointer;
   z-index: 2;
-  & div {
-    opacity: ${(props) => (props.active ? '1' : '0')};
+  &:not(:first-child){
+    div {
+      opacity: ${(props) => (props.active ? '1' : '0')};
+    }
+  }
+  &:hover {
+    div {
+      opacity: 1;
+    }
   }
 `;
 
 const Title = styled.div`
   width: fit-content;
-  padding-top: 20px;
   text-align: center;
   font-family: Times,sans-serif;
+  margin-top: 20px;
   opacity: 0;
-  &:hover {
-    opacity: 1;
-  }
-`;
-
-const ScrollIndicatorWraper = styled.div`
-  background-color: rgba(0, 0, 0, .5); 
-  height: 3px; 
-  display: flex;
-  align-items: center;
-  border-radius: 0 4px 4px 0; 
-  width: 100%; 
-`;
-
-const MainScrollIndicator = styled.div`
-  background-color: black; 
-  height: 3px; 
-  border-radius: 0 4px 4px 0;
 `;
 
 function ScrollIndicator({
@@ -76,24 +82,20 @@ function ScrollIndicator({
 }) {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
 
   const findActiveIndex = () => {
     if (scrollLeft < 24) {
       setActiveIndex(0);
-    }
-    if (scrollLeft >= 24 && scrollLeft < 32) {
+    } else if (scrollLeft >= 24 && scrollLeft < 32) {
       setActiveIndex(1);
-    }
-    if (scrollLeft >= 32 && scrollLeft < 54) {
+    } else if (scrollLeft >= 32 && scrollLeft < 54) {
       setActiveIndex(2);
-    }
-    if (scrollLeft >= 54 && scrollLeft < 76) {
+    } else if (scrollLeft >= 54 && scrollLeft < 76) {
       setActiveIndex(3);
-    }
-    if (scrollLeft >= 76 && scrollLeft < 99) {
+    } else if (scrollLeft >= 76 && scrollLeft < 99) {
       setActiveIndex(4);
-    }
-    if (scrollLeft >= 99) {
+    } else {
       setActiveIndex(5);
     }
   };
@@ -101,23 +103,17 @@ function ScrollIndicator({
   const findFilteredActiveIndex = () => {
     if (scrollLeft < 20) {
       setActiveIndex(0);
-    }
-    if (scrollLeft >= 20 && scrollLeft < 26) {
+    } else if (scrollLeft >= 20 && scrollLeft < 26) {
       setActiveIndex(1);
-    }
-    if (scrollLeft >= 26 && scrollLeft < 44) {
+    } else if (scrollLeft >= 26 && scrollLeft < 44) {
       setActiveIndex(2);
-    }
-    if (scrollLeft >= 44 && scrollLeft < 63) {
+    } else if (scrollLeft >= 44 && scrollLeft < 63) {
       setActiveIndex(3);
-    }
-    if (scrollLeft >= 63 && scrollLeft < 81) {
+    } else if (scrollLeft >= 63 && scrollLeft < 81) {
       setActiveIndex(4);
-    }
-    if (scrollLeft >= 81 && scrollLeft < 99) {
+    } else if (scrollLeft >= 81 && scrollLeft < 99) {
       setActiveIndex(5);
-    }
-    if (scrollLeft >= 99) {
+    } else {
       setActiveIndex(6);
     }
   };
@@ -135,6 +131,9 @@ function ScrollIndicator({
     } else {
       findActiveIndex();
     }
+    if (isOpen) {
+      setIsOpen(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollLeft]);
 
@@ -146,8 +145,14 @@ function ScrollIndicator({
 
   return (
     <Wrapper>
-      <Menu>Menu</Menu>
-      <ScrollIndicatorWraper>
+      <MenuBtn onClick={() => setIsOpen(!isOpen)}>
+        {
+          isOpen
+            ? 'Close' : 'Menu'
+        }
+      </MenuBtn>
+      <Menu isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ScrollIndicatorWrapper>
         <Point active={activeIndex === 0} onClick={() => scrollToElement(homeRef)}>
           <Title>Home</Title>
         </Point>
@@ -194,7 +199,7 @@ function ScrollIndicator({
           )
         }
         <MainScrollIndicator style={{ width: `${scrollLeft}%` }} />
-      </ScrollIndicatorWraper>
+      </ScrollIndicatorWrapper>
     </Wrapper>
   );
 }

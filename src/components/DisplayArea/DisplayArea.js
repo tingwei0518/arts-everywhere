@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import EventModal from '../EventModal';
@@ -94,14 +95,19 @@ const EventImg = styled.div`
 const EventCard = styled.div`
   width: 200px;
   height: 120px;
-  color: black;
+
   background-color: ${(props) => (props.primary ? 'lightgrey' : 'white')};
   box-shadow: 9px 9px ${(props) => (props.primary ? 'rgba(255, 241, 116, .8)' : 'rgba(0, 0, 0, .2)')};
   padding: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   cursor: pointer;
+  & a {
+    text-decoration: none;
+    color: black;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 `;
 
 const EventTitle = styled.div`
@@ -154,23 +160,27 @@ function DisplayArea({
           {
             events.slice(currentIndex, currentIndex + 3).map((event) => (
               <Event>
-                <EventImg
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-                  onClick={() => setShowUid(event.UID)}
-                  primary={primary}
-                />
+                <Link to={`?id=${event.UID}`}>
+                  <EventImg
+                    src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                    onClick={() => setShowUid(event.UID)}
+                    primary={primary}
+                  />
+                </Link>
                 <EventCard primary={primary} onClick={() => setShowUid(event.UID)}>
-                  <EventTag>
-                    {eventCategory[Number(event.category)]}
-                  </EventTag>
-                  <EventTitle>{event.title}</EventTitle>
-                  <EventDate>
-                    {event.startDate}
-                    {' '}
-                    -
-                    {' '}
-                    {event.endDate}
-                  </EventDate>
+                  <Link to={`?id=${event.UID}`}>
+                    <EventTag>
+                      {eventCategory[Number(event.category)]}
+                    </EventTag>
+                    <EventTitle>{event.title}</EventTitle>
+                    <EventDate>
+                      {event.startDate}
+                      {' '}
+                      -
+                      {' '}
+                      {event.endDate}
+                    </EventDate>
+                  </Link>
                 </EventCard>
                 {
                   showUid === event.UID
