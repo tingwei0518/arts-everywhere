@@ -4,7 +4,9 @@ import DatePicker from 'react-datepicker';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import next from '../../images/white_next.png';
-import down from '../../images/down.png';
+import {
+  Button, DropDownContainer, DropDownHeader, DropDownListContainer, DropDownList, ListItem,
+} from '../Units';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const Wrapper = styled.div`
@@ -33,52 +35,6 @@ const KeywordFilter = styled.div`
   overflow: scroll; 
 `;
 
-const DropDownContainer = styled.div`
-  width: 200px;
-  margin: 0 auto;
-`;
-
-const DropDownHeader = styled.div`
-  height: 40px; 
-  margin-bottom: 0;
-  padding-bottom: 5px;
-  font-size: 1.2rem;
-  text-align: center;
-  color: black;
-  background-color: transparent;
-  background-image: url(${down});
-  background-size: 20px 20px;
-  background-repeat: no-repeat;
-  background-position: 97%;
-  border-bottom: 2px solid black;
-  cursor: pointer;
-`;
-
-const DropDownListContainer = styled.div`
-  height: 200px;
-`;
-
-const DropDownList = styled.ul`
-  padding: 0;
-  margin: 0;
-  background-color: rgba(51, 51, 51, 0.8);
-  box-sizing: border-box;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  text-align: center;
-  height: 180px;
-  overflow: auto;
-  cursor: pointer;
-  &:first-child {
-    padding-top: 8px;
-  }
-`;
-
-const ListItem = styled.li`
-  list-style: none;
-  margin-bottom: 8px;
-`;
-
 const KeywordInput = styled.input`
   width: 300px;
   font-size: 1.2rem;
@@ -97,21 +53,6 @@ const Buttons = styled.div`
   flex-direction: column;
   row-gap: 10px;
   align-items: center;
-`;
-
-const Button = styled.button`
-  width: fit-content;
-  height: fit-content;
-  background: black;
-  color: white;
-  text-align: center;
-  margin-top: 45px;
-  padding: 15px 30px;
-  border: 1px solid black;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  column-gap: 20px;
 `;
 
 const HintButton = styled.button`
@@ -201,7 +142,6 @@ function Filter({
     setSelectedOption(value);
     setIsOptionOpen(false);
     locationHandeler(value);
-    console.log(selectedOption);
   };
   const locationOptionsList = [
     '台北市', '基隆市', '新北市', '宜蘭縣', '新竹市', '新竹縣', '桃園市', '苗栗縣', '台中市', '彰化縣',
@@ -223,24 +163,22 @@ function Filter({
                 setEndDate={setEndDate}
               />
             </div>
-            <div>
-              <DropDownContainer>
-                <DropDownHeader onClick={toggling}>
-                  {isGeolocation ? location || selectedOption : '自動定位中...'}
-                </DropDownHeader>
-                {isOptionOpen && (
-                  <DropDownListContainer>
-                    <DropDownList>
-                      {locationOptionsList.map((option) => (
-                        <ListItem onClick={onOptionClicked(option)} key={option}>
-                          {option}
-                        </ListItem>
-                      ))}
-                    </DropDownList>
-                  </DropDownListContainer>
-                )}
-              </DropDownContainer>
-            </div>
+            <DropDownContainer>
+              <DropDownHeader onClick={toggling}>
+                {isGeolocation ? location || selectedOption : '自動定位中...'}
+              </DropDownHeader>
+              {isOptionOpen && (
+                <DropDownListContainer>
+                  <DropDownList>
+                    {locationOptionsList.map((option) => (
+                      <ListItem onClick={onOptionClicked(option)} key={option}>
+                        {option}
+                      </ListItem>
+                    ))}
+                  </DropDownList>
+                </DropDownListContainer>
+              )}
+            </DropDownContainer>
           </MainFilter>
         ) : (
           <KeywordFilter>

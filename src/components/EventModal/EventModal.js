@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import styled from 'styled-components/macro';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import close from '../../images/close.png';
 import share from '../../images/share.png';
+import line from '../../images/line.png';
+import fb from '../../images/fb.png';
 import image1 from '../../assets/1-4.jpg';
 import image2 from '../../assets/2-3.jpg';
 import image3 from '../../assets/3-1.jpg';
@@ -19,6 +22,7 @@ import imageOther from '../../assets/1-2.jpg';
 import sunny from '../../images/sunny.png';
 import cloudy from '../../images/cloudy.png';
 import rainy from '../../images/rainy.png';
+import empty from '../../images/empty.png';
 import otherWeather from '../../images/cloudy-and-sunny.png';
 
 const eventCategory = {
@@ -40,7 +44,7 @@ const eventImageProps = {
   17: image17,
   19: imageOther,
 };
-const weatherImageProps = [sunny, cloudy, rainy, otherWeather];
+const weatherImageProps = [sunny, cloudy, rainy, otherWeather, empty];
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -272,9 +276,13 @@ const Weather = styled.div`
 function EventModal({ event, setShowUid }) {
   const [weatherData, setWeatherData] = useState([]);
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
-  // console.log('weeklyWeatherData', weeklyWeatherData);
+  const [isSharing, setIsSharing] = useState(false);
+  const url = window.location.href;
 
-  const getWeatherIcon = (desc) => {
+  function getWeatherIcon(desc) {
+    if (desc === undefined) {
+      return weatherImageProps[4];
+    }
     if (desc.includes('雨')) {
       return weatherImageProps[2];
     }
@@ -285,7 +293,7 @@ function EventModal({ event, setShowUid }) {
       return weatherImageProps[1];
     }
     return weatherImageProps[0];
-  };
+  }
 
   const getWeeklyLocationWeather = (weatherLocation) => {
     switch (weatherLocation) {
@@ -332,6 +340,7 @@ function EventModal({ event, setShowUid }) {
     if (isShowCrossDays) return;
     const todayTimeStamp = dayjs();
     const afterSevenDays = dayjs().add(7, 'day');
+
     function getWeather(info) {
       const eventTimeStamp = dayjs(info.time);
       if ((eventTimeStamp <= afterSevenDays) && (eventTimeStamp >= todayTimeStamp)) {
@@ -355,11 +364,33 @@ function EventModal({ event, setShowUid }) {
     if (isShowDateOverlap) {
       getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
         .then((data) => {
-          // console.log('getWeeklyLocationWeather', { data });
           setWeeklyWeatherData(data);
         });
     }
   }, [event.showInfo]);
+
+  useEffect(() => {
+    window.fbAsyncInit = function () {
+      window.FB.init({
+        xfbml: true,
+        version: 'v12.0',
+      });
+      window.FB.XFBML.parse();
+    };
+
+    (function (d, s, id) {
+      const fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      const js = d.createElement(s);
+      js.id = id;
+      js.src = '//connect.facebook.net/zh_TW/sdk.js';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    if (window.FB) {
+      window.FB.XFBML.parse();
+    }
+  }, []);
 
   return (
     <Wrapper>
@@ -380,13 +411,60 @@ function EventModal({ event, setShowUid }) {
                 event.startDate !== event.endDate
                 && (` - ${event.endDate}`)
               }
-              <img
-                src={share}
-                alt="share infomation"
+              <button
+                type="button"
+                onClick={() => setIsSharing(!isSharing)}
                 style={{
-                  width: '20px', marginLeft: 'auto', opacity: '.5', cursor: 'pointer',
+                  all: 'unset', cursor: 'pointer', position: 'relative', marginLeft: 'auto',
                 }}
-              />
+              >
+                {
+                  isSharing
+                    ? (
+                      <>
+                        <img
+                          src={share}
+                          alt="share infomation"
+                          style={{
+                            width: '20px', opacity: '1',
+                          }}
+                        />
+                        <a href={`https://social-plugins.line.me/lineit/share?url=${url}`} target="_blank" rel="noreferrer">
+                          <img
+                            src={line}
+                            alt="line share"
+                            style={{
+                              width: '25px', position: 'absolute', top: '25px', right: '-5px',
+                            }}
+                          />
+                        </a>
+                        <Helmet>
+                          <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v12.0" nonce="dmrjeGLN" />
+                        </Helmet>
+                        <div className="fb-share-button" data-href={url} data-layout="button_count" data-size="large">
+                          <a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3000%2F%3Fid%${event.UID}}&amp;src=sdkpreparse`} className="fb-xfbml-parse-ignore" rel="noreferrer">
+                            <img
+                              src={fb}
+                              alt="facebook share"
+                              style={{
+                                width: '25px', position: 'absolute', top: '50px', right: '-5px',
+                              }}
+                            />
+                          </a>
+
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={share}
+                        alt="share infomation"
+                        style={{
+                          width: '20px', opacity: '.5',
+                        }}
+                      />
+                    )
+                }
+              </button>
             </Day>
             {
               event.descriptionFilterHtml
@@ -404,8 +482,17 @@ function EventModal({ event, setShowUid }) {
                     (event.masterUnit.length !== 0)
                     && (
                       <div style={{ marginBottom: '10px' }}>
-                        <span style={{ marginRight: '10px' }}>活動單位</span>
+                        <span style={{ marginRight: '10px' }}>主辦單位</span>
                         <span>{event.masterUnit}</span>
+                      </div>
+                    )
+                  }
+                  {
+                    (event.showUnit)
+                    && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <span style={{ marginRight: '10px' }}>活動單位</span>
+                        <span>{event.showUnit}</span>
                       </div>
                     )
                   }
@@ -443,7 +530,7 @@ function EventModal({ event, setShowUid }) {
                           {info.endTime}
                         </div>
                         <Tag>
-                          {info.location.slice(0, 3)}
+                          {info?.location.slice(0, 3)}
                         </Tag>
                         <div style={{ marginTop: '10px' }}>{info.locationName}</div>
                       </div>
@@ -539,7 +626,6 @@ EventModal.propTypes = {
     hitRate: PropTypes.number,
     keywords: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
-  // location: PropTypes.string.isRequired,
 };
 
 export default EventModal;

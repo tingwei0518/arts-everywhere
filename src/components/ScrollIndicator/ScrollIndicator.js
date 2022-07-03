@@ -78,7 +78,7 @@ const Title = styled.div`
 
 function ScrollIndicator({
   isFiltered, scrollToElement, homeRef, filteredInfoRef, filteredEventsRef,
-  recentEventsRef, popularEventsRef, userEventsRef, userEventsEditor,
+  recentEventsRef, popularEventsRef, userEventsRef, userEventsEditorRef,
 }) {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -174,7 +174,7 @@ function ScrollIndicator({
               <Point style={{ position: 'absolute', left: '83%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsRef)}>
                 <Title>Member Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => scrollToElement(userEventsEditor)}>
+              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => scrollToElement(userEventsEditorRef)}>
                 <Title>Post Event</Title>
               </Point>
             </>
@@ -192,7 +192,7 @@ function ScrollIndicator({
               <Point style={{ position: 'absolute', left: '78%' }} active={activeIndex === 4} onClick={() => scrollToElement(userEventsRef)}>
                 <Title>Member Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsEditor)}>
+              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsEditorRef)}>
                 <Title>Post Event</Title>
               </Point>
             </>
@@ -213,7 +213,7 @@ ScrollIndicator.propTypes = {
   recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   popularEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   userEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  userEventsEditor: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  userEventsEditorRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 export default ScrollIndicator;

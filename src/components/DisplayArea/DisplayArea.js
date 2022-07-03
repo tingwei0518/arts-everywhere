@@ -86,6 +86,7 @@ const EventImg = styled.div`
   background-image: url(${(props) => props.src});
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
   border: 25px solid ${(props) => (props.primary ? 'lightgrey' : 'white')};
   box-shadow: 12px 12px ${(props) => (props.primary ? 'rgba(255, 241, 116, .8)' : 'rgba(0, 0, 0, .5)')};
   margin-bottom: 30px;

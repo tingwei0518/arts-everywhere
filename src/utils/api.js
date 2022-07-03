@@ -1,7 +1,7 @@
 import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
-import db from './firebaseInit';
+import { db } from './firebaseInit';
 
 const api = {
   keywordQuery(words) {
