@@ -442,7 +442,7 @@ function EventModal({ event, setShowUid }) {
                           <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v12.0" nonce="dmrjeGLN" />
                         </Helmet>
                         <div className="fb-share-button" data-href={url} data-layout="button_count" data-size="large">
-                          <a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3000%2F%3Fid%${event.UID}}&amp;src=sdkpreparse`} className="fb-xfbml-parse-ignore" rel="noreferrer">
+                          <a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farts-everywhere-108b3.web.app%2F%3Fid%3D${event.UID}&amp;src=sdkpreparse`} className="fb-xfbml-parse-ignore" rel="noreferrer">
                             <img
                               src={fb}
                               alt="facebook share"
