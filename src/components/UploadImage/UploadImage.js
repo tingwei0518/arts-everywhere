@@ -13,7 +13,7 @@ function UploadImage({ imgUrl, setImgUrl }) {
   useEffect(() => {
     if (image) {
       const uploadImg = async () => {
-        const imgRef = ref(storage, `${new Date()}/${image.name}`);
+        const imgRef = ref(storage, `event/${new Date()}`);
         if (imgPath) {
           await deleteObject(ref(storage, imgPath));
         }
