@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
+import {
+  doc, collection, setDoc, updateDoc, query, onSnapshot, where, limit,
+} from 'firebase/firestore';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
+import { db } from '../../utils/firebaseInit';
 import Menu from '../Menu';
+// import UserContext from '../../UserContext';
 
 const Wrapper = styled.div`
   width: 95vw;
@@ -29,7 +34,7 @@ const MenuBtn = styled.div`
   font-family: Times,sans-serif; 
   color: black;
   cursor: pointer;
-  z-index: 4;
+  z-index: 5;
 `;
 
 const ScrollIndicatorWrapper = styled.div`
@@ -68,6 +73,17 @@ const Point = styled.div`
   }
 `;
 
+const UserMarker = styled.div`
+  background-color: #FFD700;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+`;
+
 const Title = styled.div`
   width: fit-content;
   text-align: center;
@@ -76,6 +92,10 @@ const Title = styled.div`
   opacity: 0;
 `;
 
+// context user id
+// onAuthChanged
+// login
+
 function ScrollIndicator({
   isFiltered, scrollToElement, homeRef, filteredInfoRef, filteredEventsRef,
   recentEventsRef, popularEventsRef, userEventsRef, userEventsEditorRef,
@@ -83,6 +103,11 @@ function ScrollIndicator({
   const [scrollLeft, setScrollLeft] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [multipleUserPosition, setMultipleUserPosition] = useState([]);
+  // console.log('multipleUserPosition', multipleUserPosition);
+  const [currentUserId, setCurrentUserId] = useState();
+  // const currentUser = useContext(UserContext);
+  // console.log(currentUser.userId);
 
   const findActiveIndex = () => {
     if (scrollLeft < 24) {
@@ -125,6 +150,21 @@ function ScrollIndicator({
     setScrollLeft(scrolled);
   };
 
+  function debounce(func, delay = 3000) {
+    let timer = null;
+
+    return () => {
+      const context = this;
+      // eslint-disable-next-line prefer-rest-params
+      const args = arguments;
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(context, args);
+      }, delay);
+    };
+  }
+
   useEffect(() => {
     if (isFiltered) {
       findFilteredActiveIndex();
@@ -143,17 +183,99 @@ function ScrollIndicator({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const getUserPosition = () => {
+      const winScroll = document.documentElement.scrollLeft;
+      const width = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+      const scrolled = (winScroll / width) * 100;
+      if (currentUserId) {
+        const userPositionRef = doc(db, 'userPosition', currentUserId);
+        updateDoc(userPositionRef, {
+          position: scrolled,
+          isActive: true,
+          userId: currentUserId,
+        });
+      } else {
+        const data = doc(collection(db, 'userPosition'));
+        setCurrentUserId(data.id);
+        setDoc(data, {
+          isActive: true,
+          position: scrolled,
+          userId: data.id,
+        });
+      }
+    };
+    const debounceGetUserPosition = debounce(getUserPosition);
+    window.addEventListener('scroll', debounceGetUserPosition);
+    return () => {
+      window.removeEventListener('scroll', debounceGetUserPosition);
+    };
+    // }, [currentUserId]);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    const userPositionRef = query(collection(db, 'userPosition'), where('isActive', '==', true), limit(9));
+    const unsubscribe = onSnapshot(userPositionRef, (querySnapshot) => {
+      const userPositionData = [];
+      querySnapshot.forEach((posDoc) => {
+        if (currentUserId !== posDoc.data().userId) {
+          userPositionData.push(posDoc.data());
+        }
+      });
+      console.log('userPositionData', userPositionData);
+      setMultipleUserPosition(userPositionData);
+    });
+    return unsubscribe;
+    // }, [currentUserId]);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    const handleBeforeunload = () => {
+      const userPositionRef = doc(db, 'userPosition', currentUserId);
+      updateDoc(userPositionRef, {
+        isActive: false,
+      });
+    };
+    window.addEventListener('beforeunload', handleBeforeunload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeunload);
+    };
+    // }, [currentUserId]);
+  }, [currentUserId]);
+
+  useEffect(() => () => {
+    const userPositionRef = doc(db, 'userPosition', currentUserId);
+    updateDoc(userPositionRef, {
+      isActive: false,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Wrapper>
-      <MenuBtn onClick={() => setIsOpen(!isOpen)}>
+      <MenuBtn
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {
           isOpen
             ? 'Close' : 'Menu'
         }
       </MenuBtn>
-      <Menu isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Menu
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        isFiltered={isFiltered}
+        scrollToElement={scrollToElement}
+        homeRef={homeRef}
+        filteredInfoRef={filteredInfoRef}
+        filteredEventsRef={filteredEventsRef}
+        recentEventsRef={recentEventsRef}
+        popularEventsRef={popularEventsRef}
+        userEventsRef={userEventsRef}
+        userEventsEditorRef={userEventsEditorRef}
+      />
       <ScrollIndicatorWrapper>
-        <Point active={activeIndex === 0} onClick={() => scrollToElement(homeRef)}>
+        <Point style={{ zIndex: '3' }} active={activeIndex === 0} onClick={() => scrollToElement(homeRef)}>
           <Title>Home</Title>
         </Point>
         {
@@ -177,6 +299,12 @@ function ScrollIndicator({
               <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => scrollToElement(userEventsEditorRef)}>
                 <Title>Post Event</Title>
               </Point>
+              {
+                multipleUserPosition?.map((userPos) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <UserMarker key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} />
+                ))
+              }
             </>
           ) : (
             <>
@@ -195,10 +323,17 @@ function ScrollIndicator({
               <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsEditorRef)}>
                 <Title>Post Event</Title>
               </Point>
+              {
+                multipleUserPosition?.map((userPos) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <UserMarker key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} />
+                ))
+              }
             </>
           )
         }
         <MainScrollIndicator style={{ width: `${scrollLeft}%` }} />
+        <UserMarker />
       </ScrollIndicatorWrapper>
     </Wrapper>
   );

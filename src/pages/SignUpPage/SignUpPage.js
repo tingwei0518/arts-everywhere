@@ -1,12 +1,18 @@
-import {
-  getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence,
-} from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 // import { useForm } from 'react-hook-form';
 import styled from 'styled-components/macro';
+import { db } from '../../utils/firebaseInit';
+
+const Wrapper = styled.div`
+  width: 100vw;
+  height: 100vh;
+`;
 
 const HomeBtn = styled.div`
+  
   width: 52px;
   height: 52px;
   background-color: rgb(255, 240, 0);
@@ -20,35 +26,30 @@ const HomeBtn = styled.div`
   cursor: pointer;
 `;
 
-const Wrapper = styled.div`
-  width: 30%;
-  height: 80%;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-`;
-
-function LogInPage() {
+function SignUpPage() {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
+  const [userName, setUserName] = useState('');
   const auth = getAuth();
 
-  function logIn(email, password) {
-    setPersistence(auth, browserSessionPersistence)
-      .then(() => signInWithEmailAndPassword(auth, email, password))
+  function register(email, password) {
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const { user } = userCredential;
         console.log(user);
-        alert(`目前狀態:${userCredential.operationType}`);
-        window.location.replace('./');
-        // ...
+        setDoc(doc(db, 'users', user.uid), {
+          email,
+          userId: user.uid,
+          userName,
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode);
         console.log(errorMessage);
+        // ..
       });
   }
 
@@ -68,15 +69,20 @@ function LogInPage() {
           <input type="password" placeholder="請輸入密碼" name="psw" required onChange={(e) => setUserPassword(e.target.value)} />
         </label>
 
-        <button type="submit" onClick={() => logIn(userEmail, userPassword)}>登入</button>
+        <label htmlFor="name">
+          Name
+          <input type="text" placeholder="請輸入暱稱" name="name" required onChange={(e) => setUserName(e.target.value)} />
+        </label>
+
+        <button type="submit" onClick={() => register(userEmail, userPassword)}>註冊</button>
 
         <div>
-          還沒有帳戶嗎？
-          <span><Link to="/signup">註冊</Link></span>
+          已經擁有帳戶？
+          <span><Link to="/login">登入</Link></span>
         </div>
       </Wrapper>
     </>
   );
 }
 
-export default LogInPage;
+export default SignUpPage;

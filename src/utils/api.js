@@ -1,9 +1,18 @@
 import {
-  collection, query, where, getDocs,
+  collection, query, where, getDocs, doc, onSnapshot,
 } from 'firebase/firestore';
 import { db } from './firebaseInit';
 
 const api = {
+  memberEventsSnapshot() {
+    // const memberEventsRef = collection(db, 'memberEvents');
+    return onSnapshot(doc(db, 'memberId', 'test'));
+  },
+  hitRateQuery(num) {
+    const artsEventsRef = collection(db, 'artsEvents');
+    const q = query(artsEventsRef, where('hitRate', '>=', Number(num)));
+    return getDocs(q);
+  },
   keywordQuery(words) {
     const artsEventsRef = collection(db, 'artsEvents');
     const q = query(artsEventsRef, where('keywords', 'array-contains', words[0]));
@@ -12,6 +21,11 @@ const api = {
   idQuery(id) {
     const artsEventsRef = collection(db, 'artsEvents');
     const q = query(artsEventsRef, where('UID', '==', `${id}`));
+    return getDocs(q);
+  },
+  userQuery(id) {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('userId', '==', `${id}`));
     return getDocs(q);
   },
   getNearbyEvents(lat, lon, distance) {
