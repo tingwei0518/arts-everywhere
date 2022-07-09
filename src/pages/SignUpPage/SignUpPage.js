@@ -5,14 +5,13 @@ import { Link } from 'react-router-dom';
 // import { useForm } from 'react-hook-form';
 import styled from 'styled-components/macro';
 import { db } from '../../utils/firebaseInit';
-
-const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-`;
+import { Button } from '../../components/Units';
+import background from '../../assets/background7.svg';
 
 const HomeBtn = styled.div`
-  
+  position: fixed;
+  bottom: 30px;
+  left: 40px;
   width: 52px;
   height: 52px;
   background-color: rgb(255, 240, 0);
@@ -22,8 +21,67 @@ const HomeBtn = styled.div`
   justify-content: center;
   align-items: center;
   font-family: Times,sans-serif; 
-  color: black;
   cursor: pointer;
+  a{
+    text-decoration: none;
+    color: black;
+  }
+`;
+
+const Background = styled.div`
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url(${background});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, .3);
+  }
+`;
+
+const Wrapper = styled.div`
+  width: 30%;
+  min-width: 320px;
+  height: fit-content;
+  background-color: white;
+  padding: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+`;
+
+const Text = styled.div`
+  margin-bottom: 25px;
+`;
+
+const LabelTitle = styled.label`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  z-index: 2;
+  input {
+    width: 280px;
+    height: 30px;
+    font-size: 1rem;
+    color: #0e0e0e;
+    text-align: left;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1.5px solid black;
+    &:focus {
+      outline: none;
+    }
+  }
 `;
 
 function SignUpPage() {
@@ -54,34 +112,39 @@ function SignUpPage() {
   }
 
   return (
-    <>
+    <Background>
       <HomeBtn>
         <Link to="/">Home</Link>
       </HomeBtn>
       <Wrapper>
-        <label htmlFor="email">
-          E-mail
-          <input type="text" placeholder="請輸入E-mail" name="email" id="email" required onChange={(e) => setUserEmail(e.target.value)} />
-        </label>
-
-        <label htmlFor="psw">
-          Password
-          <input type="password" placeholder="請輸入密碼" name="psw" required onChange={(e) => setUserPassword(e.target.value)} />
-        </label>
-
-        <label htmlFor="name">
+        <Text>註冊加入 Arts Everywhere 會員</Text>
+        <LabelTitle htmlFor="name">
           Name
           <input type="text" placeholder="請輸入暱稱" name="name" required onChange={(e) => setUserName(e.target.value)} />
-        </label>
-
-        <button type="submit" onClick={() => register(userEmail, userPassword)}>註冊</button>
-
+        </LabelTitle>
+        <LabelTitle htmlFor="email">
+          E-mail
+          <input type="text" placeholder="請輸入E-mail" name="email" id="email" required onChange={(e) => setUserEmail(e.target.value)} />
+        </LabelTitle>
+        <LabelTitle htmlFor="psw">
+          Password
+          <input type="password" placeholder="請輸入密碼" name="psw" required onChange={(e) => setUserPassword(e.target.value)} />
+        </LabelTitle>
+        <Button
+          style={{
+            fontSize: '1rem', justifyContent: 'center', margin: '25px 0', borderRadius: '3px',
+          }}
+          type="submit"
+          onClick={() => register(userEmail, userPassword)}
+        >
+          註冊
+        </Button>
         <div>
           已經擁有帳戶？
           <span><Link to="/login">登入</Link></span>
         </div>
       </Wrapper>
-    </>
+    </Background>
   );
 }
 
