@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import { useState, useEffect, useContext } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 import styled from 'styled-components/macro';
-import PropTypes from 'prop-types';
 import { doc, collection, setDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebaseInit';
+import UserContext from '../../UserContext';
 import {
   Button, DropDownContainer, DropDownHeader, DropDownListContainer, DropDownList, ListItem,
 } from '../Units';
@@ -14,7 +16,7 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const Form = styled.div`
+const Editor = styled.form`
   position: absolute;
   top: 215px;
   left: 250px;
@@ -57,7 +59,8 @@ const SessionWrapper = styled.div`
   border-right: 1px solid grey;
 `;
 
-const SessionLists = styled.div`
+const SessionUl = styled.ul`
+  list-style-type: none;
   width: 310px;
   padding: 15px;
   border-radius: 3px;
@@ -73,10 +76,11 @@ const ImageBlock = styled.div`
   height: 375px;
 `;
 
-const SessionForm = styled.form`
+const SessionLi = styled.li`
   display: flex;
   flex-direction: column;
   position: relative;
+  margin-bottom: 40px;
 `;
 
 const SessionNumber = styled.div`
@@ -85,7 +89,7 @@ const SessionNumber = styled.div`
   color: white;
   margin-bottom: 5px;
   position: absolute;
-  bottom: 15px;
+  bottom: -20px;
   right: 0;
 `;
 
@@ -95,7 +99,7 @@ const LabelTitle = styled.label`
   margin-bottom: 10px;
   z-index: 2;
   input {
-    width: 300px;
+    width: 280px;
     height: 30px;
     font-size: 1rem;
     color: #0e0e0e;
@@ -120,61 +124,25 @@ const LabelTitle = styled.label`
   }
 `;
 
-function SessionEditor({
-  timeRef, endTimeRef, locationNameRef, locationRef, number,
-}) {
-  return (
-    <SessionForm>
-      <SessionNumber>
-        {
-          number >= 10
-            ? number : `0${number}`
-        }
-      </SessionNumber>
-      <LabelTitle htmlFor="time">
-        場次開始時間
-        <input type="text" name="time" id="time" ref={timeRef} style={{ width: '280px' }} required />
-      </LabelTitle>
-      <LabelTitle htmlFor="endTime">
-        場次結束時間
-        <input type="text" name="endTime" id="endTime" ref={endTimeRef} style={{ width: '280px' }} required />
-      </LabelTitle>
-      <LabelTitle htmlFor="locationName">
-        場地名稱
-        <input type="text" name="locationName" id="locationName" ref={locationNameRef} style={{ width: '280px' }} required />
-      </LabelTitle>
-      <LabelTitle htmlFor="location" style={{ marginBottom: '50px' }}>
-        地址
-        <input type="text" name="location" id="location" ref={locationRef} style={{ width: '280px' }} required />
-      </LabelTitle>
-    </SessionForm>
-  );
-}
-
-SessionEditor.propTypes = {
-  timeRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  endTimeRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  locationNameRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  locationRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  number: PropTypes.number.isRequired,
+const defaultValues = {
+  showInfo: [{
+    time: '', endTime: '', locationName: '', location: '',
+  }],
 };
 
 function PostEvent() {
+  const currentUser = useContext(UserContext);
+  const {
+    control, register, handleSubmit, reset,
+  } = useForm({ defaultValues });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'showInfo',
+  });
+
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('音樂');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [imgUrl, setImgUrl] = useState('');
-  const [masterUnit, setMasterUnit] = useState([]);
-  const [showUnit, setShowUnit] = useState('');
-  const [website, setWebsite] = useState('');
-  const [sessionValues, setSessionValues] = useState([]);
-  const [sessionCounter, setSessionCounter] = useState(1);
-
-  const timeRef = useRef(null);
-  const endTimeRef = useRef(null);
-  const locationNameRef = useRef(null);
-  const locationRef = useRef(null);
 
   const categoryOptionsList = {
     音樂: '1', 戲劇: '2', 舞蹈: '3', 親子: '4', 獨立音樂: '5', 展覽: '6', 講座: '7', 電影: '8', 演唱會: '17', 研習課程: '19', 其他: '15',
@@ -187,42 +155,73 @@ function PostEvent() {
     setIsOptionOpen(false);
   };
 
-  const postToFirestore = () => {
-    setSessionValues({
-      time: timeRef.current.value,
-      endtime: endTimeRef.current.value,
-      locationName: locationNameRef.current.value,
-      location: locationRef.current.value,
-    });
-    if (title !== '') {
-      const data = doc(collection(db, 'memberEvents'));
-      setDoc(data, {
-        UID: data.id,
-        category: categoryOptionsList[selectedOption],
-        title,
-        descriptionFilterHtml: description,
-        startDate: '',
-        endDate: '',
-        imageUrl: imgUrl,
-        masterUnit,
-        showUnit,
-        website,
-        showInfo: sessionValues,
-        memberId: 'test',
-      });
+  const onSubmit = (d) => {
+    const eventContent = d;
+    eventContent.category = categoryOptionsList[selectedOption];
+    eventContent.imgUrl = imgUrl;
+    if (currentUser.userId !== '') {
+      if (eventContent.title !== '' && eventContent.startDate !== ''
+        && eventContent.endDate !== '' && eventContent.showInfo.length !== 0) {
+        const data = doc(collection(db, 'memberEvents'));
+        setDoc(data, {
+          ...eventContent,
+          UID: data.id,
+          memberId: currentUser.userId,
+        });
+        setImgUrl('');
+        setSelectedOption('音樂');
+        reset({
+          title: '',
+          descriptionFilterHtml: '',
+          startDate: '',
+          endDate: '',
+          masterUnit: '',
+          showUnit: '',
+          website: '',
+        });
+        localStorage.removeItem('event');
+      } else {
+        alert('填寫標題、場次和日期');
+      }
+    } else {
+      localStorage.setItem('event', JSON.stringify({ ...eventContent, img: imgUrl }));
+      alert('請先登入，即將跳轉登入頁面');
+      window.location.replace('./member');
+      // 登入
     }
   };
+
+  useEffect(() => {
+    const unsubmittedEventContent = window.localStorage.getItem('event');
+    console.log(unsubmittedEventContent);
+    if (!unsubmittedEventContent) return;
+    const {
+      title, descriptionFilterHtml, startDate, endDate,
+      masterUnit, showUnit, website, img,
+    } = JSON.parse(unsubmittedEventContent);
+    console.log(title);
+    reset({
+      title,
+      descriptionFilterHtml,
+      startDate,
+      endDate,
+      masterUnit,
+      showUnit,
+      website,
+    });
+    setImgUrl(img);
+  }, [reset]);
 
   return (
     <Wrapper>
       <PageTitle primary>Post Event</PageTitle>
       <img src={board} alt="" style={{ width: '80%', alignSelf: 'flex-end', margin: '25px 60px 0 0' }} />
-      <Form>
+      <Editor onSubmit={handleSubmit(onSubmit)}>
         <BasicInformation>
           <Step>Step 1</Step>
           <LabelTitle htmlFor="title">
             活動名稱
-            <input type="text" name="title" id="title" required onChange={(e) => setTitle(e.target.value)} />
+            <input type="text" name="title" id="title" {...register('title')} />
           </LabelTitle>
 
           <LabelTitle
@@ -261,77 +260,130 @@ function PostEvent() {
               type="text"
               name="desc"
               id="desc"
-              onChange={(e) => setDescription(e.target.value)}
+              {...register('descriptionFilterHtml')}
             />
+          </LabelTitle>
+
+          <LabelTitle htmlFor="startDate">
+            活動開始日期
+            <input type="text" name="startDate" id="startDate" {...register('startDate')} />
+          </LabelTitle>
+
+          <LabelTitle htmlFor="endDate">
+            活動結束日期
+            <input type="text" name="endDate" id="endDate" {...register('endDate')} />
           </LabelTitle>
 
           <LabelTitle htmlFor="masterUnit">
             主辦單位
-            <input type="text" name="masterUnit" id="masterUnit" onChange={(e) => setMasterUnit(e.target.value)} />
+            <input type="text" name="masterUnit" id="masterUnit" {...register('masterUnit')} />
           </LabelTitle>
 
           <LabelTitle htmlFor="showUnit">
             活動單位
-            <input type="text" name="showUnit" id="showUnit" onChange={(e) => setShowUnit(e.target.value)} />
+            <input type="text" name="showUnit" id="showUnit" {...register('showUnit')} />
           </LabelTitle>
 
           <LabelTitle htmlFor="website">
             活動網站
-            <input type="text" name="website" id="website" onChange={(e) => setWebsite(e.target.value)} />
+            <input type="text" name="website" id="website" {...register('website')} />
           </LabelTitle>
         </BasicInformation>
         <SessionWrapper>
           <Step>Step 2</Step>
           <LabelTitle htmlFor="session">
             活動場次
-            <SessionLists>
+            <SessionUl>
               {
-                Array.from(Array(sessionCounter), (_, i) => (
-                  <SessionEditor
-                    key={i}
-                    timeRef={timeRef}
-                    endTimeRef={endTimeRef}
-                    locationNameRef={locationNameRef}
-                    locationRef={locationRef}
-                    number={i + 1}
-                  />
+                fields.map((item, index) => (
+                  <SessionLi key={item.id}>
+                    <SessionNumber>
+                      {
+                        ((index + 1) >= 10) ? index + 1 : `0${index + 1}`
+                      }
+                    </SessionNumber>
+                    <LabelTitle>
+                      場次開始時間
+                      <input
+                        {...register(`showInfo.${index}.time`, {
+                          required: true,
+                        })}
+                      />
+                    </LabelTitle>
+                    <LabelTitle>
+                      場次結束時間
+                      <input
+                        {...register(`showInfo.${index}.endTime`, {
+                          required: true,
+                        })}
+                      />
+                    </LabelTitle>
+                    <LabelTitle>
+                      場地名稱
+                      <input
+                        {...register(`showInfo.${index}.locationName`, {
+                          required: true,
+                        })}
+                      />
+                    </LabelTitle>
+                    <LabelTitle>
+                      地址
+                      <input
+                        {...register(`showInfo.${index}.location`, {
+                          required: true,
+                        })}
+                      />
+                    </LabelTitle>
+                    {
+                      (index >= 1)
+                      && (
+                        <Button
+                          type="button"
+                          onClick={() => remove(index)}
+                          style={{
+                            width: '50px', justifyContent: 'center', margin: '0', padding: '2px 7px', backgroundColor: 'lightgrey', borderColor: 'lightgrey', borderRadius: '3px', position: 'absolute', top: '0px', right: '0', zIndex: '5',
+                          }}
+                        >
+                          刪除
+                        </Button>
+                      )
+                    }
+                  </SessionLi>
                 ))
               }
-              <div style={{
-                width: '200px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
-              }}
+              <Button
+                type="button"
+                onClick={() => append({
+                  time: '',
+                  endTime: '',
+                  locationName: '',
+                  location: '',
+                })}
+                style={{
+                  width: '90px', justifyContent: 'center', margin: '0', padding: '5px 10px', borderRadius: '3px',
+                }}
               >
-                {
-                  sessionCounter >= 2
-                  && (
-                    <Button
-                      onClick={() => setSessionCounter(sessionCounter - 1)}
-                      style={{
-                        width: '90px', justifyContent: 'center', margin: '0', padding: '5px 10px',
-                      }}
-                    >
-                      減少一場
-                    </Button>
-                  )
-                }
-                <Button
-                  onClick={() => setSessionCounter(sessionCounter + 1)}
-                  style={{
-                    width: '90px', justifyContent: 'center', margin: '0', padding: '5px 10px',
-                  }}
-                >
-                  增加一場
-                </Button>
-              </div>
-            </SessionLists>
+                增加場次
+              </Button>
+            </SessionUl>
           </LabelTitle>
         </SessionWrapper>
         <ImageBlock>
           <Step style={{ marginBottom: '15px' }}>Step 3</Step>
           <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl} />
-          <Button onClick={postToFirestore} style={{ justifyContent: 'center', marginTop: '25px' }}>刊登活動資訊</Button>
+          <Button
+            style={{ justifyContent: 'center', marginTop: '25px', borderRadius: '3px' }}
+          >
+            <input
+              type="submit"
+              value="刊登活動資訊"
+              style={{
+                background: 'none', color: 'inherit', border: 'none', padding: '0', font: 'inherit', outline: 'inherit', cursor: 'pointer',
+              }}
+            />
+          </Button>
         </ImageBlock>
-      </Form>
+      </Editor>
     </Wrapper>
   );
 }
