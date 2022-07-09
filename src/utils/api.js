@@ -28,6 +28,11 @@ const api = {
     const q = query(usersRef, where('userId', '==', `${id}`));
     return getDocs(q);
   },
+  userSubmittedEventsQuery(id) {
+    const memberEventsRef = collection(db, 'memberEvents');
+    const q = query(memberEventsRef, where('memberId', '==', `${id}`));
+    return getDocs(q);
+  },
   getNearbyEvents(lat, lon, distance) {
     return fetch(`https://cloud.culture.tw/frontsite/opendata/activityOpenDataJsonAction.do?method=doFindActivitiesNearBy&lat=${lat}&lon=${lon}&range=${distance}`)
       .then((response) => response.json());

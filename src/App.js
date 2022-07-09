@@ -7,6 +7,7 @@ import api from './utils/api';
 import EventDisplayPage from './pages/EventDisplayPage';
 import LogInPage from './pages/LogInPage';
 import SignUpPage from './pages/SignUpPage';
+import ProfilePage from './pages/ProfilePage';
 import FontStyles from './fontStyles';
 // import './App.css';
 
@@ -65,7 +66,7 @@ function App() {
             <Route path="/" element={<EventDisplayPage />} />
             <Route path="/login" element={<LogInPage />} />
             <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/profile" element={<LogInPage />} />
+            <Route path="/profile" element={userData.userId !== '' ? <ProfilePage /> : <LogInPage />} />
           </Routes>
         </BrowserRouter>
       </div>
