@@ -26,7 +26,7 @@ import empty from '../../images/empty.png';
 import otherWeather from '../../images/cloudy-and-sunny.png';
 
 const eventCategory = {
-  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 11: '綜藝', 13: '競賽', 14: '徵選', 15: '其他', 17: '演唱會', 19: '研習課程',
+  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 9: '其他', 10: '其他', 11: '綜藝', 12: '其他', 13: '競賽', 14: '徵選', 15: '其他', 16: '其他', 17: '演唱會', 18: '其他', 19: '研習課程',
 };
 const eventImageProps = {
   1: image1,
@@ -37,11 +37,16 @@ const eventImageProps = {
   6: image6,
   7: image7,
   8: image8,
+  9: imageOther,
+  10: imageOther,
   11: imageOther,
+  12: imageOther,
   13: imageOther,
   14: imageOther,
   15: imageOther,
+  16: imageOther,
   17: image17,
+  18: imageOther,
   19: imageOther,
 };
 const weatherImageProps = [sunny, cloudy, rainy, otherWeather, empty];
@@ -273,7 +278,7 @@ const Weather = styled.div`
   }
 `;
 
-function EventModal({ event, setShowUid }) {
+function EventModal({ event, setShowUid, member }) {
   const [weatherData, setWeatherData] = useState([]);
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
   const [isSharing, setIsSharing] = useState(false);
@@ -509,16 +514,28 @@ function EventModal({ event, setShowUid }) {
               )
             }
           </MainInfo>
-          <ModalImage
-            src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-          />
+          {
+            member
+              ? (
+                <img
+                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  alt={event.title}
+                  style={{ width: '30%', height: 'fit-content' }}
+                />
+              ) : (
+                <ModalImage
+                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                />
+              )
+          }
           <SubInfo>
             <SessionTable week={weeklyWeatherData.length !== 0}>
               <TableTitle>活動場次</TableTitle>
               <SessionLists>
                 {
                   event.showInfo.map((info, index) => (
-                    <Session>
+                    // eslint-disable-next-line react/no-array-index-key
+                    <Session key={index}>
                       <div>
                         <div>
                           {info.time}
@@ -626,6 +643,7 @@ EventModal.propTypes = {
     hitRate: PropTypes.number,
     keywords: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
+  member: PropTypes.bool.isRequired,
 };
 
 export default EventModal;

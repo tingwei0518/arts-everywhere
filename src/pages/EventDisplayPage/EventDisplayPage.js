@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
+import {
+  collection, onSnapshot,
+} from 'firebase/firestore';
 import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import { db } from '../../utils/firebaseInit';
 import api from '../../utils/api';
 import ScrollIndicator from '../../components/ScrollIndicator';
 import HomeVisual from '../../components/HomeVisual';
@@ -53,8 +57,10 @@ const SubPage = styled.div`
 `;
 
 function EventDisplay() {
-  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
+  const [popularEvents, setPopularEvents] = useState([]);
+  const [memberEvents, setMemberEvents] = useState([]);
   const [filteredShowInfo, setFilteredShowInfo] = useState([]);
   const [recentShowInfo, setRecentShowInfo] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -71,6 +77,7 @@ function EventDisplay() {
   const pageText = {
     filtered: '根據您所選擇的時間與地點，精心為您篩選藝文活動。',
     recent: '不曉得該如何安排空閒時間嗎？可以參考看看這一週內，有哪些精彩的藝文活動。',
+    popular: '',
   };
 
   const homeRef = useRef(null);
@@ -90,7 +97,7 @@ function EventDisplay() {
       eventData.push(doc.data());
     });
     // console.log({ eventData });
-    setEvents(eventData);
+    setFilteredEvents(eventData);
   }
 
   async function getRecentIdQuery(UID) {
@@ -255,6 +262,7 @@ function EventDisplay() {
         });
       });
     });
+    // console.log('recentShowInfo', recentShowInfo);
   };
 
   const getFilteredEvents = () => {
@@ -322,9 +330,18 @@ function EventDisplay() {
       }
     });
     setFilteredShowInfo(showInfo);
-    setEvents(keywordEvents);
+    setFilteredEvents(keywordEvents);
     scrollToElement(filteredInfoRef);
     setIsFiltered(true);
+  }
+
+  async function getHitRateEvents(num) {
+    const hitRateEvents = [];
+    const querySnapshot = await api.hitRateQuery(num);
+    querySnapshot.forEach((doc) => {
+      hitRateEvents.push(doc.data());
+    });
+    setPopularEvents(hitRateEvents);
   }
 
   useEffect(() => {
@@ -338,7 +355,31 @@ function EventDisplay() {
   }, []);
 
   useEffect(() => {
-    getRecentEvents();
+    if (isFiltered) {
+      setFilteredShowInfo([]);
+      getFilteredEvents();
+    } else {
+      setRecentShowInfo([]);
+      getRecentEvents();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latitude, longitude]);
+
+  useEffect(() => {
+    getHitRateEvents(600);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const memberEventsRef = collection(db, 'memberEvents');
+    const unsubscribe = onSnapshot(memberEventsRef, (querySnapshot) => {
+      const memberEventsData = [];
+      querySnapshot.forEach((doc) => {
+        memberEventsData.push(doc.data());
+      });
+      setMemberEvents(memberEventsData);
+    });
+    return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -384,23 +425,32 @@ function EventDisplay() {
               startDate={startDate}
               endDate={endDate}
               isFiltered={isFiltered}
-              filteredEventsRef={filteredEventsRef}
+              recentEvents={recentEvents}
               scrollToElement={scrollToElement}
+              filteredEventsRef={filteredEventsRef}
+              recentEventsRef={recentEventsRef}
+              setShowUid={setShowUid}
+              setLatitude={setLatitude}
+              setLongitude={setLongitude}
               style={{ padding: '0', flexWrap: 'wrap' }}
             />
           </SubPage>
           {
-            (isFiltered && events.length !== 0) && (
+            (isFiltered && filteredEvents?.length !== 0) && (
               <Page bg={bg1} ref={filteredEventsRef}>
-                <DisplayArea title="Filtered" events={events} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} />
+                <DisplayArea title="Filtered" events={filteredEvents} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} />
               </Page>
             )
           }
-          <Page bg={bg3} ref={recentEventsRef || filteredEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary />
+          <Page bg={bg3} ref={isFiltered ? recentEventsRef : filteredEventsRef}>
+            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} />
           </Page>
-          <Page ref={popularEventsRef} />
-          <Page bg={bg1} ref={userEventsRef} />
+          <Page ref={popularEventsRef}>
+            <DisplayArea title="Popular" events={popularEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} />
+          </Page>
+          <Page bg={bg1} ref={userEventsRef}>
+            <DisplayArea title="Member" events={memberEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member />
+          </Page>
           <Page bg={bg3} ref={userEventsEditorRef}>
             <PostEvent />
           </Page>
