@@ -283,6 +283,7 @@ function EventModal({ event, setShowUid, member }) {
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
   const [isSharing, setIsSharing] = useState(false);
   const url = window.location.href;
+  const { gapi } = window;
 
   function getWeatherIcon(desc) {
     if (desc === undefined) {
@@ -397,6 +398,39 @@ function EventModal({ event, setShowUid, member }) {
     }
   }, []);
 
+  const handleAuthClick = () => {
+    gapi.load('client:auth2', () => {
+      gapi.client.init({
+        apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+        clientId: '548994073184-t4o8hf7jmk1boqor2jcttvbd0l67a0qd.apps.googleusercontent.com',
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+        scope: 'https://www.googleapis.com/auth/calendar.events',
+      });
+      gapi.client.load('calendar', 'v3', () => console.log('loaded calendar'));
+      gapi.auth2.getAuthInstance().signIn()
+        .then(() => {
+          const insertedEvent = {
+            summary: 'Google I/O 2015',
+            location: '800 Howard St., San Francisco, CA 94103',
+            description: 'A chance to hear more about Google\'s developer products.',
+            start: {
+              dateTime: '2022-07-10T09:00:00-07:00',
+              timeZone: 'America/Los_Angeles',
+            },
+            end: {
+              dateTime: '2022-07-10T17:00:00-07:00',
+              timeZone: 'America/Los_Angeles',
+            },
+          };
+          const request = gapi.client.calendar.events.insert({
+            calendarId: 'primary',
+            resource: insertedEvent,
+          });
+          request.execute();
+        });
+    });
+  };
+
   return (
     <Wrapper>
       <Modal>
@@ -456,7 +490,6 @@ function EventModal({ event, setShowUid, member }) {
                               }}
                             />
                           </a>
-
                         </div>
                       </>
                     ) : (
@@ -567,7 +600,7 @@ function EventModal({ event, setShowUid, member }) {
                               </WeatherIconWrapper>
                             ) : <div style={{ width: '30px', height: '30px' }} />
                         }
-                        <Button>
+                        <Button onClick={handleAuthClick}>
                           加入行事曆
                         </Button>
                       </div>

@@ -38,7 +38,7 @@ const api = {
       .then((response) => response.json());
   },
   getReverseGeocoding(lat, lon) {
-    return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${process.env.REACT_APP_MAPS_API_KEY}`)
+    return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
       .then((response) => response.json());
   },
   getOneDayWeatherDesc(location, timeFrom, timeTo) {
