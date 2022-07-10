@@ -111,7 +111,7 @@ const MainInfo = styled.div`
 
 const Tag = styled.div`
   width: fit-content;
-  font-size: .8rem;
+  font-size: .9rem;
   text-align: left;
   padding: 3px 3px; 
   border: .8px solid black;
@@ -125,7 +125,7 @@ const Title = styled.div`
 `;
 
 const Day = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   text-align: left;
   font-weight: bold;
   margin: 10px 0;
@@ -137,7 +137,8 @@ const Day = styled.div`
 const Description = styled.div`
   border-top: 2px solid black;
   padding: 20px 0;
-  font-size: .9rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
   text-align: left;
   padding-right: 10px;
   overflow-y: auto;
@@ -147,7 +148,7 @@ const Description = styled.div`
 const Information = styled.div`
   border-top: 2px solid black;
   padding-top: 20px;
-  font-size: .9rem;
+  font-size: 1rem;
   text-align: left;
 `;
 
@@ -174,7 +175,7 @@ const SessionTable = styled.div`
 `;
 
 const TableTitle = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   text-align: left;
   padding-bottom: 10px;
@@ -193,7 +194,7 @@ const Session = styled.div`
   margin-top: 10px;
   padding-bottom: 10px;
   text-align: left;
-  font-size: .9rem;
+  font-size: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -212,7 +213,7 @@ const WeatherIconWrapper = styled.div`
     border-radius: 5px;
     padding: 2px 5px;
     color: white;
-    font-size: .6rem;
+    font-size: .9rem;
     opacity: 0;
   }
   &:hover {
@@ -251,7 +252,7 @@ const WeatherTable = styled.div`
 const WeatherLists = styled.div`
   display: flex;
   flex-direction: row;
-  font-size: .7rem;
+  font-size: .9rem;
   padding: 10px 0;
   justify-content: space-between;
 `;
@@ -260,7 +261,7 @@ const Weather = styled.div`
   position: relative;
   span {
     position: absolute;
-    top: 55px;
+    top: 60px;
     left: -10px;
     min-width: 50px;
     text-align: center;
@@ -268,7 +269,7 @@ const Weather = styled.div`
     border-radius: 5px;
     padding: 2px 5px;
     color: white;
-    font-size: .6rem;
+    font-size: .9rem;
     opacity: 0;
   }
   &:hover {
@@ -571,13 +572,13 @@ function EventModal({ event, setShowUid, member }) {
                     <Session key={index}>
                       <div>
                         <div>
-                          {info.time}
+                          {info.time.slice(0, 16)}
                           {' '}
                           -
                         </div>
                         <div style={{ marginBottom: '10px' }}>
                           {' '}
-                          {info.endTime}
+                          {info.endTime.slice(0, 16)}
                         </div>
                         <Tag>
                           {info?.location.slice(0, 3)}
@@ -600,7 +601,7 @@ function EventModal({ event, setShowUid, member }) {
                               </WeatherIconWrapper>
                             ) : <div style={{ width: '30px', height: '30px' }} />
                         }
-                        <Button onClick={handleAuthClick}>
+                        <Button onClick={handleAuthClick} style={{ width: '90px', fontSize: '.9rem' }}>
                           加入行事曆
                         </Button>
                       </div>

@@ -93,7 +93,6 @@ function SignUpPage() {
   function register(email, password) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
         const { user } = userCredential;
         console.log(user);
         setDoc(doc(db, 'users', user.uid), {

@@ -438,18 +438,18 @@ function EventDisplay() {
           {
             (isFiltered && filteredEvents?.length !== 0) && (
               <Page bg={bg1} ref={filteredEventsRef}>
-                <DisplayArea title="Filtered" events={filteredEvents} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} />
+                <DisplayArea title="Filtered" events={filteredEvents} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
               </Page>
             )
           }
           <Page bg={bg3} ref={recentEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} />
+            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
           </Page>
           <Page ref={popularEventsRef}>
-            <DisplayArea title="Popular" events={popularEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} />
+            <DisplayArea title="Popular" events={popularEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
           </Page>
           <Page bg={bg1} ref={userEventsRef}>
-            <DisplayArea title="Member" events={memberEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member />
+            <DisplayArea title="Member" events={memberEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
           </Page>
           <Page bg={bg3} ref={userEventsEditorRef}>
             <PostEvent />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components/macro';
+import styled, { keyframes, css } from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import EventModal from '../EventModal';
 import next from '../../images/next.png';
@@ -74,9 +74,28 @@ const Events = styled.div`
 const Event = styled.div`
   margin-top: 20px;
   margin-left: 40px;
+  display: flex;
+  flex-direction: column;
   &:first-child {
     margin-left: 0;
   }
+`;
+const shine = keyframes`
+  0%   {opacity: 0}
+  100% {opacity: 1}
+`;
+
+const animation = (props) => css`
+  ${shine} ${props.animationLength} linear 2s infinite;
+`;
+
+const HitRate = styled.div`
+  color: #324E8E;
+  font-size: 1rem;
+  font-weight: bold;
+  align-self: center;
+  margin: -35px 0 15px 0;
+  animation: ${animation};
 `;
 
 const EventImg = styled.div`
@@ -112,20 +131,20 @@ const EventCard = styled.div`
 
 const EventTitle = styled.div`
   width: 180px;
-  font-size: .9rem;
+  font-size: .95rem;
   font-weight: bold;
   white-space: normal;
   display: inline-block;
 `;
 const EventDate = styled.div`
-  font-size: .5rem;
+  font-size: .8rem;
 `;
 const EventTag = styled.div`
-  font-size: .5rem;
+  font-size: .8rem;
 `;
 
 function DisplayArea({
-  title, text, events, primary, showUid, setShowUid, member,
+  title, text, events, primary, showUid, setShowUid, member, popular,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -160,6 +179,20 @@ function DisplayArea({
           {
             events?.slice(currentIndex, currentIndex + 3).map((event, index) => (
               <Event>
+                {
+                  popular
+                  && (
+                    <HitRate>
+                      ＼
+                      {' '}
+                      {event.hitRate}
+                      {' '}
+                      hit rate
+                      {' '}
+                      ／
+                    </HitRate>
+                  )
+                }
                 <Link to={`?id=${event.UID}`}>
                   {
                     member
@@ -188,6 +221,7 @@ function DisplayArea({
                 </Link>
                 <EventCard primary={primary} onClick={() => setShowUid(event.UID)}>
                   <Link to={`?id=${event.UID}`}>
+                    {popular}
                     <EventTag>
                       {eventCategory[Number(event.category)]}
                     </EventTag>
@@ -286,6 +320,7 @@ DisplayArea.propTypes = {
   showUid: PropTypes.string.isRequired,
   setShowUid: PropTypes.func.isRequired,
   member: PropTypes.bool.isRequired,
+  popular: PropTypes.bool.isRequired,
 };
 
 export default DisplayArea;

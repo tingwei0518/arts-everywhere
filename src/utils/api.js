@@ -1,5 +1,5 @@
 import {
-  collection, query, where, getDocs, doc, onSnapshot,
+  collection, query, where, getDocs, doc, onSnapshot, orderBy,
 } from 'firebase/firestore';
 import { db } from './firebaseInit';
 
@@ -10,7 +10,7 @@ const api = {
   },
   hitRateQuery(num) {
     const artsEventsRef = collection(db, 'artsEvents');
-    const q = query(artsEventsRef, where('hitRate', '>=', Number(num)));
+    const q = query(artsEventsRef, where('hitRate', '>=', Number(num)), orderBy('hitRate', 'desc'));
     return getDocs(q);
   },
   keywordQuery(words) {

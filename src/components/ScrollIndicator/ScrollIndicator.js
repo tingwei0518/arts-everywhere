@@ -243,13 +243,16 @@ function ScrollIndicator({
     // }, [currentUserId]);
   }, [currentUserId]);
 
-  useEffect(() => () => {
-    const userPositionRef = doc(db, 'userPosition', currentUserId);
-    updateDoc(userPositionRef, {
-      isActive: false,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   function setActiveFalse() {
+  //     const userPositionRef = doc(db, 'userPosition', currentUserId);
+  //     updateDoc(userPositionRef, {
+  //       isActive: false,
+  //     });
+  //   }
+  //   return setActiveFalse;
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <Wrapper>
