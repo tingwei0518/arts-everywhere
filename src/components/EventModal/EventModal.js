@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import styled from 'styled-components/macro';
+import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import close from '../../images/close.png';
 import share from '../../images/share.png';
+import line from '../../images/line.png';
+import fb from '../../images/fb.png';
 import image1 from '../../assets/1-4.jpg';
 import image2 from '../../assets/2-3.jpg';
 import image3 from '../../assets/3-1.jpg';
@@ -14,9 +19,14 @@ import image7 from '../../assets/7-1.jpg';
 import image8 from '../../assets/8-1.jpg';
 import image17 from '../../assets/17-1.jpg';
 import imageOther from '../../assets/1-2.jpg';
+import sunny from '../../images/sunny.png';
+import cloudy from '../../images/cloudy.png';
+import rainy from '../../images/rainy.png';
+import empty from '../../images/empty.png';
+import otherWeather from '../../images/cloudy-and-sunny.png';
 
 const eventCategory = {
-  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 11: '綜藝', 13: '競賽', 14: '徵選', 15: '其他', 17: '演唱會', 19: '研習課程',
+  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 9: '其他', 10: '其他', 11: '綜藝', 12: '其他', 13: '競賽', 14: '徵選', 15: '其他', 16: '其他', 17: '演唱會', 18: '其他', 19: '研習課程',
 };
 const eventImageProps = {
   1: image1,
@@ -27,13 +37,19 @@ const eventImageProps = {
   6: image6,
   7: image7,
   8: image8,
+  9: imageOther,
+  10: imageOther,
   11: imageOther,
+  12: imageOther,
   13: imageOther,
   14: imageOther,
   15: imageOther,
+  16: imageOther,
   17: image17,
+  18: imageOther,
   19: imageOther,
 };
+const weatherImageProps = [sunny, cloudy, rainy, otherWeather, empty];
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -108,7 +124,7 @@ const Title = styled.div`
   margin-top: 10px;
 `;
 
-const Date = styled.div`
+const Day = styled.div`
   font-size: 1rem;
   text-align: left;
   font-weight: bold;
@@ -137,21 +153,24 @@ const Information = styled.div`
 
 const ModalImage = styled.div`
   box-sizing: content-box;
-  min-width: 30%;
-  min-height: 90%;
+  width: 30%;
+  height: 95%;
   background-image: url(${(props) => props.src});
-  background-size: contain;
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 `;
 
-// const SubInfo = styled.div`
-//   width: 28%;
-//   display: flex;
-//   flex-direction: column;
-// `;
+const SubInfo = styled.div`
+  width: 28%;
+  height: 98%;
+  display: flex;
+  flex-direction: column;
+`;
 
 const SessionTable = styled.div`
-  width: 28%;
+  width: 100%;
+  height: ${(props) => (props.week ? '35%' : '90%')};
 `;
 
 const TableTitle = styled.div`
@@ -163,10 +182,10 @@ const TableTitle = styled.div`
 `;
 
 const SessionLists = styled.div`
-  height: 90%;
   padding-right: 10px;
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%;
 `;
 
 const Session = styled.div`
@@ -178,121 +197,280 @@ const Session = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
+`;
+
+const WeatherIconWrapper = styled.div`
+  position: relative;
+  div {
+    position: absolute;
+    top: 0;
+    right: 38px;
+    min-width: 50px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, .3);
+    border-radius: 5px;
+    padding: 2px 5px;
+    color: white;
+    font-size: .6rem;
+    opacity: 0;
+  }
+  &:hover {
+    div {
+      opacity: 1;
+    }
+  }
+`;
+
+const WeatherIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  position: ${(props) => (props.week ? 'static' : 'absolute')};
+  top: 0;
+  right: 0;
 `;
 
 const Button = styled.button`
-  width: 95px;
+  width: 90px;
   height: fit-content;
   background: black;
+  font-size: .7rem;
   color: white;
   text-align: center;
-  padding: 5px 10px;
+  padding: 3px 7px;
+  margin-left: 5px;
   border: 1px solid black;
   border-radius: 5px;
   cursor: pointer;
 `;
 
-function EventModal({ event, setShowUid, location }) {
-  const [weatherLocation, setWeatherLocation] = useState(location);
-  const [weatherDesc, setWeatherDesc] = useState([]);
-  // const todayTimeStamp = new Date(new Date().toLocaleDateString('zh-TW'));
-  // const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
-  // console.log({ weatherLocation });
-  // console.log({ weatherDesc });
+const WeatherTable = styled.div`
+  margin-top: 20px;
+`;
 
-  // const checkDate = () => {
-  //   const weatherDateDesc = [];
-  //   event.showInfo.forEach((info) => {
-  //     if (info.location.slice(0, 3) === weatherLocation) {
-  //       const eventStartTimeStamp = new Date(info.time.split(' ')[0]);
-  //       const eventEndTimeStamp = new Date(info.endTime.split(' ')[0]);
-  //       if ((eventStartTimeStamp >= todayTimeStamp && eventStartTimeStamp <= afterSevenDays)
-  //         || (todayTimeStamp <= eventEndTimeStamp)) {
-  //         weatherDesc.forEach((desc) => {
-  //           const dateWeather = {};
-  //           const startTime = desc.startTime.split(' ')[0];
-  //           const weather = desc.elementValue[0].value;
-  //           dateWeather[startTime] = startTime;
-  //           dateWeather[weather] = weather;
-  //           weatherDateDesc.push(dateWeather);
-  //         });
-  //       }
-  //     }
-  //   });
-  //   console.log(weatherDateDesc);
-  // };
+const WeatherLists = styled.div`
+  display: flex;
+  flex-direction: row;
+  font-size: .7rem;
+  padding: 10px 0;
+  justify-content: space-between;
+`;
 
-  const getLocationWeather = () => {
+const Weather = styled.div`
+  position: relative;
+  span {
+    position: absolute;
+    top: 55px;
+    left: -10px;
+    min-width: 50px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, .3);
+    border-radius: 5px;
+    padding: 2px 5px;
+    color: white;
+    font-size: .6rem;
+    opacity: 0;
+  }
+  &:hover {
+    span {
+      opacity: 1;
+    }
+  }
+`;
+
+function EventModal({ event, setShowUid, member }) {
+  const [weatherData, setWeatherData] = useState([]);
+  const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
+  const [isSharing, setIsSharing] = useState(false);
+  const url = window.location.href;
+
+  function getWeatherIcon(desc) {
+    if (desc === undefined) {
+      return weatherImageProps[4];
+    }
+    if (desc.includes('雨')) {
+      return weatherImageProps[2];
+    }
+    if (desc.includes('晴') && desc.includes('雲')) {
+      return weatherImageProps[3];
+    }
+    if (desc.includes('陰') || desc.includes('多雲')) {
+      return weatherImageProps[1];
+    }
+    return weatherImageProps[0];
+  }
+
+  const getWeeklyLocationWeather = (weatherLocation) => {
     switch (weatherLocation) {
       case '台北市':
-        api.getWeatherDesc('臺北市').then((json) => {
-          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
-          console.log('臺北市', weatherDesc);
-          // checkDate();
-        });
-        break;
+        return api.getWeatherDesc('臺北市')
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
       case '台中市':
-        api.getWeatherDesc('臺中市').then((json) => {
-          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
-          console.log('臺中市', weatherDesc);
-        });
-        break;
+        return api.getWeatherDesc('臺中市')
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
       case '台南市':
-        api.getWeatherDesc('臺南市').then((json) => {
-          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
-          console.log('臺南市', weatherDesc);
-        });
-        break;
+        return api.getWeatherDesc('臺南市')
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
       case '台東縣':
-        api.getWeatherDesc('臺東縣').then((json) => {
-          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
-          console.log('臺東縣', weatherDesc);
-        });
-        break;
+        return api.getWeatherDesc('臺東縣')
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
       default:
-        api.getWeatherDesc(weatherLocation).then((json) => {
-          setWeatherDesc(json.records.locations[0].location[0].weatherElement[0].time);
-          console.log(weatherLocation, weatherDesc);
-        });
+        return api.getWeatherDesc(weatherLocation)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
     }
   };
 
-  const getAddressWeather = (address) => {
-    const city = address.slice(0, 3);
-    setWeatherLocation(city);
+  const getOneDayLocationWeather = (weatherLocation, timeFrom, timeTo) => {
+    switch (weatherLocation) {
+      case '台北市':
+        return api.getOneDayWeatherDesc('臺北市', timeFrom, timeTo)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+      case '台中市':
+        return api.getOneDayWeatherDesc('臺中市', timeFrom, timeTo)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+      case '台南市':
+        return api.getOneDayWeatherDesc('臺南市', timeFrom, timeTo)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+      case '台東縣':
+        return api.getOneDayWeatherDesc('臺東縣', timeFrom, timeTo)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+      default:
+        return api.getOneDayWeatherDesc(weatherLocation, timeFrom, timeTo)
+          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+    }
   };
 
   useEffect(() => {
-    getLocationWeather();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weatherLocation]);
+    const isShowCrossDays = event.showInfo.some((info) => info.time.split(' ')[0] !== info.endTime.split(' ')[0]);
+    if (isShowCrossDays) return;
+    const todayTimeStamp = dayjs();
+    const afterSevenDays = dayjs().add(7, 'day');
+
+    function getWeather(info) {
+      const eventTimeStamp = dayjs(info.time);
+      if ((eventTimeStamp <= afterSevenDays) && (eventTimeStamp >= todayTimeStamp)) {
+        const timeFrom = dayjs(info.time.split(' ')[0]).format('YYYY-MM-DDTHH:mm:ss');
+        const timeTo = dayjs(info.time.split(' ')[0]).add(1, 'day').format('YYYY-MM-DDTHH:mm:ss');
+        return getOneDayLocationWeather(info.location.slice(0, 3), timeFrom, timeTo);
+      }
+      return null;
+    }
+    Promise.all(event.showInfo.map(getWeather)).then((weather) => {
+      setWeatherData(weather);
+    });
+  }, [event.showInfo]);
+
+  useEffect(() => {
+    const isShowCrossDays = event.showInfo.some((info) => info.time.split(' ')[0] !== info.endTime.split(' ')[0]);
+    if (!isShowCrossDays) return;
+    const afterSevenDays = dayjs().add(7, 'day');
+    const isShowDateOverlap = event.showInfo.some((info) => afterSevenDays >= dayjs(info.time)
+      || (afterSevenDays >= dayjs(info.endTime)));
+    if (isShowDateOverlap) {
+      getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
+        .then((data) => {
+          setWeeklyWeatherData(data);
+        });
+    }
+  }, [event.showInfo]);
+
+  useEffect(() => {
+    window.fbAsyncInit = function () {
+      window.FB.init({
+        xfbml: true,
+        version: 'v12.0',
+      });
+      window.FB.XFBML.parse();
+    };
+
+    (function (d, s, id) {
+      const fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      const js = d.createElement(s);
+      js.id = id;
+      js.src = '//connect.facebook.net/zh_TW/sdk.js';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    if (window.FB) {
+      window.FB.XFBML.parse();
+    }
+  }, []);
 
   return (
     <Wrapper>
       <Modal>
         <ModalHeader>
-          <CloseBtn onClick={() => setShowUid('')} />
+          <Link to="/">
+            <CloseBtn onClick={() => setShowUid('')} />
+          </Link>
         </ModalHeader>
         <InfoSection>
           <MainInfo>
             <Tag>{eventCategory[Number(event.category)]}</Tag>
             <Title>{event.title}</Title>
-            <Date>
+            <Day>
               {event.startDate}
               {' '}
               {
                 event.startDate !== event.endDate
                 && (` - ${event.endDate}`)
               }
-              <img
-                src={share}
-                alt="share infomation"
+              <button
+                type="button"
+                onClick={() => setIsSharing(!isSharing)}
                 style={{
-                  width: '20px', marginLeft: 'auto', opacity: '.5', cursor: 'pointer',
+                  all: 'unset', cursor: 'pointer', position: 'relative', marginLeft: 'auto',
                 }}
-              />
-            </Date>
+              >
+                {
+                  isSharing
+                    ? (
+                      <>
+                        <img
+                          src={share}
+                          alt="share infomation"
+                          style={{
+                            width: '20px', opacity: '1',
+                          }}
+                        />
+                        <a href={`https://social-plugins.line.me/lineit/share?url=${url}`} target="_blank" rel="noreferrer">
+                          <img
+                            src={line}
+                            alt="line share"
+                            style={{
+                              width: '25px', position: 'absolute', top: '25px', right: '-5px',
+                            }}
+                          />
+                        </a>
+                        <Helmet>
+                          <script async defer crossOrigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v12.0" nonce="dmrjeGLN" />
+                        </Helmet>
+                        <div className="fb-share-button" data-href={url} data-layout="button_count" data-size="large">
+                          <a target="_blank" href={`https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farts-everywhere-108b3.web.app%2F%3Fid%3D${event.UID}&amp;src=sdkpreparse`} className="fb-xfbml-parse-ignore" rel="noreferrer">
+                            <img
+                              src={fb}
+                              alt="facebook share"
+                              style={{
+                                width: '25px', position: 'absolute', top: '50px', right: '-5px',
+                              }}
+                            />
+                          </a>
+
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={share}
+                        alt="share infomation"
+                        style={{
+                          width: '20px', opacity: '.5',
+                        }}
+                      />
+                    )
+                }
+              </button>
+            </Day>
             {
               event.descriptionFilterHtml
               && (
@@ -309,8 +487,17 @@ function EventModal({ event, setShowUid, location }) {
                     (event.masterUnit.length !== 0)
                     && (
                       <div style={{ marginBottom: '10px' }}>
-                        <span style={{ marginRight: '10px' }}>活動單位</span>
+                        <span style={{ marginRight: '10px' }}>主辦單位</span>
                         <span>{event.masterUnit}</span>
+                      </div>
+                    )
+                  }
+                  {
+                    (event.showUnit)
+                    && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <span style={{ marginRight: '10px' }}>活動單位</span>
+                        <span>{event.showUnit}</span>
                       </div>
                     )
                   }
@@ -327,50 +514,94 @@ function EventModal({ event, setShowUid, location }) {
               )
             }
           </MainInfo>
-          <ModalImage
-            src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-          />
-          {/* <SubInfo> */}
-          <SessionTable>
-            <TableTitle>活動場次</TableTitle>
-            <SessionLists>
-              {
-                event.showInfo.map((info) => (
-                  <Session>
-                    <div>
+          {
+            member
+              ? (
+                <img
+                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  alt={event.title}
+                  style={{ width: '30%', height: 'fit-content' }}
+                />
+              ) : (
+                <ModalImage
+                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                />
+              )
+          }
+          <SubInfo>
+            <SessionTable week={weeklyWeatherData.length !== 0}>
+              <TableTitle>活動場次</TableTitle>
+              <SessionLists>
+                {
+                  event.showInfo.map((info, index) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <Session key={index}>
                       <div>
-                        {info.time}
-                        {' '}
-                        -
+                        <div>
+                          {info.time}
+                          {' '}
+                          -
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                          {' '}
+                          {info.endTime}
+                        </div>
+                        <Tag>
+                          {info?.location.slice(0, 3)}
+                        </Tag>
+                        <div style={{ marginTop: '10px' }}>{info.locationName}</div>
                       </div>
-                      <div style={{ marginBottom: '10px' }}>
-                        {' '}
-                        {info.endTime}
+                      <div style={{
+                        position: 'relative', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between',
+                      }}
+                      >
+                        {
+                          (weatherData.length !== 0 && weatherData[index] !== null)
+                            ? (
+                              <WeatherIconWrapper>
+                                <div>{weatherData?.[index]?.[0]?.elementValue?.[0]?.value?.split('。')?.[0]}</div>
+                                <WeatherIcon
+                                  src={getWeatherIcon(weatherData?.[index]?.[0]?.elementValue?.[0]?.value?.split('。')?.[0])}
+                                  alt={weatherData?.[index]?.[0]?.elementValue?.[0]?.value?.split('。')?.[0]}
+                                />
+                              </WeatherIconWrapper>
+                            ) : <div style={{ width: '30px', height: '30px' }} />
+                        }
+                        <Button>
+                          加入行事曆
+                        </Button>
                       </div>
-                      <Tag onClick={() => getAddressWeather(info.location)}>
-                        {info.location.slice(0, 3)}
-                      </Tag>
-                      <div style={{ marginTop: '10px' }}>{info.locationName}</div>
-                    </div>
-                    <Button>
-                      加入行事曆
-                    </Button>
-                  </Session>
-                ))
-              }
-            </SessionLists>
-          </SessionTable>
-          {/* <div>test</div>
-            <div>
-              {
-                weatherDesc.map(() => (
-                  <div>
-                    test
-                  </div>
-                ))
-              }
-            </div> */}
-          {/* </SubInfo> */}
+                    </Session>
+                  ))
+                }
+              </SessionLists>
+            </SessionTable>
+            {
+              (weeklyWeatherData.length !== 0)
+              && (
+                <WeatherTable>
+                  <TableTitle>一週天氣</TableTitle>
+                  <WeatherLists>
+                    {
+                      weeklyWeatherData
+                        .filter((_, index) => index % 2 === 0)
+                        .map((data) => (
+                          <Weather>
+                            <div style={{ marginBottom: '10px' }}>{dayjs(data?.startTime?.split(' ')?.[0]).format('M/D')}</div>
+                            <WeatherIcon
+                              src={getWeatherIcon(data?.elementValue?.[0]?.value?.split('。')?.[0])}
+                              alt={data?.elementValue?.[0]?.value?.split('。')?.[0]}
+                              week
+                            />
+                            <span>{data?.elementValue?.[0]?.value?.split('。')?.[0]}</span>
+                          </Weather>
+                        ))
+                    }
+                  </WeatherLists>
+                </WeatherTable>
+              )
+            }
+          </SubInfo>
         </InfoSection>
       </Modal>
     </Wrapper>
@@ -412,7 +643,7 @@ EventModal.propTypes = {
     hitRate: PropTypes.number,
     keywords: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
-  location: PropTypes.string.isRequired,
+  member: PropTypes.bool.isRequired,
 };
 
 export default EventModal;

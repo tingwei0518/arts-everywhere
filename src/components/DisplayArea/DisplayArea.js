@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import EventModal from '../EventModal';
@@ -85,6 +86,7 @@ const EventImg = styled.div`
   background-image: url(${(props) => props.src});
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
   border: 25px solid ${(props) => (props.primary ? 'lightgrey' : 'white')};
   box-shadow: 12px 12px ${(props) => (props.primary ? 'rgba(255, 241, 116, .8)' : 'rgba(0, 0, 0, .5)')};
   margin-bottom: 30px;
@@ -94,14 +96,18 @@ const EventImg = styled.div`
 const EventCard = styled.div`
   width: 200px;
   height: 120px;
-  color: black;
   background-color: ${(props) => (props.primary ? 'lightgrey' : 'white')};
   box-shadow: 9px 9px ${(props) => (props.primary ? 'rgba(255, 241, 116, .8)' : 'rgba(0, 0, 0, .2)')};
   padding: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   cursor: pointer;
+  & a {
+    text-decoration: none;
+    color: black;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 `;
 
 const EventTitle = styled.div`
@@ -119,7 +125,7 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, text, events, primary, showUid, setShowUid, location,
+  title, text, events, primary, showUid, setShowUid, member,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -152,25 +158,48 @@ function DisplayArea({
         }
         <Events>
           {
-            events.slice(currentIndex, currentIndex + 3).map((event) => (
+            events?.slice(currentIndex, currentIndex + 3).map((event, index) => (
               <Event>
-                <EventImg
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
-                  onClick={() => setShowUid(event.UID)}
-                  primary={primary}
-                />
+                <Link to={`?id=${event.UID}`}>
+                  {
+                    member
+                      ? (
+                        <img
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={index}
+                          src={event.imageUrl
+                            ? event.imageUrl : eventImageProps[Number(event.category)]}
+                          alt={event.title}
+                          aria-hidden="true"
+                          onClick={() => setShowUid(event.UID)}
+                          style={{
+                            boxSizing: 'content-box', width: '200px', height: '200px', objectFit: 'cover', marginBottom: '30px', cursor: 'pointer', border: '25px solid white', boxShadow: '12px 12px rgba(0, 0, 0, .5)',
+                          }}
+                        />
+                      ) : (
+                        <EventImg
+                          src={event.imageUrl
+                            ? event.imageUrl : eventImageProps[Number(event.category)]}
+                          onClick={() => setShowUid(event.UID)}
+                          primary={primary}
+                        />
+                      )
+                  }
+                </Link>
                 <EventCard primary={primary} onClick={() => setShowUid(event.UID)}>
-                  <EventTag>
-                    {eventCategory[Number(event.category)]}
-                  </EventTag>
-                  <EventTitle>{event.title}</EventTitle>
-                  <EventDate>
-                    {event.startDate}
-                    {' '}
-                    -
-                    {' '}
-                    {event.endDate}
-                  </EventDate>
+                  <Link to={`?id=${event.UID}`}>
+                    <EventTag>
+                      {eventCategory[Number(event.category)]}
+                    </EventTag>
+                    <EventTitle>{event.title}</EventTitle>
+                    <EventDate>
+                      {event.startDate}
+                      {' '}
+                      -
+                      {' '}
+                      {event.endDate}
+                    </EventDate>
+                  </Link>
                 </EventCard>
                 {
                   showUid === event.UID
@@ -178,7 +207,7 @@ function DisplayArea({
                     <EventModal
                       event={event}
                       setShowUid={setShowUid}
-                      location={location}
+                      member={member}
                     />
                   )
                 }
@@ -199,6 +228,18 @@ function DisplayArea({
                 }}
               />
             ) : <div style={{ width: '45px', height: '45px' }} />
+        }
+        {
+          events?.map((event) => (
+            showUid === event.UID
+            && (
+              <EventModal
+                event={event}
+                setShowUid={setShowUid}
+                member={member}
+              />
+            )
+          ))
         }
       </EventSection>
     </Wrapper>
@@ -244,7 +285,7 @@ DisplayArea.propTypes = {
   primary: PropTypes.bool.isRequired,
   showUid: PropTypes.string.isRequired,
   setShowUid: PropTypes.func.isRequired,
-  location: PropTypes.string.isRequired,
+  member: PropTypes.bool.isRequired,
 };
 
 export default DisplayArea;

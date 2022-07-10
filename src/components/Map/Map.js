@@ -2,8 +2,11 @@
 import { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import PropTypes from 'prop-types';
+// import EventModal from '../EventModal';
 
-function Map({ latitude, longitude, showInfo }) {
+function Map({
+  latitude, longitude, setLatitude, setLongitude, showInfo, setShowUid, scrollToElement, eventsRef,
+}) {
   const center = {
     lat: latitude,
     lng: longitude,
@@ -22,40 +25,53 @@ function Map({ latitude, longitude, showInfo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const clickMarker = (uid) => {
-    console.log(uid);
+  const onDragEnd = () => {
+    setLatitude(map.getCenter().toJSON().lat);
+    setLongitude(map.getCenter().toJSON().lng);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  const onClickMarker = (uid) => {
+    setShowUid(uid);
+    scrollToElement(eventsRef);
   };
 
   return (
-    isLoaded ? (
+    isLoaded && (
       <GoogleMap
         center={center}
-        zoom={12}
+        zoom={11}
         options={{ mapId: '5c9ec1165b4386f6' }}
         mapContainerStyle={{ height: '55%', width: '60%' }}
         onLoad={onLoad}
+        onDragEnd={onDragEnd}
+        clickableIcons={false}
       >
         {
-          showInfo.map((item) => (
+          showInfo.map((item, index) => (
             <Marker
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
               position={{
                 lat: Number(item.info.latitude),
                 lng: Number(item.info.longitude),
               }}
               map={map}
-              onClick={() => { clickMarker(item.UID); }}
+              onClick={() => { onClickMarker(item.UID); }}
               aria-hidden="true"
             />
           ))
         }
       </GoogleMap>
-    ) : ''
+    )
   );
 }
 
 Map.propTypes = {
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
+  setLatitude: PropTypes.func.isRequired,
+  setLongitude: PropTypes.func.isRequired,
   showInfo: PropTypes.arrayOf(PropTypes.shape({
     UID: PropTypes.string,
     title: PropTypes.string,
@@ -70,6 +86,9 @@ Map.propTypes = {
       time: PropTypes.string,
     }).isRequired,
   })).isRequired,
+  setShowUid: PropTypes.func.isRequired,
+  scrollToElement: PropTypes.func.isRequired,
+  eventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 export default Map;

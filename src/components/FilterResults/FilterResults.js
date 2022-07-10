@@ -44,8 +44,8 @@ const AnimationBtn = styled.div`
 `;
 
 function FilterResults({
-  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate,
-  searchText, isFiltered, filteredEventsRef, scrollToElement,
+  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate, searchText, isFiltered,
+  filteredEventsRef, scrollToElement, setShowUid, setLatitude, setLongitude,
 }) {
   return (
     <Wrapper>
@@ -92,6 +92,11 @@ function FilterResults({
         latitude={latitude}
         longitude={longitude}
         showInfo={isFiltered ? filteredShowInfo : recentShowInfo}
+        eventsRef={filteredEventsRef}
+        scrollToElement={scrollToElement}
+        setShowUid={setShowUid}
+        setLatitude={setLatitude}
+        setLongitude={setLongitude}
       />
     </Wrapper>
   );
@@ -133,7 +138,11 @@ FilterResults.propTypes = {
   endDate: PropTypes.instanceOf(Date).isRequired,
   isFiltered: PropTypes.bool.isRequired,
   filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  // recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   scrollToElement: PropTypes.func.isRequired,
+  setShowUid: PropTypes.func.isRequired,
+  setLatitude: PropTypes.func.isRequired,
+  setLongitude: PropTypes.func.isRequired,
 };
 
 export default FilterResults;
