@@ -113,17 +113,21 @@ const EventDetails = styled.div`
 
 function ProfilePage() {
   const [userSubmittedEvent, setUserSubmittedEvent] = useState([]);
-  console.log(userSubmittedEvent);
   const [showSubmittedEventIndex, setShowSubmittedEventIndex] = useState(0);
   const currentUser = useContext(UserContext);
   const eventData = [];
+
+  const deleteEvent = (uid) => {
+    deleteDoc(doc(db, 'memberEvents', uid));
+    const newUserSubmittedEvent = userSubmittedEvent.filter((event) => event.UID !== uid);
+    setUserSubmittedEvent(newUserSubmittedEvent);
+  };
 
   async function getUserSubmittedEvents(UID) {
     const querySnapshot = await api.userSubmittedEventsQuery(UID);
     querySnapshot.forEach((dataDoc) => {
       eventData.push(dataDoc.data());
     });
-    // console.log({ eventData });
     setUserSubmittedEvent(eventData);
   }
 
@@ -198,12 +202,12 @@ function ProfilePage() {
           }
           <Button
             type="button"
-            onClick={() => { deleteDoc(doc(db, 'memberEvents', userSubmittedEvent[showSubmittedEventIndex].UID)); }}
+            onClick={() => deleteEvent(userSubmittedEvent[showSubmittedEventIndex].UID)}
             style={{
-              width: '150px', justifyContent: 'center', margin: '10px 0', padding: '2px 7px', backgroundColor: 'lightgrey', borderColor: 'lightgrey', borderRadius: '3px',
+              width: '100px', justifyContent: 'center', margin: '10px 0', padding: '2px 7px', backgroundColor: 'lightgrey', borderColor: 'lightgrey', borderRadius: '3px',
             }}
           >
-            刪除這則活動
+            刪除活動
           </Button>
         </EventDetails>
       </Wrapper>
