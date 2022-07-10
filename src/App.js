@@ -64,9 +64,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<EventDisplayPage />} />
-            <Route path="/login" element={<LogInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/profile" element={userData.userId !== '' ? <ProfilePage /> : <LogInPage />} />
+            <Route path="login" element={<LogInPage />} />
+            <Route path="signup" element={<SignUpPage />} />
+            <Route path="profile" element={userData.userId !== '' && <ProfilePage />} />
           </Routes>
         </BrowserRouter>
       </div>

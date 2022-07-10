@@ -442,7 +442,7 @@ function EventDisplay() {
               </Page>
             )
           }
-          <Page bg={bg3} ref={isFiltered ? recentEventsRef : filteredEventsRef}>
+          <Page bg={bg3} ref={recentEventsRef}>
             <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} />
           </Page>
           <Page ref={popularEventsRef}>

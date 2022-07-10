@@ -45,8 +45,16 @@ const AnimationBtn = styled.div`
 
 function FilterResults({
   latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate, searchText, isFiltered,
-  filteredEventsRef, scrollToElement, setShowUid, setLatitude, setLongitude,
+  filteredEventsRef, recentEventsRef, scrollToElement, setShowUid, setLatitude, setLongitude,
 }) {
+  const scrollToEventPage = () => {
+    if (isFiltered) {
+      scrollToElement(filteredEventsRef);
+    } else {
+      scrollToElement(recentEventsRef);
+    }
+  };
+
   return (
     <Wrapper>
       <Block>
@@ -55,7 +63,7 @@ function FilterResults({
         }}
         >
           <img src={title} alt="arts everywhere" style={{ width: '250px', marginRight: '20px' }} />
-          <AnimationBtn onClick={() => scrollToElement(filteredEventsRef)}>
+          <AnimationBtn onClick={scrollToEventPage}>
             <div style={{ fontSize: '.5rem' }}>go!</div>
             <img src={doubleNext} alt="next page" aria-hidden="true" style={{ width: '30px' }} />
           </AnimationBtn>
@@ -138,7 +146,7 @@ FilterResults.propTypes = {
   endDate: PropTypes.instanceOf(Date).isRequired,
   isFiltered: PropTypes.bool.isRequired,
   filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  // recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   scrollToElement: PropTypes.func.isRequired,
   setShowUid: PropTypes.func.isRequired,
   setLatitude: PropTypes.func.isRequired,
