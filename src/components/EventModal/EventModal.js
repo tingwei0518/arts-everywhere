@@ -9,16 +9,31 @@ import close from '../../images/close.png';
 import share from '../../images/share.png';
 import line from '../../images/line.png';
 import fb from '../../images/fb.png';
-import image1 from '../../assets/1-4.jpg';
-import image2 from '../../assets/2-3.jpg';
-import image3 from '../../assets/3-1.jpg';
-import image4 from '../../assets/4-1.jpg';
-import image5 from '../../assets/5-1.jpg';
-import image6 from '../../assets/6-1.jpg';
-import image7 from '../../assets/7-1.jpg';
-import image8 from '../../assets/8-1.jpg';
+import image11 from '../../assets/1-1.jpg';
+import image12 from '../../assets/1-2.jpg';
+import image13 from '../../assets/1-3.jpg';
+import image21 from '../../assets/2-1.jpg';
+import image22 from '../../assets/2-2.jpg';
+import image23 from '../../assets/2-3.jpg';
+import image31 from '../../assets/3-1.jpg';
+import image32 from '../../assets/3-2.jpg';
+import image41 from '../../assets/4-1.jpg';
+import image42 from '../../assets/4-2.jpg';
+import image51 from '../../assets/5-1.jpg';
+import image52 from '../../assets/5-2.jpg';
+import image61 from '../../assets/6-1.jpg';
+import image62 from '../../assets/6-2.jpg';
+import image63 from '../../assets/6-3.jpg';
+import image71 from '../../assets/7-1.jpg';
+import image72 from '../../assets/7-2.jpg';
+import image73 from '../../assets/7-3.jpg';
+import image81 from '../../assets/8-1.jpg';
+import image82 from '../../assets/8-2.jpg';
+import image83 from '../../assets/8-3.jpg';
 import image17 from '../../assets/17-1.jpg';
-import imageOther from '../../assets/1-2.jpg';
+import imageOther1 from '../../assets/o1.jpg';
+import imageOther2 from '../../assets/o2.jpg';
+import imageOther3 from '../../assets/o3.jpg';
 import sunny from '../../images/sunny.png';
 import cloudy from '../../images/cloudy.png';
 import rainy from '../../images/rainy.png';
@@ -29,26 +44,27 @@ const eventCategory = {
   1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 9: '其他', 10: '其他', 11: '綜藝', 12: '其他', 13: '競賽', 14: '徵選', 15: '其他', 16: '其他', 17: '演唱會', 18: '其他', 19: '研習課程',
 };
 const eventImageProps = {
-  1: image1,
-  2: image2,
-  3: image3,
-  4: image4,
-  5: image5,
-  6: image6,
-  7: image7,
-  8: image8,
-  9: imageOther,
-  10: imageOther,
-  11: imageOther,
-  12: imageOther,
-  13: imageOther,
-  14: imageOther,
-  15: imageOther,
-  16: imageOther,
-  17: image17,
-  18: imageOther,
-  19: imageOther,
+  1: [image11, image12, image13],
+  2: [image21, image22, image23],
+  3: [image31, image32, image31],
+  4: [image41, image42, image41],
+  5: [image51, image52, image51],
+  6: [image61, image62, image63],
+  7: [image71, image72, image73],
+  8: [image81, image82, image83],
+  9: [imageOther1, imageOther2, imageOther3],
+  10: [imageOther1, imageOther2, imageOther3],
+  11: [imageOther1, imageOther2, imageOther3],
+  12: [imageOther1, imageOther2, imageOther3],
+  13: [imageOther1, imageOther2, imageOther3],
+  14: [imageOther1, imageOther2, imageOther3],
+  15: [imageOther1, imageOther2, imageOther3],
+  16: [imageOther1, imageOther2, imageOther3],
+  17: [image17, image17, image17],
+  18: [imageOther1, imageOther2, imageOther3],
+  19: [imageOther1, imageOther2, imageOther3],
 };
+
 const weatherImageProps = [sunny, cloudy, rainy, otherWeather, empty];
 
 const Wrapper = styled.div`
@@ -279,7 +295,9 @@ const Weather = styled.div`
   }
 `;
 
-function EventModal({ event, setShowUid, member }) {
+function EventModal({
+  event, setShowUid, member, idx,
+}) {
   const [weatherData, setWeatherData] = useState([]);
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
   const [isSharing, setIsSharing] = useState(false);
@@ -552,13 +570,15 @@ function EventModal({ event, setShowUid, member }) {
             member
               ? (
                 <img
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  src={event.imageUrl
+                    ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                   alt={event.title}
                   style={{ width: '30%', height: 'fit-content' }}
                 />
               ) : (
                 <ModalImage
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                  src={event.imageUrl
+                    ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                 />
               )
           }
@@ -678,6 +698,7 @@ EventModal.propTypes = {
     keywords: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   member: PropTypes.bool.isRequired,
+  idx: PropTypes.number.isRequired,
 };
 
 export default EventModal;

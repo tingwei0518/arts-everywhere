@@ -16,6 +16,7 @@ import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
 import bg6 from '../../assets/background6.svg';
 import filterBg from '../../assets/filter-bg2.svg';
+import nextWall from '../../images/next_wall.svg';
 
 const Container = styled.div`
   width: 100vw;
@@ -75,9 +76,10 @@ function EventDisplay() {
   const distance = 10;
   const eventData = [];
   const pageText = {
-    filtered: '根據您所選擇的時間與地點，精心為您篩選藝文活動。',
-    recent: '不曉得該如何安排空閒時間嗎？可以參考看看這一週內，有哪些精彩的藝文活動。',
-    popular: '',
+    filtered: '根據您所選擇的時間與地點，精心為您篩選合適的藝文饗宴，探索各式表演藝術與歷史人文的跨領域展演。',
+    recent: '參考這一週內、在您的周遭有哪些精彩的藝文活動，讓藝術成為日常，縮短與藝術的距離。',
+    popular: '搜集目前最受歡迎、點擊率最高的展演活動，或許就有符合您喜好的藝文體驗。',
+    member: '由 Arts Everywhere 的會員好朋友所刊登的藝文活動，分享多樣化的活動新訊。',
   };
 
   const homeRef = useRef(null);
@@ -438,18 +440,32 @@ function EventDisplay() {
           {
             (isFiltered && filteredEvents?.length !== 0) && (
               <Page bg={bg1} ref={filteredEventsRef}>
-                <DisplayArea title="Filtered" events={filteredEvents} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
+                <img
+                  src={nextWall}
+                  alt="next"
+                  style={{
+                    width: '130px', height: '130px', position: 'absolute', top: '-30px', right: '50px',
+                  }}
+                />
+                <DisplayArea title="Filtered" events={filteredEvents} color="white" text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
               </Page>
             )
           }
           <Page bg={bg3} ref={recentEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
+            <DisplayArea title="Recent" events={recentEvents} color="darkgrey" text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
           </Page>
           <Page ref={popularEventsRef}>
-            <DisplayArea title="Popular" events={popularEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
+            <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
           </Page>
           <Page bg={bg1} ref={userEventsRef}>
-            <DisplayArea title="Member" events={memberEvents} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
+            <img
+              src={nextWall}
+              alt="next"
+              style={{
+                width: '130px', height: '130px', position: 'absolute', top: '-30px', right: '50px',
+              }}
+            />
+            <DisplayArea title="Member" events={memberEvents} color="white" text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
           </Page>
           <Page bg={bg3} ref={userEventsEditorRef}>
             <PostEvent />

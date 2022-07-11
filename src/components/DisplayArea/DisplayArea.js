@@ -5,35 +5,55 @@ import PropTypes from 'prop-types';
 import EventModal from '../EventModal';
 import next from '../../images/next.png';
 import prev from '../../images/prev.png';
-import image1 from '../../assets/1-4.jpg';
-import image2 from '../../assets/2-3.jpg';
-import image3 from '../../assets/3-1.jpg';
-import image4 from '../../assets/4-1.jpg';
-import image5 from '../../assets/5-1.jpg';
-import image6 from '../../assets/6-1.jpg';
-import image7 from '../../assets/7-1.jpg';
-import image8 from '../../assets/8-1.jpg';
+import image11 from '../../assets/1-1.jpg';
+import image12 from '../../assets/1-2.jpg';
+import image13 from '../../assets/1-3.jpg';
+import image21 from '../../assets/2-1.jpg';
+import image22 from '../../assets/2-2.jpg';
+import image23 from '../../assets/2-3.jpg';
+import image31 from '../../assets/3-1.jpg';
+import image32 from '../../assets/3-2.jpg';
+import image41 from '../../assets/4-1.jpg';
+import image42 from '../../assets/4-2.jpg';
+import image51 from '../../assets/5-1.jpg';
+import image52 from '../../assets/5-2.jpg';
+import image61 from '../../assets/6-1.jpg';
+import image62 from '../../assets/6-2.jpg';
+import image63 from '../../assets/6-3.jpg';
+import image71 from '../../assets/7-1.jpg';
+import image72 from '../../assets/7-2.jpg';
+import image73 from '../../assets/7-3.jpg';
+import image81 from '../../assets/8-1.jpg';
+import image82 from '../../assets/8-2.jpg';
+import image83 from '../../assets/8-3.jpg';
 import image17 from '../../assets/17-1.jpg';
-import imageOther from '../../assets/1-2.jpg';
+import imageOther1 from '../../assets/o1.jpg';
+import imageOther2 from '../../assets/o2.jpg';
+import imageOther3 from '../../assets/o3.jpg';
 
 const eventCategory = {
-  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 11: '綜藝', 13: '競賽', 14: '徵選', 15: '其他', 17: '演唱會', 19: '研習課程',
+  1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 9: '其他', 10: '其他', 11: '綜藝', 12: '其他', 13: '競賽', 14: '徵選', 15: '其他', 16: '其他', 17: '演唱會', 18: '其他', 19: '研習課程',
 };
 const eventImageProps = {
-  1: image1,
-  2: image2,
-  3: image3,
-  4: image4,
-  5: image5,
-  6: image6,
-  7: image7,
-  8: image8,
-  11: imageOther,
-  13: imageOther,
-  14: imageOther,
-  15: imageOther,
-  17: image17,
-  19: imageOther,
+  1: [image11, image12, image13],
+  2: [image21, image22, image23],
+  3: [image31, image32, image31],
+  4: [image41, image42, image41],
+  5: [image51, image52, image51],
+  6: [image61, image62, image63],
+  7: [image71, image72, image73],
+  8: [image81, image82, image83],
+  9: [imageOther1, imageOther2, imageOther3],
+  10: [imageOther1, imageOther2, imageOther3],
+  11: [imageOther1, imageOther2, imageOther3],
+  12: [imageOther1, imageOther2, imageOther3],
+  13: [imageOther1, imageOther2, imageOther3],
+  14: [imageOther1, imageOther2, imageOther3],
+  15: [imageOther1, imageOther2, imageOther3],
+  16: [imageOther1, imageOther2, imageOther3],
+  17: [image17, image17, image17],
+  18: [imageOther1, imageOther2, imageOther3],
+  19: [imageOther1, imageOther2, imageOther3],
 };
 
 const Wrapper = styled.div`
@@ -45,7 +65,7 @@ const PageTitle = styled.div`
   font-size: 6rem;
   font-family: Times,sans-serif; 
   padding: 40px 10px 0 60px;
-  color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
+  color: ${(props) => (props.color)};
 `;
 
 const EventSection = styled.div`
@@ -60,7 +80,7 @@ const SectionText = styled.div`
   padding-left: 70px;
   padding-top: 20px;
   line-height: 1.8;
-  color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
+  color: ${(props) => (props.color)};
 `;
 
 const Events = styled.div`
@@ -91,10 +111,10 @@ const animation = (props) => css`
 
 const HitRate = styled.div`
   color: #324E8E;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: bold;
   align-self: center;
-  margin: -35px 0 15px 0;
+  margin: -39px 0 15px 0;
   animation: ${animation};
 `;
 
@@ -144,7 +164,7 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, text, events, primary, showUid, setShowUid, member, popular,
+  title, color, text, events, primary, showUid, setShowUid, member, popular,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -158,9 +178,9 @@ function DisplayArea({
 
   return (
     <Wrapper>
-      <PageTitle primary={primary}>{title}</PageTitle>
+      <PageTitle primary={primary} color={color}>{title}</PageTitle>
       <EventSection>
-        <SectionText primary={primary}>{text}</SectionText>
+        <SectionText primary={primary} color={color}>{text}</SectionText>
         {
           currentIndex >= 3
             ? (
@@ -201,7 +221,7 @@ function DisplayArea({
                           // eslint-disable-next-line react/no-array-index-key
                           key={index}
                           src={event.imageUrl
-                            ? event.imageUrl : eventImageProps[Number(event.category)]}
+                            ? event.imageUrl : eventImageProps[Number(event.category)][index % 3]}
                           alt={event.title}
                           aria-hidden="true"
                           onClick={() => setShowUid(event.UID)}
@@ -212,7 +232,7 @@ function DisplayArea({
                       ) : (
                         <EventImg
                           src={event.imageUrl
-                            ? event.imageUrl : eventImageProps[Number(event.category)]}
+                            ? event.imageUrl : eventImageProps[Number(event.category)][index % 3]}
                           onClick={() => setShowUid(event.UID)}
                           primary={primary}
                         />
@@ -242,6 +262,7 @@ function DisplayArea({
                       event={event}
                       setShowUid={setShowUid}
                       member={member}
+                      idx={index}
                     />
                   )
                 }
@@ -264,13 +285,14 @@ function DisplayArea({
             ) : <div style={{ width: '45px', height: '45px' }} />
         }
         {
-          events?.map((event) => (
+          events?.map((event, index) => (
             showUid === event.UID
             && (
               <EventModal
                 event={event}
                 setShowUid={setShowUid}
                 member={member}
+                idx={index}
               />
             )
           ))
@@ -282,6 +304,7 @@ function DisplayArea({
 
 DisplayArea.propTypes = {
   title: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   events: PropTypes.arrayOf(PropTypes.shape({
     showInfo: PropTypes.arrayOf(PropTypes.shape({

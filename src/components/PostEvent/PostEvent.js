@@ -186,8 +186,7 @@ function PostEvent() {
     } else {
       localStorage.setItem('event', JSON.stringify({ ...eventContent, img: imgUrl }));
       alert('請先登入，即將跳轉登入頁面');
-      window.location.replace('./member');
-      // 登入
+      window.location.replace('./login');
     }
   };
 

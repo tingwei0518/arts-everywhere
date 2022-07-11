@@ -8,16 +8,16 @@ import { db } from '../../utils/firebaseInit';
 import Menu from '../Menu';
 import UserContext from '../../UserContext';
 // import user from '../../images/user.png';
-import face1 from '../../images/face1.png';
-import face2 from '../../images/face2.png';
-import face3 from '../../images/face3.png';
-import face4 from '../../images/face4.png';
-import face5 from '../../images/face5.png';
-import back1 from '../../images/back1.png';
-import back2 from '../../images/back2.png';
-import back3 from '../../images/back3.png';
-import back4 from '../../images/back4.png';
-import back5 from '../../images/back5.png';
+import face1 from '../../images/face1.svg';
+import face2 from '../../images/face2.svg';
+import face3 from '../../images/face3.svg';
+import face4 from '../../images/face4.svg';
+import face5 from '../../images/face5.svg';
+import back1 from '../../images/back1.svg';
+import back2 from '../../images/back2.svg';
+import back3 from '../../images/back3.svg';
+import back4 from '../../images/back4.svg';
+import back5 from '../../images/back5.svg';
 
 const userBackProps = {
   0: back1,
@@ -105,9 +105,9 @@ const UserMarker = styled.div`
   background-image: url(${(props) => props.src});
   background-size: contain;
   background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
-  margin-top: -53px;
+  width: 55px;
+  height: 55px;
+  margin-top: -58px;
   z-index: 1;
   div {
     opacity: 0;
@@ -118,8 +118,8 @@ const UserMarker = styled.div`
       width: 105px;
       margin: -20px 0 0 -27px;
       padding: 2px;
-      background-color: lightgrey;
-      border: 1px solid lightgrey;
+      background-color: rgb(255, 240, 0);
+      border: 1px solid rgb(255, 240, 0);
       border-radius: 2px;
       text-align: center;
       font-size: .7rem;
@@ -128,26 +128,10 @@ const UserMarker = styled.div`
   }
 `;
 
-// div {
-//   opacity: 0;
-//   background-image: url(${(props) => props.face});
-//   background-size: 100% auto;
-//   background-repeat: no-repeat;
-//   margin-left: 12px;
-//   margin-top: 2px;
-//   width: 20px;
-//   height: 20px;
-// }
-// :hover {
-//   width: 50px;
-//   height: 50px;
-//   div {
-//     opacity: .8;
-//   }
-
 const Test = styled.div`
-  width: 40px;
+  width: 50px;
   height: 60px;
+  margin-left: -10px;
   background-image: url(${face1});
   background-size: contain;
   background-repeat: no-repeat;
@@ -192,7 +176,7 @@ function ScrollIndicator({
         return '看看搜尋結果有什麼';
       }
       if (distance >= 44 && distance < 63) {
-        return '最近有這些活動耶';
+        return '這週有這些活動耶';
       }
       if (distance >= 63 && distance < 81) {
         return '好熱門！我要去！';
@@ -200,7 +184,10 @@ function ScrollIndicator({
       if (distance >= 81 && distance < 99) {
         return '會員po的活動好讚';
       }
-      return '我也想刊登';
+      if (distance >= 99) {
+        return '我想刊登活動';
+      }
+      return '我想搜尋藝文活動';
     }
     if (distance < 24) {
       return '我想搜尋藝文活動';
@@ -209,7 +196,7 @@ function ScrollIndicator({
       return '搜尋到好多活動';
     }
     if (distance >= 32 && distance < 54) {
-      return '最近有這些活動耶';
+      return '這週有這些活動耶';
     }
     if (distance >= 54 && distance < 76) {
       return '好熱門！我要去！';
@@ -217,7 +204,10 @@ function ScrollIndicator({
     if (distance >= 76 && distance < 99) {
       return '會員po的活動好讚';
     }
-    return '我也想刊登';
+    if (distance >= 99) {
+      return '我想刊登活動';
+    }
+    return '我想搜尋藝文活動';
   };
 
   const findActiveIndex = () => {
@@ -351,16 +341,20 @@ function ScrollIndicator({
     };
   }, [currentUserId]);
 
-  // useEffect(() => {
-  //   function setActiveFalse() {
-  //     const userPositionRef = doc(db, 'userPosition', currentUserId);
-  //     updateDoc(userPositionRef, {
-  //       isActive: false,
-  //     });
-  //   }
-  //   return setActiveFalse;
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    function setActiveFalse() {
+      try {
+        const userPositionRef = doc(db, 'userPosition', currentUserId);
+        updateDoc(userPositionRef, {
+          isActive: false,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return setActiveFalse;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Wrapper>
@@ -412,7 +406,7 @@ function ScrollIndicator({
               </Point>
               {
                 multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker src={userBackProps[index]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }}>
+                  <UserMarker src={userBackProps[index]} key={userPos.userId} face={userFaceProps[index % 5]} style={{ position: 'absolute', left: `${userPos.position}%` }}>
                     <div>{userPositionText(userPos.position)}</div>
                   </UserMarker>
                 ))
