@@ -86,7 +86,7 @@ const shine = keyframes`
 `;
 
 const animation = (props) => css`
-  ${shine} ${props.animationLength} linear 2s infinite;
+  ${shine} ${props.animationLength} linear 3s infinite;
 `;
 
 const HitRate = styled.div`
@@ -183,13 +183,13 @@ function DisplayArea({
                   popular
                   && (
                     <HitRate>
-                      ＼
+                      ＼＼
                       {' '}
                       {event.hitRate}
                       {' '}
                       hit rate
                       {' '}
-                      ／
+                      ／／
                     </HitRate>
                   )
                 }

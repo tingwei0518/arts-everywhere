@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   doc, collection, setDoc, updateDoc, query, onSnapshot, where, limit,
 } from 'firebase/firestore';
@@ -6,7 +6,34 @@ import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import { db } from '../../utils/firebaseInit';
 import Menu from '../Menu';
-// import UserContext from '../../UserContext';
+import UserContext from '../../UserContext';
+// import user from '../../images/user.png';
+import face1 from '../../images/face1.png';
+import face2 from '../../images/face2.png';
+import face3 from '../../images/face3.png';
+import face4 from '../../images/face4.png';
+import face5 from '../../images/face5.png';
+import back1 from '../../images/back1.png';
+import back2 from '../../images/back2.png';
+import back3 from '../../images/back3.png';
+import back4 from '../../images/back4.png';
+import back5 from '../../images/back5.png';
+
+const userBackProps = {
+  0: back1,
+  1: back2,
+  2: back3,
+  3: back4,
+  4: back5,
+};
+
+const userFaceProps = {
+  0: face1,
+  1: face2,
+  2: face3,
+  3: face4,
+  4: face5,
+};
 
 const Wrapper = styled.div`
   width: 95vw;
@@ -38,6 +65,7 @@ const MenuBtn = styled.div`
 `;
 
 const ScrollIndicatorWrapper = styled.div`
+  position: relative;
   background-color: rgba(0, 0, 0, .5); 
   height: 3px; 
   display: flex;
@@ -74,12 +102,55 @@ const Point = styled.div`
 `;
 
 const UserMarker = styled.div`
-  background-color: #FFD700;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
+  background-image: url(${(props) => props.src});
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 50px;
+  height: 50px;
+  margin-top: -53px;
+  z-index: 1;
+  div {
+    opacity: 0;
+  }
+  :hover {
+    background-image: url(${(props) => props.face});
+    div {
+      width: 105px;
+      margin: -20px 0 0 -27px;
+      padding: 2px;
+      background-color: lightgrey;
+      border: 1px solid lightgrey;
+      border-radius: 2px;
+      text-align: center;
+      font-size: .7rem;
+      opacity: 1;
+    }
+  }
+`;
+
+// div {
+//   opacity: 0;
+//   background-image: url(${(props) => props.face});
+//   background-size: 100% auto;
+//   background-repeat: no-repeat;
+//   margin-left: 12px;
+//   margin-top: 2px;
+//   width: 20px;
+//   height: 20px;
+// }
+// :hover {
+//   width: 50px;
+//   height: 50px;
+//   div {
+//     opacity: .8;
+//   }
+
+const Test = styled.div`
+  width: 40px;
+  height: 60px;
+  background-image: url(${face1});
+  background-size: contain;
+  background-repeat: no-repeat;
   cursor: pointer;
   z-index: 2;
 `;
@@ -106,8 +177,48 @@ function ScrollIndicator({
   const [multipleUserPosition, setMultipleUserPosition] = useState([]);
   // console.log('multipleUserPosition', multipleUserPosition);
   const [currentUserId, setCurrentUserId] = useState();
-  // const currentUser = useContext(UserContext);
+  const currentUser = useContext(UserContext);
   // console.log(currentUser.userId);
+
+  const userPositionText = (distance) => {
+    if (isFiltered) {
+      if (distance < 20) {
+        return '我想搜尋藝文活動';
+      }
+      if (distance >= 20 && distance < 26) {
+        return '搜尋到好多活動';
+      }
+      if (distance >= 26 && distance < 44) {
+        return '看看搜尋結果有什麼';
+      }
+      if (distance >= 44 && distance < 63) {
+        return '最近有這些活動耶';
+      }
+      if (distance >= 63 && distance < 81) {
+        return '好熱門！我要去！';
+      }
+      if (distance >= 81 && distance < 99) {
+        return '會員po的活動好讚';
+      }
+      return '我也想刊登';
+    }
+    if (distance < 24) {
+      return '我想搜尋藝文活動';
+    }
+    if (distance >= 24 && distance < 32) {
+      return '搜尋到好多活動';
+    }
+    if (distance >= 32 && distance < 54) {
+      return '最近有這些活動耶';
+    }
+    if (distance >= 54 && distance < 76) {
+      return '好熱門！我要去！';
+    }
+    if (distance >= 76 && distance < 99) {
+      return '會員po的活動好讚';
+    }
+    return '我也想刊登';
+  };
 
   const findActiveIndex = () => {
     if (scrollLeft < 24) {
@@ -210,7 +321,6 @@ function ScrollIndicator({
     return () => {
       window.removeEventListener('scroll', debounceGetUserPosition);
     };
-    // }, [currentUserId]);
   }, [currentUserId]);
 
   useEffect(() => {
@@ -226,7 +336,6 @@ function ScrollIndicator({
       setMultipleUserPosition(userPositionData);
     });
     return unsubscribe;
-    // }, [currentUserId]);
   }, [currentUserId]);
 
   useEffect(() => {
@@ -240,7 +349,6 @@ function ScrollIndicator({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeunload);
     };
-    // }, [currentUserId]);
   }, [currentUserId]);
 
   // useEffect(() => {
@@ -303,9 +411,8 @@ function ScrollIndicator({
                 <Title>Post Event</Title>
               </Point>
               {
-                multipleUserPosition?.map((userPos) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <UserMarker key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} />
+                multipleUserPosition?.map((userPos, index) => (
+                  <UserMarker src={userBackProps[index]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} />
                 ))
               }
             </>
@@ -327,16 +434,17 @@ function ScrollIndicator({
                 <Title>Post Event</Title>
               </Point>
               {
-                multipleUserPosition?.map((userPos) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <UserMarker key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} />
+                multipleUserPosition?.map((userPos, index) => (
+                  <UserMarker src={userBackProps[index % 5]} face={userFaceProps[index % 5]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }}>
+                    <div>{userPositionText(userPos.position)}</div>
+                  </UserMarker>
                 ))
               }
             </>
           )
         }
         <MainScrollIndicator style={{ width: `${scrollLeft}%` }} />
-        <UserMarker />
+        <Test member={currentUser.userId !== ''} />
       </ScrollIndicatorWrapper>
     </Wrapper>
   );

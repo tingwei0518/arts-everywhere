@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 
 const HomeTitle = styled.div`
   position: absolute;
-  bottom: 80px;
+  bottom: 100px;
   left: 45px;
 `;
 
