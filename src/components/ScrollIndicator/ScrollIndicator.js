@@ -412,7 +412,7 @@ function ScrollIndicator({
               </Point>
               {
                 multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker src={userBackProps[index]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }} >
+                  <UserMarker src={userBackProps[index]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }}>
                     <div>{userPositionText(userPos.position)}</div>
                   </UserMarker>
                 ))
