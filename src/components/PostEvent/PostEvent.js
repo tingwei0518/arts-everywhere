@@ -158,7 +158,7 @@ function PostEvent() {
   const onSubmit = (d) => {
     const eventContent = d;
     eventContent.category = categoryOptionsList[selectedOption];
-    eventContent.imgUrl = imgUrl;
+    eventContent.imageUrl = imgUrl;
     if (currentUser.userId !== '') {
       if (eventContent.title !== '' && eventContent.startDate !== ''
         && eventContent.endDate !== '' && eventContent.showInfo.length !== 0) {
@@ -184,7 +184,7 @@ function PostEvent() {
         alert('填寫標題、場次和日期');
       }
     } else {
-      localStorage.setItem('event', JSON.stringify({ ...eventContent, img: imgUrl }));
+      localStorage.setItem('event', JSON.stringify({ ...eventContent }));
       alert('請先登入，即將跳轉登入頁面');
       window.location.replace('./login');
     }
