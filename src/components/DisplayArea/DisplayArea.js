@@ -164,7 +164,7 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, color, text, events, primary, showUid, setShowUid, member, popular,
+  title, color, scrolled, text, events, primary, showUid, setShowUid, member, popular,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -255,17 +255,14 @@ function DisplayArea({
                     </EventDate>
                   </Link>
                 </EventCard>
-                {
-                  showUid === event.UID
-                  && (
-                    <EventModal
-                      event={event}
-                      setShowUid={setShowUid}
-                      member={member}
-                      idx={index}
-                    />
-                  )
-                }
+                <EventModal
+                  event={event}
+                  setShowUid={setShowUid}
+                  member={member}
+                  idx={index}
+                  show={showUid === event.UID}
+                  scrolled={scrolled}
+                />
               </Event>
             ))
           }
@@ -293,6 +290,7 @@ function DisplayArea({
                 setShowUid={setShowUid}
                 member={member}
                 idx={index}
+                scrolled={scrolled}
               />
             )
           ))
@@ -304,6 +302,7 @@ function DisplayArea({
 
 DisplayArea.propTypes = {
   title: PropTypes.string.isRequired,
+  scrolled: PropTypes.number.isRequired,
   color: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   events: PropTypes.arrayOf(PropTypes.shape({

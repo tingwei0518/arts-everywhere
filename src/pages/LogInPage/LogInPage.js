@@ -102,8 +102,13 @@ function LogInPage() {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
+        if (errorCode === 'auth/user-not-found') {
+          alert('找不到帳號，請重新輸入或是註冊新帳號，謝謝～');
+        } else if (errorCode === 'auth/wrong-password') {
+          alert('密碼輸入錯誤，請重新輸入，謝謝～');
+        } else {
+          alert({ errorMessage });
+        }
       });
   }
 

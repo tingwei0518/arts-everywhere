@@ -78,6 +78,7 @@ const MainScrollIndicator = styled.div`
   background-color: black; 
   height: 3px; 
   border-radius: 0 4px 4px 0;
+  transition: width .5s linear;
 `;
 
 const Point = styled.div`
@@ -152,16 +153,18 @@ const Title = styled.div`
 // login
 
 function ScrollIndicator({
-  isFiltered, scrollToElement, homeRef, filteredInfoRef, filteredEventsRef,
-  recentEventsRef, popularEventsRef, userEventsRef, userEventsEditorRef,
+  isFiltered, scrolled, setScrolled, containerRef,
 }) {
-  const [scrollLeft, setScrollLeft] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [multipleUserPosition, setMultipleUserPosition] = useState([]);
   // console.log('multipleUserPosition', multipleUserPosition);
   const [currentUserId, setCurrentUserId] = useState();
   const currentUser = useContext(UserContext);
+  const layoutWidth = containerRef?.current?.offsetWidth ?? window.innerWidth;
+  const scrollLeft = (
+    scrolled / Math.max(layoutWidth - window.innerWidth, window.innerWidth)
+  ) * 100;
   // console.log(currentUser.userId);
 
   const userPositionText = (distance) => {
@@ -211,11 +214,11 @@ function ScrollIndicator({
   };
 
   const findActiveIndex = () => {
-    if (scrollLeft < 24) {
+    if (scrollLeft < 22) {
       setActiveIndex(0);
-    } else if (scrollLeft >= 24 && scrollLeft < 32) {
+    } else if (scrollLeft >= 22 && scrollLeft < 31) {
       setActiveIndex(1);
-    } else if (scrollLeft >= 32 && scrollLeft < 54) {
+    } else if (scrollLeft >= 31 && scrollLeft < 54) {
       setActiveIndex(2);
     } else if (scrollLeft >= 54 && scrollLeft < 76) {
       setActiveIndex(3);
@@ -244,13 +247,6 @@ function ScrollIndicator({
     }
   };
 
-  const onScroll = () => {
-    const winScroll = document.documentElement.scrollLeft;
-    const width = document.documentElement.scrollWidth - document.documentElement.clientWidth;
-    const scrolled = (winScroll / width) * 100;
-    setScrollLeft(scrolled);
-  };
-
   function debounce(func, delay = 3000) {
     let timer = null;
 
@@ -276,23 +272,17 @@ function ScrollIndicator({
       setIsOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollLeft]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [scrolled]);
 
   useEffect(() => {
     const getUserPosition = () => {
       const winScroll = document.documentElement.scrollLeft;
       const width = document.documentElement.scrollWidth - document.documentElement.clientWidth;
-      const scrolled = (winScroll / width) * 100;
+      const scrolledPosition = (winScroll / width) * 100;
       if (currentUserId) {
         const userPositionRef = doc(db, 'userPosition', currentUserId);
         updateDoc(userPositionRef, {
-          position: scrolled,
+          position: scrolledPosition,
           isActive: true,
           userId: currentUserId,
         });
@@ -301,7 +291,7 @@ function ScrollIndicator({
         setCurrentUserId(data.id);
         setDoc(data, {
           isActive: true,
-          position: scrolled,
+          position: scrolledPosition,
           userId: data.id,
         });
       }
@@ -322,7 +312,7 @@ function ScrollIndicator({
           userPositionData.push(posDoc.data());
         }
       });
-      console.log('userPositionData', userPositionData);
+      // console.log('userPositionData', userPositionData);
       setMultipleUserPosition(userPositionData);
     });
     return unsubscribe;
@@ -370,38 +360,31 @@ function ScrollIndicator({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         isFiltered={isFiltered}
-        scrollToElement={scrollToElement}
-        homeRef={homeRef}
-        filteredInfoRef={filteredInfoRef}
-        filteredEventsRef={filteredEventsRef}
-        recentEventsRef={recentEventsRef}
-        popularEventsRef={popularEventsRef}
-        userEventsRef={userEventsRef}
-        userEventsEditorRef={userEventsEditorRef}
+        setScrolled={setScrolled}
       />
       <ScrollIndicatorWrapper>
-        <Point style={{ zIndex: '3' }} active={activeIndex === 0} onClick={() => scrollToElement(homeRef)}>
+        <Point style={{ zIndex: '3' }} active={activeIndex === 0} onClick={() => setScrolled(0)}>
           <Title>Home</Title>
         </Point>
         {
           isFiltered ? (
             <>
-              <Point style={{ position: 'absolute', left: '24%' }} active={activeIndex === 1} onClick={() => scrollToElement(filteredInfoRef)}>
+              <Point style={{ position: 'absolute', left: '22%' }} active={activeIndex === 1} onClick={() => setScrolled(1450)}>
                 <Title>Search Results</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '30%' }} active={activeIndex === 2} onClick={() => scrollToElement(filteredEventsRef)}>
+              <Point style={{ position: 'absolute', left: '30%' }} active={activeIndex === 2} onClick={() => setScrolled(1960)}>
                 <Title>Filtered Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '48%' }} active={activeIndex === 3} onClick={() => scrollToElement(recentEventsRef)}>
+              <Point style={{ position: 'absolute', left: '48%' }} active={activeIndex === 3} onClick={() => setScrolled(3320)}>
                 <Title>Recent Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '65%' }} active={activeIndex === 4} onClick={() => scrollToElement(popularEventsRef)}>
+              <Point style={{ position: 'absolute', left: '65%' }} active={activeIndex === 4} onClick={() => setScrolled(4680)}>
                 <Title>Popular Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '83%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsRef)}>
+              <Point style={{ position: 'absolute', left: '83%' }} active={activeIndex === 5} onClick={() => setScrolled(6040)}>
                 <Title>Member Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => scrollToElement(userEventsEditorRef)}>
+              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => setScrolled(7400)}>
                 <Title>Post Event</Title>
               </Point>
               {
@@ -414,19 +397,19 @@ function ScrollIndicator({
             </>
           ) : (
             <>
-              <Point style={{ position: 'absolute', left: '28%' }} active={activeIndex === 1} onClick={() => scrollToElement(filteredInfoRef)}>
+              <Point style={{ position: 'absolute', left: '26%' }} active={activeIndex === 1} onClick={() => setScrolled(1450)}>
                 <Title>Search Results</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '36%' }} active={activeIndex === 2} onClick={() => scrollToElement(recentEventsRef)}>
+              <Point style={{ position: 'absolute', left: '34%' }} active={activeIndex === 2} onClick={() => setScrolled(1960)}>
                 <Title>Recent Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '57%' }} active={activeIndex === 3} onClick={() => scrollToElement(popularEventsRef)}>
+              <Point style={{ position: 'absolute', left: '57%' }} active={activeIndex === 3} onClick={() => setScrolled(3320)}>
                 <Title>Popular Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '78%' }} active={activeIndex === 4} onClick={() => scrollToElement(userEventsRef)}>
+              <Point style={{ position: 'absolute', left: '78%' }} active={activeIndex === 4} onClick={() => setScrolled(4680)}>
                 <Title>Member Events</Title>
               </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => scrollToElement(userEventsEditorRef)}>
+              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => setScrolled(6040)}>
                 <Title>Post Event</Title>
               </Point>
               {
@@ -448,14 +431,9 @@ function ScrollIndicator({
 
 ScrollIndicator.propTypes = {
   isFiltered: PropTypes.bool.isRequired,
-  scrollToElement: PropTypes.func.isRequired,
-  homeRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  filteredInfoRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  popularEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  userEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  userEventsEditorRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  scrolled: PropTypes.number.isRequired,
+  setScrolled: PropTypes.func.isRequired,
+  containerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 export default ScrollIndicator;

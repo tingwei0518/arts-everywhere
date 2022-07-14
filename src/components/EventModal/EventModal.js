@@ -72,12 +72,15 @@ const Wrapper = styled.div`
   height: 100vh;
   background-color: rgba(0,0,0,.5);
   display: flex;
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 0;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 7;
+  opacity: ${(props) => (props.show ? '1' : '0')};
+  transition-duration: .3s;
+  transition-timing-function: ease-out;
+  pointer-events: ${(props) => (props.show ? 'auto' : 'none')};
 `;
 
 const Modal = styled.div`
@@ -296,7 +299,7 @@ const Weather = styled.div`
 `;
 
 function EventModal({
-  event, setShowUid, member, idx,
+  event, setShowUid, member, idx, show, scrolled,
 }) {
   const [weatherData, setWeatherData] = useState([]);
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
@@ -451,7 +454,7 @@ function EventModal({
   };
 
   return (
-    <Wrapper>
+    <Wrapper show={show} style={{ left: `${scrolled}px` }}>
       <Modal>
         <ModalHeader>
           <Link to="/">
@@ -699,6 +702,8 @@ EventModal.propTypes = {
   }).isRequired,
   member: PropTypes.bool.isRequired,
   idx: PropTypes.number.isRequired,
+  show: PropTypes.bool.isRequired,
+  scrolled: PropTypes.number.isRequired,
 };
 
 export default EventModal;

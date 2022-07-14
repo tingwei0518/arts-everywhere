@@ -16,19 +16,23 @@ import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
 import bg6 from '../../assets/background6.svg';
 import filterBg from '../../assets/filter-bg2.svg';
-import nextWall from '../../images/next_wall.svg';
-
-const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
-`;
 
 const Wrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   height: 100vh;
+  overflow: hidden;
+`;
+
+const Container = styled.div`
+  width: fit-content;
+  height: 100%;
   white-space: nowrap;
   display: flex;
   align-items: flex-start;
-  scroll-snap-type: x mandatory;
+  transition: transform .5s linear;
 `;
 
 const Page = styled.div`
@@ -58,6 +62,7 @@ const SubPage = styled.div`
 `;
 
 function EventDisplay() {
+  const [scrolled, setScrolled] = useState(0);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
   const [popularEvents, setPopularEvents] = useState([]);
@@ -82,16 +87,7 @@ function EventDisplay() {
     member: '由 Arts Everywhere 的會員好朋友所刊登的藝文活動，分享多樣化的活動新訊。',
   };
 
-  const homeRef = useRef(null);
-  const filteredInfoRef = useRef(null);
-  const filteredEventsRef = useRef(null);
-  const recentEventsRef = useRef(null);
-  const popularEventsRef = useRef(null);
-  const userEventsRef = useRef(null);
-  const userEventsEditorRef = useRef(null);
-  const scrollToElement = (ref) => {
-    ref.current.scrollIntoView({ behavior: 'smooth' });
-  };
+  const containerRef = useRef(null);
 
   async function getIdQuery(UID) {
     const querySnapshot = await api.idQuery(UID);
@@ -306,7 +302,7 @@ function EventDisplay() {
         });
       });
     });
-    scrollToElement(filteredInfoRef);
+    setScrolled(600);
     setIsFiltered(true);
   };
 
@@ -333,7 +329,7 @@ function EventDisplay() {
     });
     setFilteredShowInfo(showInfo);
     setFilteredEvents(keywordEvents);
-    scrollToElement(filteredInfoRef);
+    setScrolled(600);
     setIsFiltered(true);
   }
 
@@ -385,22 +381,37 @@ function EventDisplay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const onScroll = (event) => {
+      if (event.target.tagName === 'FORM' || event.target.tagName === 'LABEL'
+        || event.target.tagName === 'INPUT' || event.target.tagName === 'UL'
+        || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'LI') return;
+      if (event.target.className.includes('EventModal')) return;
+      setScrolled((preValue) => {
+        const value = preValue + event.deltaY;
+        if (value < 0) return 0;
+        if (value > containerRef.current.offsetWidth - window.innerWidth) {
+          return containerRef.current.offsetWidth - window.innerWidth;
+        }
+        return value;
+      });
+    };
+    window.addEventListener('wheel', onScroll);
+    return () => window.removeEventListener('wheel', onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <ScrollIndicator
         isFiltered={isFiltered}
-        scrollToElement={scrollToElement}
-        homeRef={homeRef}
-        filteredInfoRef={filteredInfoRef}
-        filteredEventsRef={filteredEventsRef}
-        recentEventsRef={recentEventsRef}
-        popularEventsRef={popularEventsRef}
-        userEventsRef={userEventsRef}
-        userEventsEditorRef={userEventsEditorRef}
+        scrolled={scrolled}
+        setScrolled={setScrolled}
+        containerRef={containerRef}
       />
-      <Container>
-        <Wrapper>
-          <Page bg={bg6} ref={homeRef}>
+      <Wrapper>
+        <Container ref={containerRef} style={{ width: '', transform: `translate3d(-${scrolled}px, 0px, 0px)` }}>
+          <Page bg={bg6}>
             <HomeVisual />
             <Filter
               startDate={startDate}
@@ -413,11 +424,9 @@ function EventDisplay() {
               getFilteredEvents={getFilteredEvents}
               searchHandeler={searchHandeler}
               getKeywordQuery={() => getKeywordQuery()}
-              filteredInfoRef={filteredInfoRef}
-              scrollToElement={scrollToElement}
             />
           </Page>
-          <SubPage ref={filteredInfoRef} bg={filterBg} style={{ display: 'flex', justifyContent: 'center' }}>
+          <SubPage bg={filterBg} style={{ display: 'flex', justifyContent: 'center' }}>
             <FilterResults
               latitude={latitude}
               longitude={longitude}
@@ -428,9 +437,7 @@ function EventDisplay() {
               endDate={endDate}
               isFiltered={isFiltered}
               recentEvents={recentEvents}
-              scrollToElement={scrollToElement}
-              filteredEventsRef={filteredEventsRef}
-              recentEventsRef={recentEventsRef}
+              setScrolled={setScrolled}
               setShowUid={setShowUid}
               setLatitude={setLatitude}
               setLongitude={setLongitude}
@@ -439,39 +446,25 @@ function EventDisplay() {
           </SubPage>
           {
             (isFiltered && filteredEvents?.length !== 0) && (
-              <Page bg={bg1} ref={filteredEventsRef}>
-                <img
-                  src={nextWall}
-                  alt="next"
-                  style={{
-                    width: '130px', height: '130px', position: 'absolute', top: '-30px', right: '50px',
-                  }}
-                />
-                <DisplayArea title="Filtered" events={filteredEvents} color="white" text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
+              <Page bg={bg1}>
+                <DisplayArea title="Filtered" events={filteredEvents} color="white" scrolled={scrolled} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
               </Page>
             )
           }
-          <Page bg={bg3} ref={recentEventsRef}>
-            <DisplayArea title="Recent" events={recentEvents} color="darkgrey" text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
+          <Page bg={bg3}>
+            <DisplayArea title="Recent" events={recentEvents} color="darkgrey" scrolled={scrolled} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
           </Page>
-          <Page ref={popularEventsRef}>
-            <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
+          <Page>
+            <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" scrolled={scrolled} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
           </Page>
-          <Page bg={bg1} ref={userEventsRef}>
-            <img
-              src={nextWall}
-              alt="next"
-              style={{
-                width: '130px', height: '130px', position: 'absolute', top: '-30px', right: '50px',
-              }}
-            />
-            <DisplayArea title="Member" events={memberEvents} color="white" text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
+          <Page bg={bg1}>
+            <DisplayArea title="Member" events={memberEvents} color="white" scrolled={scrolled} text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
           </Page>
-          <Page bg={bg3} ref={userEventsEditorRef}>
+          <Page bg={bg3}>
             <PostEvent />
           </Page>
-        </Wrapper>
-      </Container>
+        </Container>
+      </Wrapper>
     </>
   );
 }

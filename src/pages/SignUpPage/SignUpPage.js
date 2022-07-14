@@ -94,19 +94,25 @@ function SignUpPage() {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const { user } = userCredential;
-        console.log(user);
         setDoc(doc(db, 'users', user.uid), {
           email,
           userId: user.uid,
           userName,
         });
+        window.location.replace('./');
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-        // ..
+        if (errorCode === 'auth/email-already-in-use') {
+          alert('此帳號已被使用，請更換另一個信箱註冊，謝謝～');
+        } else if (errorCode === 'auth/invalid-email') {
+          alert('請確認輸入的信箱格式，謝謝～');
+        } else if (errorCode === 'auth/weak-password') {
+          alert('密碼需要6個字母以上，謝謝～');
+        } else {
+          alert({ errorMessage });
+        }
       });
   }
 
