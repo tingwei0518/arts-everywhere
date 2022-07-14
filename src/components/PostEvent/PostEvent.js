@@ -192,13 +192,11 @@ function PostEvent() {
 
   useEffect(() => {
     const unsubmittedEventContent = window.localStorage.getItem('event');
-    console.log(unsubmittedEventContent);
     if (!unsubmittedEventContent) return;
     const {
       title, descriptionFilterHtml, startDate, endDate,
       masterUnit, showUnit, website, img,
     } = JSON.parse(unsubmittedEventContent);
-    console.log(title);
     reset({
       title,
       descriptionFilterHtml,

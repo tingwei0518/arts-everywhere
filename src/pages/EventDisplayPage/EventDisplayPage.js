@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import {
-  collection, onSnapshot,
+  doc, setDoc, updateDoc, collection, onSnapshot,
 } from 'firebase/firestore';
 import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
@@ -62,6 +62,7 @@ const SubPage = styled.div`
 `;
 
 function EventDisplay() {
+  const [currentUserId, setCurrentUserId] = useState();
   const [scrolled, setScrolled] = useState(0);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
@@ -91,19 +92,17 @@ function EventDisplay() {
 
   async function getIdQuery(UID) {
     const querySnapshot = await api.idQuery(UID);
-    querySnapshot.forEach((doc) => {
-      eventData.push(doc.data());
+    querySnapshot.forEach((snapshotDoc) => {
+      eventData.push(snapshotDoc.data());
     });
-    // console.log({ eventData });
     setFilteredEvents(eventData);
   }
 
   async function getRecentIdQuery(UID) {
     const querySnapshot = await api.idQuery(UID);
-    querySnapshot.forEach((doc) => {
-      eventData.push(doc.data());
+    querySnapshot.forEach((snapshotDoc) => {
+      eventData.push(snapshotDoc.data());
     });
-    // console.log({ eventData });
     setRecentEvents(eventData);
   }
 
@@ -128,7 +127,6 @@ function EventDisplay() {
     setLongitude(position.coords.longitude);
     // latitude = 25.03867955570004;
     // longitude = 121.53237109734974;
-    console.log(`Latitude is ${latitude}° Longitude is ${longitude}°`);
     api.getReverseGeocoding(position.coords.latitude, position.coords.longitude).then((json) => {
       setLocation(json.plus_code.compound_code.split(' ')[1].slice(2, 5));
     });
@@ -260,7 +258,6 @@ function EventDisplay() {
         });
       });
     });
-    // console.log('recentShowInfo', recentShowInfo);
   };
 
   const getFilteredEvents = () => {
@@ -315,14 +312,14 @@ function EventDisplay() {
     const querySnapshot = await api.keywordQuery(searchWords);
     const showInfo = [];
     const keywordEvents = [];
-    querySnapshot.forEach((doc) => {
-      if (doc.data().title.includes(searchText)) {
-        keywordEvents.push(doc.data());
-        doc.data().showInfo.forEach((info) => {
+    querySnapshot.forEach((snapshotDoc) => {
+      if (snapshotDoc.data().title.includes(searchText)) {
+        keywordEvents.push(snapshotDoc.data());
+        snapshotDoc.data().showInfo.forEach((info) => {
           showInfo.push({
             info,
-            title: doc.data().title,
-            UID: doc.data().UID,
+            title: snapshotDoc.data().title,
+            UID: snapshotDoc.data().UID,
           });
         });
       }
@@ -336,19 +333,15 @@ function EventDisplay() {
   async function getHitRateEvents(num) {
     const hitRateEvents = [];
     const querySnapshot = await api.hitRateQuery(num);
-    querySnapshot.forEach((doc) => {
-      hitRateEvents.push(doc.data());
+    querySnapshot.forEach((snapshotDoc) => {
+      hitRateEvents.push(snapshotDoc.data());
     });
     setPopularEvents(hitRateEvents);
   }
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      console.log('Geolocation is not supported by your browser');
-    } else {
-      console.log('Locating…');
-      navigator.geolocation.getCurrentPosition(success, error);
-    }
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(success, error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -372,8 +365,8 @@ function EventDisplay() {
     const memberEventsRef = collection(db, 'memberEvents');
     const unsubscribe = onSnapshot(memberEventsRef, (querySnapshot) => {
       const memberEventsData = [];
-      querySnapshot.forEach((doc) => {
-        memberEventsData.push(doc.data());
+      querySnapshot.forEach((snapshotDoc) => {
+        memberEventsData.push(snapshotDoc.data());
       });
       setMemberEvents(memberEventsData);
     });
@@ -398,8 +391,56 @@ function EventDisplay() {
     };
     window.addEventListener('wheel', onScroll);
     return () => window.removeEventListener('wheel', onScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentUserId, scrolled]);
+
+  const timeoutRef = useRef();
+
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => {
+      if (currentUserId) {
+        const userPositionRef = doc(db, 'userPosition', currentUserId);
+        updateDoc(userPositionRef, {
+          position: scrolled,
+          isActive: true,
+          userId: currentUserId,
+        });
+      } else {
+        const data = doc(collection(db, 'userPosition'));
+        setCurrentUserId(data.id);
+        setDoc(data, {
+          position: scrolled,
+          isActive: true,
+          userId: data.id,
+        });
+      }
+    }, '3000');
+    return () => { clearTimeout(timeoutRef.current); };
+  }, [currentUserId, scrolled]);
+
+  useEffect(() => {
+    function setActiveFalse() {
+      if (!currentUserId) return;
+      const userPositionRef = doc(db, 'userPosition', currentUserId);
+      updateDoc(userPositionRef, {
+        isActive: false,
+      });
+    }
+    return setActiveFalse;
+  }, [currentUserId]);
+
+  useEffect(() => {
+    const handleBeforeunload = () => {
+      if (!currentUserId) return;
+      const userPositionRef = doc(db, 'userPosition', currentUserId);
+      updateDoc(userPositionRef, {
+        isActive: false,
+      });
+    };
+    window.addEventListener('beforeunload', handleBeforeunload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeunload);
+    };
+  }, [currentUserId]);
 
   return (
     <>
@@ -408,6 +449,7 @@ function EventDisplay() {
         scrolled={scrolled}
         setScrolled={setScrolled}
         containerRef={containerRef}
+        currentUserId={currentUserId}
       />
       <Wrapper>
         <Container ref={containerRef} style={{ width: '', transform: `translate3d(-${scrolled}px, 0px, 0px)` }}>

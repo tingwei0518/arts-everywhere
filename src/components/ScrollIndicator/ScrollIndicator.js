@@ -1,13 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import {
-  doc, collection, setDoc, updateDoc, query, onSnapshot, where, limit,
+  collection, query, onSnapshot, where, limit,
 } from 'firebase/firestore';
 import styled from 'styled-components/macro';
 import PropTypes from 'prop-types';
 import { db } from '../../utils/firebaseInit';
 import Menu from '../Menu';
 import UserContext from '../../UserContext';
-// import user from '../../images/user.png';
 import face1 from '../../images/face1.svg';
 import face2 from '../../images/face2.svg';
 import face3 from '../../images/face3.svg';
@@ -78,7 +77,7 @@ const MainScrollIndicator = styled.div`
   background-color: black; 
   height: 3px; 
   border-radius: 0 4px 4px 0;
-  transition: width .5s linear;
+  transition: width .5s ease-out;
 `;
 
 const Point = styled.div`
@@ -108,7 +107,8 @@ const UserMarker = styled.div`
   background-repeat: no-repeat;
   width: 55px;
   height: 55px;
-  margin-top: -58px;
+  margin: -58px 0 0 -20px;
+  transition: left .8s linear;
   z-index: 1;
   div {
     opacity: 0;
@@ -148,24 +148,17 @@ const Title = styled.div`
   opacity: 0;
 `;
 
-// context user id
-// onAuthChanged
-// login
-
 function ScrollIndicator({
-  isFiltered, scrolled, setScrolled, containerRef,
+  isFiltered, scrolled, setScrolled, containerRef, currentUserId,
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [multipleUserPosition, setMultipleUserPosition] = useState([]);
-  // console.log('multipleUserPosition', multipleUserPosition);
-  const [currentUserId, setCurrentUserId] = useState();
-  const currentUser = useContext(UserContext);
+  const currentMember = useContext(UserContext);
   const layoutWidth = containerRef?.current?.offsetWidth ?? window.innerWidth;
   const scrollLeft = (
     scrolled / Math.max(layoutWidth - window.innerWidth, window.innerWidth)
   ) * 100;
-  // console.log(currentUser.userId);
 
   const userPositionText = (distance) => {
     if (isFiltered) {
@@ -247,21 +240,6 @@ function ScrollIndicator({
     }
   };
 
-  function debounce(func, delay = 3000) {
-    let timer = null;
-
-    return () => {
-      const context = this;
-      // eslint-disable-next-line prefer-rest-params
-      const args = arguments;
-
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func.apply(context, args);
-      }, delay);
-    };
-  }
-
   useEffect(() => {
     if (isFiltered) {
       findFilteredActiveIndex();
@@ -275,35 +253,6 @@ function ScrollIndicator({
   }, [scrolled]);
 
   useEffect(() => {
-    const getUserPosition = () => {
-      const winScroll = document.documentElement.scrollLeft;
-      const width = document.documentElement.scrollWidth - document.documentElement.clientWidth;
-      const scrolledPosition = (winScroll / width) * 100;
-      if (currentUserId) {
-        const userPositionRef = doc(db, 'userPosition', currentUserId);
-        updateDoc(userPositionRef, {
-          position: scrolledPosition,
-          isActive: true,
-          userId: currentUserId,
-        });
-      } else {
-        const data = doc(collection(db, 'userPosition'));
-        setCurrentUserId(data.id);
-        setDoc(data, {
-          isActive: true,
-          position: scrolledPosition,
-          userId: data.id,
-        });
-      }
-    };
-    const debounceGetUserPosition = debounce(getUserPosition);
-    window.addEventListener('scroll', debounceGetUserPosition);
-    return () => {
-      window.removeEventListener('scroll', debounceGetUserPosition);
-    };
-  }, [currentUserId]);
-
-  useEffect(() => {
     const userPositionRef = query(collection(db, 'userPosition'), where('isActive', '==', true), limit(9));
     const unsubscribe = onSnapshot(userPositionRef, (querySnapshot) => {
       const userPositionData = [];
@@ -312,39 +261,10 @@ function ScrollIndicator({
           userPositionData.push(posDoc.data());
         }
       });
-      // console.log('userPositionData', userPositionData);
       setMultipleUserPosition(userPositionData);
     });
     return unsubscribe;
   }, [currentUserId]);
-
-  useEffect(() => {
-    const handleBeforeunload = () => {
-      const userPositionRef = doc(db, 'userPosition', currentUserId);
-      updateDoc(userPositionRef, {
-        isActive: false,
-      });
-    };
-    window.addEventListener('beforeunload', handleBeforeunload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeunload);
-    };
-  }, [currentUserId]);
-
-  useEffect(() => {
-    function setActiveFalse() {
-      try {
-        const userPositionRef = doc(db, 'userPosition', currentUserId);
-        updateDoc(userPositionRef, {
-          isActive: false,
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    return setActiveFalse;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Wrapper>
@@ -389,8 +309,16 @@ function ScrollIndicator({
               </Point>
               {
                 multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker src={userBackProps[index]} key={userPos.userId} face={userFaceProps[index % 5]} style={{ position: 'absolute', left: `${userPos.position}%` }}>
-                    <div>{userPositionText(userPos.position)}</div>
+                  <UserMarker
+                    src={userBackProps[index]}
+                    key={userPos.userId}
+                    face={userFaceProps[index % 5]}
+                    style={{ position: 'absolute', left: `${(userPos.position / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100}%` }}
+                  >
+                    <div>
+                      {userPositionText((userPos.position
+                        / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100)}
+                    </div>
                   </UserMarker>
                 ))
               }
@@ -414,8 +342,16 @@ function ScrollIndicator({
               </Point>
               {
                 multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker src={userBackProps[index % 5]} face={userFaceProps[index % 5]} key={userPos.userId} style={{ position: 'absolute', left: `${userPos.position}%` }}>
-                    <div>{userPositionText(userPos.position)}</div>
+                  <UserMarker
+                    src={userBackProps[index % 5]}
+                    face={userFaceProps[index % 5]}
+                    key={userPos.userId}
+                    style={{ position: 'absolute', left: `${(userPos.position / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100}%` }}
+                  >
+                    <div>
+                      {userPositionText((userPos.position
+                        / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100)}
+                    </div>
                   </UserMarker>
                 ))
               }
@@ -423,7 +359,7 @@ function ScrollIndicator({
           )
         }
         <MainScrollIndicator style={{ width: `${scrollLeft}%` }} />
-        <Test member={currentUser.userId !== ''} />
+        <Test member={currentMember.userId !== ''} />
       </ScrollIndicatorWrapper>
     </Wrapper>
   );
@@ -434,6 +370,7 @@ ScrollIndicator.propTypes = {
   scrolled: PropTypes.number.isRequired,
   setScrolled: PropTypes.func.isRequired,
   containerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  currentUserId: PropTypes.string.isRequired,
 };
 
 export default ScrollIndicator;

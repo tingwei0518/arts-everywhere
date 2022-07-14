@@ -2,7 +2,6 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import { useForm } from 'react-hook-form';
 import styled from 'styled-components/macro';
 import { db } from '../../utils/firebaseInit';
 import { Button } from '../../components/Units';

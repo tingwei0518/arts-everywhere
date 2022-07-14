@@ -586,7 +586,7 @@ function EventModal({
               )
           }
           <SubInfo>
-            <SessionTable week={weeklyWeatherData.length !== 0}>
+            <SessionTable week={weeklyWeatherData?.length !== 0}>
               <TableTitle>活動場次</TableTitle>
               <SessionLists>
                 {

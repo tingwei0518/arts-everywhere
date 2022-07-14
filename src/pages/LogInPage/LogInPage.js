@@ -3,7 +3,6 @@ import {
 } from 'firebase/auth';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import { useForm } from 'react-hook-form';
 import styled from 'styled-components/macro';
 import { Button } from '../../components/Units';
 import background from '../../assets/background7.svg';
@@ -92,12 +91,8 @@ function LogInPage() {
     setPersistence(auth, browserSessionPersistence)
       .then(() => signInWithEmailAndPassword(auth, email, password))
       .then((userCredential) => {
-        // Signed in
-        const { user } = userCredential;
-        console.log(user);
         alert(`目前狀態:${userCredential.operationType}`);
         window.location.replace('./');
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
