@@ -68,6 +68,13 @@ const PageTitle = styled.div`
   color: ${(props) => (props.color)};
 `;
 
+const Reminder = styled.div`
+  margin: 50px 0 0 150px;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: ${(props) => (props.color)};
+`;
+
 const EventSection = styled.div`
   display: flex;
   flex-direction: row;
@@ -197,6 +204,16 @@ function DisplayArea({
         }
         <Events>
           {
+            events.length === 0
+            && (
+              <Reminder color={color}>
+                抱歉！
+                <br />
+                此時間/地點範圍內暫時沒有搜尋到藝文活動，請搜尋其他區間，謝謝！
+              </Reminder>
+            )
+          }
+          {
             events?.slice(currentIndex, currentIndex + 3).map((event, index) => (
               <Event>
                 {
@@ -288,6 +305,7 @@ function DisplayArea({
               <EventModal
                 event={event}
                 setShowUid={setShowUid}
+                show={showUid === event.UID}
                 member={member}
                 idx={index}
                 scrolled={scrolled}
