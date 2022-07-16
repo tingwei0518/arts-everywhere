@@ -1,6 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState, useEffect, useContext } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import DatePicker from 'react-datepicker';
+import dayjs from 'dayjs';
 import styled from 'styled-components/macro';
 import { doc, collection, setDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebaseInit';
@@ -10,6 +12,7 @@ import {
 } from '../Units';
 import UploadImage from '../UploadImage';
 import board from '../../assets/board.svg';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Wrapper = styled.div`
   display: flex;
@@ -124,6 +127,81 @@ const LabelTitle = styled.label`
   }
 `;
 
+const DatePickerWrapper = styled(({
+  className, popperContainer, calendarContainer, field,
+}) => (
+  <DatePicker
+    dateFormat="yyyy/MM/dd"
+    popperContainer={popperContainer}
+    calendarContainer={calendarContainer}
+    wrapperClassName={className}
+    onChange={(date) => field.onChange(date)}
+    selected={field.value}
+  />
+))`
+  input {
+    width: 280px;
+    height: 30px;
+    font-size: 1rem;
+    color: #0e0e0e;
+    text-align: left;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1.5px solid black;
+    &:focus {
+      outline: none;
+    }
+  }
+`;
+
+const MainCalendar = styled.div`
+  width: 243px;
+  border-radius: 5px;
+  box-shadow: 0 6px 12px rgba(27, 37, 86, 0.16);
+  overflow: hidden;
+  position: absolute;
+  bottom: 40px;
+`;
+
+const DateTimePickerWrapper = styled(({
+  className, popperContainer, calendarContainer, field,
+}) => (
+  <DatePicker
+    dateFormat="yyyy/MM/dd  hh:mm"
+    popperContainer={popperContainer}
+    calendarContainer={calendarContainer}
+    wrapperClassName={className}
+    onChange={(date) => field.onChange(date)}
+    selected={field.value}
+    showTimeSelect
+  />
+))`
+  input {
+    width: 280px;
+    height: 30px;
+    font-size: 1rem;
+    color: #0e0e0e;
+    text-align: left;
+    border: none;
+    background-color: transparent;
+    border-bottom: 1.5px solid black;
+    &:focus {
+      outline: none;
+    }
+  }
+`;
+
+const Calendar = styled.div`
+  width: 328px;
+  border-radius: 5px;
+  box-shadow: 0 6px 12px rgba(27, 37, 86, 0.16);
+  overflow: hidden;
+`;
+
+const Popper = styled.div`
+  width:280px;
+`;
+
 const defaultValues = {
   showInfo: [{
     time: '', endTime: '', locationName: '', location: '',
@@ -159,6 +237,12 @@ function PostEvent() {
     const eventContent = d;
     eventContent.category = categoryOptionsList[selectedOption];
     eventContent.imageUrl = imgUrl;
+    eventContent.startDate = dayjs(eventContent.startDate).format('YYYY/MM/DD');
+    eventContent.endDate = dayjs(eventContent.endDate).format('YYYY/MM/DD');
+    eventContent.showInfo.forEach((info, index) => {
+      eventContent.showInfo[index].time = dayjs(info.time).format('YYYY/MM/DD HH:mm');
+      eventContent.showInfo[index].endTime = dayjs(info.endTime).format('YYYY/MM/DD HH:mm');
+    });
     if (currentUser.userId !== '') {
       if (eventContent.title !== '' && eventContent.startDate !== ''
         && eventContent.endDate !== '' && eventContent.showInfo.length !== 0) {
@@ -239,9 +323,9 @@ function PostEvent() {
               </DropDownHeader>
               {isOptionOpen && (
                 <DropDownListContainer style={{ width: '100px', top: '24px' }}>
-                  <DropDownList style={{ margin: '0' }}>
+                  <DropDownList style={{ margin: '0', height: '118px' }}>
                     {Object.keys(categoryOptionsList).map((option) => (
-                      <ListItem onClick={onOptionClicked(option)} key={option}>
+                      <ListItem onClick={onOptionClicked(option)} key={option} style={{ zIndex: '6' }}>
                         {option}
                       </ListItem>
                     ))}
@@ -261,14 +345,38 @@ function PostEvent() {
             />
           </LabelTitle>
 
-          <LabelTitle htmlFor="startDate">
+          <LabelTitle htmlFor="startDate" style={{ zIndex: '5' }}>
             活動開始日期
-            <input type="text" name="startDate" id="startDate" {...register('startDate')} />
+            <Controller
+              control={control}
+              name="startDate"
+              render={({ field }) => (
+                <DatePickerWrapper
+                  popperContainer={Popper}
+                  calendarContainer={MainCalendar}
+                  onChange={(date) => field.onChange(date)}
+                  selected={field.value}
+                  field={field}
+                />
+              )}
+            />
           </LabelTitle>
 
-          <LabelTitle htmlFor="endDate">
+          <LabelTitle htmlFor="endDate" style={{ zIndex: '5' }}>
             活動結束日期
-            <input type="text" name="endDate" id="endDate" {...register('endDate')} />
+            <Controller
+              control={control}
+              name="endDate"
+              render={({ field }) => (
+                <DatePickerWrapper
+                  popperContainer={Popper}
+                  calendarContainer={MainCalendar}
+                  onChange={(date) => field.onChange(date)}
+                  selected={field.value}
+                  field={field}
+                />
+              )}
+            />
           </LabelTitle>
 
           <LabelTitle htmlFor="masterUnit">
@@ -299,20 +407,36 @@ function PostEvent() {
                         ((index + 1) >= 10) ? index + 1 : `0${index + 1}`
                       }
                     </SessionNumber>
-                    <LabelTitle>
+                    <LabelTitle style={{ zIndex: '5' }}>
                       場次開始時間
-                      <input
-                        {...register(`showInfo.${index}.time`, {
-                          required: true,
-                        })}
+                      <Controller
+                        control={control}
+                        {...register(`showInfo.${index}.time`)}
+                        render={({ field }) => (
+                          <DateTimePickerWrapper
+                            popperContainer={Popper}
+                            calendarContainer={Calendar}
+                            onChange={(date) => field.onChange(date)}
+                            selected={field.value}
+                            field={field}
+                          />
+                        )}
                       />
                     </LabelTitle>
-                    <LabelTitle>
+                    <LabelTitle style={{ zIndex: '4' }}>
                       場次結束時間
-                      <input
-                        {...register(`showInfo.${index}.endTime`, {
-                          required: true,
-                        })}
+                      <Controller
+                        control={control}
+                        {...register(`showInfo.${index}.endTime`)}
+                        render={({ field }) => (
+                          <DateTimePickerWrapper
+                            popperContainer={Popper}
+                            calendarContainer={Calendar}
+                            onChange={(date) => field.onChange(date)}
+                            selected={field.value}
+                            field={field}
+                          />
+                        )}
                       />
                     </LabelTitle>
                     <LabelTitle>
