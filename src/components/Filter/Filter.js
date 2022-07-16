@@ -32,7 +32,7 @@ const MainFilter = styled.div`
 
 const KeywordFilter = styled.div`
   height: 200px;
-  overflow: scroll; 
+  overflow: hidden;
 `;
 
 const KeywordInput = styled.input`
@@ -130,7 +130,7 @@ const Popper = styled.div`
 `;
 
 function Filter({
-  startDate, endDate, setStartDate, setEndDate, isGeolocation, location,
+  startDate, endDate, setStartDate, setEndDate, location,
   locationHandeler, getFilteredEvents, searchHandeler, getKeywordQuery,
 }) {
   const [isOptionOpen, setIsOptionOpen] = useState(false);
@@ -166,7 +166,7 @@ function Filter({
             </div>
             <DropDownContainer>
               <DropDownHeader onClick={toggling}>
-                {isGeolocation ? location || selectedOption : '自動定位中...'}
+                {location || selectedOption}
               </DropDownHeader>
               {isOptionOpen && (
                 <DropDownListContainer>
@@ -205,7 +205,6 @@ Filter.propTypes = {
   endDate: PropTypes.instanceOf(Date).isRequired,
   setStartDate: PropTypes.func.isRequired,
   setEndDate: PropTypes.func.isRequired,
-  isGeolocation: PropTypes.bool.isRequired,
   location: PropTypes.string.isRequired,
   locationHandeler: PropTypes.func.isRequired,
   getFilteredEvents: PropTypes.func.isRequired,

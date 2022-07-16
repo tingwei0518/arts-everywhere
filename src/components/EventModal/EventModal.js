@@ -265,7 +265,7 @@ const Button = styled.button`
 `;
 
 const WeatherTable = styled.div`
-  margin-top: 20px;
+  margin-top: 50px;
 `;
 
 const WeatherLists = styled.div`

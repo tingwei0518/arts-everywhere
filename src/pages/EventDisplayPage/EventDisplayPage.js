@@ -90,22 +90,6 @@ function EventDisplay() {
 
   const containerRef = useRef(null);
 
-  async function getIdQuery(UID) {
-    const querySnapshot = await api.idQuery(UID);
-    querySnapshot.forEach((snapshotDoc) => {
-      eventData.push(snapshotDoc.data());
-    });
-    setFilteredEvents(eventData);
-  }
-
-  async function getRecentIdQuery(UID) {
-    const querySnapshot = await api.idQuery(UID);
-    querySnapshot.forEach((snapshotDoc) => {
-      eventData.push(snapshotDoc.data());
-    });
-    setRecentEvents(eventData);
-  }
-
   const getMaxMinLatLon = (lat, lng) => {
     const r = 6371.393; // 地球半徑公里 // distance是km
     let dlng = 2 * Math.asin(Math.sin(distance / (2 * r)) / Math.cos((lat * Math.PI) / 180));
@@ -120,6 +104,69 @@ function EventDisplay() {
       minLat, maxLat, minLng, maxLng,
     };
   };
+
+  async function getIdQuery(UID) {
+    const {
+      minLat, maxLat, minLng, maxLng,
+    } = getMaxMinLatLon(latitude, longitude);
+    const startDateTimeStamp = new Date(new Date(startDate).toLocaleDateString('zh-TW')).getTime();
+    const endDateTimeStamp = new Date(new Date(endDate).toLocaleDateString('zh-TW')).getTime();
+    const querySnapshot = await api.idQuery(UID);
+    querySnapshot.forEach((snapshotDoc) => {
+      eventData.push(snapshotDoc.data());
+      snapshotDoc.data().showInfo.forEach((info) => {
+        if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
+          && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
+          const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+          const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+          if ((startDateTimeStamp >= infoStartTimeStamp
+            && startDateTimeStamp <= infoEndTimeStamp)
+            || (endDateTimeStamp >= infoStartTimeStamp
+              && endDateTimeStamp <= infoEndTimeStamp)) {
+            filteredShowInfo.push({
+              info,
+              title: snapshotDoc.data().title,
+              UID: snapshotDoc.data().UID,
+            });
+            setFilteredShowInfo(filteredShowInfo);
+          }
+        }
+      });
+    });
+    setFilteredEvents(eventData);
+    console.log(eventData);
+  }
+
+  async function getRecentIdQuery(UID) {
+    const {
+      minLat, maxLat, minLng, maxLng,
+    } = getMaxMinLatLon(latitude, longitude);
+    const todayTimeStamp = new Date(new Date().toLocaleDateString('zh-TW'));
+    const afterSevenDays = new Date(todayTimeStamp.setDate(todayTimeStamp.getDate() + 7));
+    const querySnapshot = await api.idQuery(UID);
+    querySnapshot.forEach((snapshotDoc) => {
+      eventData.push(snapshotDoc.data());
+      snapshotDoc.data().showInfo.forEach((info) => {
+        if ((Number(info.latitude) >= minLat && Number(info.latitude) <= maxLat)
+          && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
+          const infoStartTimeStamp = new Date(info.time.slice(0, 10));
+          const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
+          if ((todayTimeStamp >= infoStartTimeStamp
+            && todayTimeStamp <= infoEndTimeStamp)
+            || (afterSevenDays >= infoStartTimeStamp
+              && afterSevenDays <= infoEndTimeStamp)) {
+            recentShowInfo.push({
+              info,
+              title: snapshotDoc.data().title,
+              UID: snapshotDoc.data().UID,
+            });
+            setRecentShowInfo(recentShowInfo);
+          }
+        }
+      });
+    });
+    setRecentEvents(eventData);
+  }
 
   const success = (position) => {
     setIsGeolocation(true);
@@ -243,12 +290,6 @@ function EventDisplay() {
               //   && infoStartTimeStamp <= afterSevenDays)
               //   && (infoEndTimeStamp >= todayTimeStamp
               //     && infoEndTimeStamp <= afterSevenDays)) {
-              recentShowInfo.push({
-                info,
-                title: data.title,
-                UID: data.UID,
-              });
-              setRecentShowInfo(recentShowInfo);
               if (data.UID !== infoUid) {
                 getRecentIdQuery(data.UID);
               }
@@ -284,12 +325,6 @@ function EventDisplay() {
               && infoStartTimeStamp <= endDateTimeStamp)
               && (infoEndTimeStamp >= startDateTimeStamp
                 && infoEndTimeStamp <= endDateTimeStamp)) {
-              filteredShowInfo.push({
-                info,
-                title: data.title,
-                UID: data.UID,
-              });
-              setFilteredShowInfo(filteredShowInfo);
               if (data.UID !== infoUid) {
                 getIdQuery(data.UID);
               }
@@ -487,7 +522,7 @@ function EventDisplay() {
             />
           </SubPage>
           {
-            (isFiltered && filteredEvents?.length !== 0) && (
+            (isFiltered) && (
               <Page bg={bg1}>
                 <DisplayArea title="Filtered" events={filteredEvents} color="white" scrolled={scrolled} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
               </Page>

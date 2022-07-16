@@ -47,6 +47,8 @@ function FilterResults({
   latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate,
   searchText, isFiltered, setScrolled, setShowUid, setLatitude, setLongitude,
 }) {
+  // console.log('filteredShowInfo', filteredShowInfo);
+  // console.log('recentShowInfo', recentShowInfo);
   return (
     <Wrapper>
       <Block>
