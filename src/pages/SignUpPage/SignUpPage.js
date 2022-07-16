@@ -98,8 +98,8 @@ function SignUpPage() {
           userId: user.uid,
           userName,
         });
-        window.location.replace('./');
       })
+      .then(window.location.replace('./'))
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
