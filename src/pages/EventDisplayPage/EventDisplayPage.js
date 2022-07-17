@@ -14,7 +14,7 @@ import DisplayArea from '../../components/DisplayArea';
 import PostEvent from '../../components/PostEvent';
 import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
-import bg6 from '../../assets/background6.svg';
+import homeBg from '../../assets/background6.svg';
 import filterBg from '../../assets/filter-bg2.svg';
 
 const Wrapper = styled.div`
@@ -54,8 +54,9 @@ const SubPage = styled.div`
   height: 100vh;
   display: inline-block;
   background-image: url(${(props) => (props.bg)});
-  background-size: auto 100%;
+  background-size: cover;
   background-repeat: no-repeat;
+  background-position-x: center;
   position: relative;
   flex-shrink: 0;
   scroll-snap-align: start;
@@ -415,6 +416,7 @@ function EventDisplay() {
         || event.target.tagName === 'INPUT' || event.target.tagName === 'UL'
         || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'LI') return;
       if (event.target.className.includes('EventModal')) return;
+      if (event.target.className.includes('gm')) return;
       setScrolled((preValue) => {
         const value = preValue + event.deltaY;
         if (value < 0) return 0;
@@ -488,7 +490,7 @@ function EventDisplay() {
       />
       <Wrapper>
         <Container ref={containerRef} style={{ width: '', transform: `translate3d(-${scrolled}px, 0px, 0px)` }}>
-          <Page bg={bg6}>
+          <Page bg={homeBg}>
             <HomeVisual />
             <Filter
               startDate={startDate}

@@ -38,11 +38,11 @@ function Map({
   return (
     isLoaded && (
       <GoogleMap
-        id="map"
+        className="map"
         center={center}
         zoom={11}
         options={{ mapId: '5c9ec1165b4386f6' }}
-        mapContainerStyle={{ height: '55%', width: '60%' }}
+        mapContainerStyle={{ height: '55%', width: '65%' }}
         onLoad={onLoad}
         onDragEnd={onDragEnd}
         clickableIcons={false}

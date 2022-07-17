@@ -81,6 +81,7 @@ const Wrapper = styled.div`
   transition-duration: .3s;
   transition-timing-function: ease-out;
   pointer-events: ${(props) => (props.show ? 'auto' : 'none')};
+
 `;
 
 const Modal = styled.div`
@@ -89,6 +90,13 @@ const Modal = styled.div`
   background-color: white;
   position: relative;
   text-align: center;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: calc(100% - 120px);
+    align-self: start;
+    overflow-y: auto;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -97,6 +105,10 @@ const ModalHeader = styled.div`
   width: 100%;
   height: 60px;
   background-color: white;
+
+  @media screen and (max-width: 1000px) {
+    height: 30px;
+  }
 `;
 
 const CloseBtn = styled.div`
@@ -120,12 +132,20 @@ const InfoSection = styled.div`
   white-space: normal;
   flex-direction: row;
   justify-content: space-between;
+
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
 `;
 
 const MainInfo = styled.div`
   width: 32%;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const Tag = styled.div`
@@ -141,6 +161,10 @@ const Title = styled.div`
   text-align: left;
   font-weight: bold;
   margin-top: 10px;
+
+  @media screen and (max-width: 1000px) {
+    font-size: 1.3rem;
+  }
 `;
 
 const Day = styled.div`
@@ -151,6 +175,10 @@ const Day = styled.div`
   padding-right: 10px;
   display: flex;
   align-items: center;
+
+  @media screen and (max-width: 1000px) {
+    font-size: 1rem;
+  }
 `;
 
 const Description = styled.div`
@@ -162,6 +190,10 @@ const Description = styled.div`
   padding-right: 10px;
   overflow-y: auto;
   overflow-x: hidden;
+
+  @media screen and (max-width: 1000px) {
+    max-height: 100px;
+  }
 `;
 
 const Information = styled.div`
@@ -169,9 +201,26 @@ const Information = styled.div`
   padding-top: 20px;
   font-size: 1rem;
   text-align: left;
+
+  @media screen and (max-width: 1000px) {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 30px;
+  }
 `;
 
-const ModalImage = styled.div`
+const ModalImage = styled.img`
+  width: 30%;
+  height: fit-content;
+
+  @media screen and (max-width: 1000px) {
+    margin-top: 20px;
+    width: 100%;
+  }
+`;
+
+const ModalBackgroundImage = styled.div`
   box-sizing: content-box;
   width: 30%;
   height: 95%;
@@ -179,6 +228,13 @@ const ModalImage = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
+  @media screen and (max-width: 1000px) {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+  }
 `;
 
 const SubInfo = styled.div`
@@ -186,12 +242,24 @@ const SubInfo = styled.div`
   height: 98%;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: 120px;
+    margin-top: 20px;
+  }
 `;
 
 const SessionTable = styled.div`
   width: 100%;
   height: ${(props) => (props.week ? '35%' : '90%')};
-`;
+  
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: 100%;
+    margin-top: 20px;
+  }
+  `;
 
 const TableTitle = styled.div`
   font-size: 1.2rem;
@@ -274,6 +342,11 @@ const WeatherLists = styled.div`
   font-size: .9rem;
   padding: 10px 0;
   justify-content: space-between;
+
+  @media screen and (max-width: 1400px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
 `;
 
 const Weather = styled.div`
@@ -294,6 +367,14 @@ const Weather = styled.div`
   &:hover {
     span {
       opacity: 1;
+    }
+  }
+
+  @media screen and (max-width: 1400px) {
+    margin-right: 15px;
+    span {
+      background-color: rgba(0, 0, 0, 1);
+      z-index: 3;
     }
   }
 `;
@@ -420,13 +501,18 @@ function EventModal({
     }
   }, []);
 
+  const CLIENT_ID = '548994073184-t4o8hf7jmk1boqor2jcttvbd0l67a0qd.apps.googleusercontent.com';
+  const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+  const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
+  const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+
   const handleAuthClick = () => {
     gapi.load('client:auth2', () => {
       gapi.client.init({
-        apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
-        clientId: '548994073184-t4o8hf7jmk1boqor2jcttvbd0l67a0qd.apps.googleusercontent.com',
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-        scope: 'https://www.googleapis.com/auth/calendar.events',
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: DISCOVERY_DOCS,
+        scope: SCOPES,
       });
       gapi.client.load('calendar', 'v3', () => console.log('loaded calendar'));
       gapi.auth2.getAuthInstance().signIn()
@@ -572,14 +658,13 @@ function EventModal({
           {
             member
               ? (
-                <img
+                <ModalImage
                   src={event.imageUrl
                     ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                   alt={event.title}
-                  style={{ width: '30%', height: 'fit-content' }}
                 />
               ) : (
-                <ModalImage
+                <ModalBackgroundImage
                   src={event.imageUrl
                     ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                 />

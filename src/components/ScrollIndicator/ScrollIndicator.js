@@ -169,7 +169,7 @@ function ScrollIndicator({
         return '搜尋到好多活動';
       }
       if (distance >= 26 && distance < 44) {
-        return '看看搜尋結果有什麼';
+        return '看看搜尋結果！';
       }
       if (distance >= 44 && distance < 63) {
         return '這週有這些活動耶';
