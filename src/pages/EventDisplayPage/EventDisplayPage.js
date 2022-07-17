@@ -47,6 +47,11 @@ const Page = styled.div`
   position: relative;
   flex-shrink: 0;
   scroll-snap-align: start;
+
+  @media screen and (max-width: 450px) {
+    width: 450px;
+    min-width: 450px;
+  }
 `;
 
 const SubPage = styled.div`
@@ -60,9 +65,15 @@ const SubPage = styled.div`
   position: relative;
   flex-shrink: 0;
   scroll-snap-align: start;
+
+  @media screen and (max-width: 450px) {
+    width: 450px;
+    min-width: 450px;
+  }
 `;
 
 function EventDisplay() {
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState();
   const [scrolled, setScrolled] = useState(0);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -88,8 +99,24 @@ function EventDisplay() {
     popular: '搜集目前最受歡迎、點擊率最高的展演活動，或許就有符合您喜好的藝文體驗。',
     member: '由 Arts Everywhere 的會員好朋友所刊登的藝文活動，分享多樣化的活動新訊。',
   };
-
   const containerRef = useRef(null);
+
+  const resizeUpdate = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 450) {
+      setIsMobileScreen(true);
+    }
+  };
+  useEffect(() => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 450) {
+      setIsMobileScreen(true);
+    }
+    window.addEventListener('resize', resizeUpdate);
+    return () => {
+      window.removeEventListener('resize', resizeUpdate);
+    };
+  }, []);
 
   const getMaxMinLatLon = (lat, lng) => {
     const r = 6371.393; // 地球半徑公里 // distance是km
@@ -487,6 +514,7 @@ function EventDisplay() {
         setScrolled={setScrolled}
         containerRef={containerRef}
         currentUserId={currentUserId}
+        isMobileScreen={isMobileScreen}
       />
       <Wrapper>
         <Container ref={containerRef} style={{ width: '', transform: `translate3d(-${scrolled}px, 0px, 0px)` }}>

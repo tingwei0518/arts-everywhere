@@ -19,6 +19,16 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
+const EditorImg = styled.img`
+  width: 80%;
+  align-self: flex-end;
+  margin: 25px 60px 0 0;
+
+  @media screen and (max-width: 450px) {
+    display: none;
+  }
+`;
+
 const Editor = styled.form`
   position: absolute;
   top: 215px;
@@ -26,6 +36,12 @@ const Editor = styled.form`
   display: flex;
   flex-direction: row;
   letter-spacing: 2px;
+
+  @media screen and (max-width: 450px) {
+    flex-direction: column;
+    top: 100px;
+    left: 70px;
+  }
 `;
 
 const PageTitle = styled.div`
@@ -33,13 +49,22 @@ const PageTitle = styled.div`
   font-family: Times,sans-serif; 
   padding: 40px 10px 0 60px;
   color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
-`;
+
+  @media screen and (max-width: 450px) {
+    font-size: 3rem;
+    padding: 40px 10px 0 70px;
+  }
+  `;
 
 const Step = styled.div`
   font-family: Times,sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 15px;
+
+  @media screen and (max-width: 450px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const BasicInformation = styled.div`
@@ -50,6 +75,12 @@ const BasicInformation = styled.div`
   overflow-y: auto;
   margin-right: 20px;
   border-right: 1px solid grey;
+
+  @media screen and (max-width: 450px) {
+    height: 200px;
+    border-right: none;
+    font-size: .95rem;
+  }
 `;
 
 const SessionWrapper = styled.div`
@@ -60,6 +91,12 @@ const SessionWrapper = styled.div`
   overflow-y: auto;
   margin-right: 20px;
   border-right: 1px solid grey;
+
+  @media screen and (max-width: 450px) {
+    height: 180px;
+    border-right: none;
+    font-size: .95rem;
+  }
 `;
 
 const SessionUl = styled.ul`
@@ -77,6 +114,13 @@ const ImageBlock = styled.div`
   display: flex;
   flex-direction: column;
   height: 375px;
+
+  @media screen and (max-width: 450px) {
+    font-size: .95rem;
+    height: 120px;
+    width: 330px;
+    overflow-y: auto;
+  }
 `;
 
 const SessionLi = styled.li`
@@ -123,6 +167,13 @@ const LabelTitle = styled.label`
     resize: vertical;
     &:focus {
       outline: none;
+    }
+  }
+
+
+  @media screen and (max-width: 450px) {
+    textarea {
+      background-color: lightgrey;
     }
   }
 `;
@@ -296,7 +347,7 @@ function PostEvent() {
   return (
     <Wrapper>
       <PageTitle primary>Post Event</PageTitle>
-      <img src={board} alt="" style={{ width: '80%', alignSelf: 'flex-end', margin: '25px 60px 0 0' }} />
+      <EditorImg src={board} alt="" />
       <Editor onSubmit={handleSubmit(onSubmit)}>
         <BasicInformation>
           <Step>Step 1</Step>

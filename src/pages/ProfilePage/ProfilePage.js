@@ -22,9 +22,15 @@ const HomeBtn = styled.div`
   align-items: center;
   font-family: Times,sans-serif; 
   cursor: pointer;
+  z-index: 2;
   a{
     text-decoration: none;
     color: black;
+  }
+
+  @media screen and (max-width: 450px) {
+    bottom: 10px;
+    left: 10px;
   }
 `;
 
@@ -56,6 +62,13 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   z-index: 1;
+
+  @media screen and (max-width: 450px) {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    padding: 20px;
+  }
 `;
 
 const UserInfo = styled.div`
@@ -66,6 +79,11 @@ const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 450px) {
+    border-right: none;
+    align-items: flex-start;
+  }
 `;
 
 const BasicInfo = styled.div`
@@ -104,11 +122,20 @@ const Event = styled.div`
 const EventLists = styled.div`
   margin-top: 20px;
   overflow-y: auto;
+
+  @media screen and (max-width: 450px) {
+    margin-top: 10px;
+  }
 `;
+
 const EventDetails = styled.div`
   width: 100%;
   padding: 0 30px;
   overflow-y: auto;
+
+  @media screen and (max-width: 450px) {
+    padding: 0;
+  }
 `;
 
 function ProfilePage() {

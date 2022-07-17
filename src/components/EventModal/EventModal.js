@@ -93,7 +93,7 @@ const Modal = styled.div`
 
   @media screen and (max-width: 1000px) {
     width: 100%;
-    height: calc(100% - 120px);
+    height: calc(100% - 80px);
     align-self: start;
     overflow-y: auto;
   }
@@ -201,13 +201,6 @@ const Information = styled.div`
   padding-top: 20px;
   font-size: 1rem;
   text-align: left;
-
-  @media screen and (max-width: 1000px) {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding-right: 30px;
-  }
 `;
 
 const ModalImage = styled.img`
@@ -234,6 +227,7 @@ const ModalBackgroundImage = styled.div`
     width: 100%;
     height: 100%;
     background-size: cover;
+    flex-shrink: 0;
   }
 `;
 
@@ -245,7 +239,7 @@ const SubInfo = styled.div`
 
   @media screen and (max-width: 1000px) {
     width: 100%;
-    height: 120px;
+    height: 160px;
     margin-top: 20px;
   }
 `;
@@ -256,7 +250,7 @@ const SessionTable = styled.div`
   
   @media screen and (max-width: 1000px) {
     width: 100%;
-    height: 100%;
+    height: 80%;
     margin-top: 20px;
   }
   `;

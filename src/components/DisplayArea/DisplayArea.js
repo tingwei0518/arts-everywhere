@@ -66,6 +66,11 @@ const PageTitle = styled.div`
   font-family: Times,sans-serif; 
   padding: 40px 10px 0 60px;
   color: ${(props) => (props.color)};
+
+  @media screen and (max-width: 450px) {
+    font-size: 3rem;
+    padding: 40px 10px 0 70px;
+  }
 `;
 
 const Reminder = styled.div`
@@ -73,12 +78,22 @@ const Reminder = styled.div`
   font-size: 1rem;
   line-height: 1.8;
   color: ${(props) => (props.color)};
+
+  @media screen and (max-width: 450px) {
+    width: 320px;
+    white-space: normal;
+    margin: 0;
+  }
 `;
 
 const EventSection = styled.div`
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
+
+  @media screen and (max-width: 450px) {
+    flex-direction: column;
+  }
 `;
 
 const SectionText = styled.div`
@@ -88,6 +103,10 @@ const SectionText = styled.div`
   padding-top: 20px;
   line-height: 1.8;
   color: ${(props) => (props.color)};
+
+  @media screen and (max-width: 450px) {
+    font-size: .8rem;
+  }
 `;
 
 const Events = styled.div`
@@ -96,6 +115,52 @@ const Events = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   padding: 0 35px;
+
+  @media screen and (max-width: 450px) {
+    flex-direction: column;
+    padding: 0 0 0 70px;
+  }
+`;
+
+const PrevBatch = styled.img`
+  width: 45px;
+  height: 45px;
+  margin-top: 200px;
+  margin-left: 20px;
+  cursor: pointer;
+
+  @media screen and (max-width: 450px) {
+    position: absolute;
+    bottom: 80px;
+    left: 50px;
+    width: 25px;
+    height: 25px;
+  }
+`;
+
+const NextBatch = styled.img`
+  width: 45px;
+  height: 45px;
+  margin-top: 200px;
+  cursor: pointer;
+
+  @media screen and (max-width: 450px) {
+    position: absolute;
+    bottom: 80px;
+    right: 80px;
+    width: 25px;
+    height: 25px;
+  }
+`;
+
+const EmptyBatch = styled.div`
+  width: 45px;
+  height: 45px;
+
+  @media screen and (max-width: 450px) {
+    position: absolute;
+    right: 0;
+  }
 `;
 
 const Event = styled.div`
@@ -105,6 +170,11 @@ const Event = styled.div`
   flex-direction: column;
   &:first-child {
     margin-left: 0;
+  }
+
+  @media screen and (max-width: 450px) {
+    flex-direction: row;
+    margin-left: 0px;
   }
 `;
 const shine = keyframes`
@@ -123,6 +193,33 @@ const HitRate = styled.div`
   align-self: center;
   margin: -39px 0 15px 0;
   animation: ${animation};
+
+  @media screen and (max-width: 450px) {
+    font-size: .7rem;
+    margin-top: -55px;
+    position: absolute;
+    right: 90px;
+    color: red;
+  }
+`;
+
+const MemberEventImg = styled.img`
+  box-sizing: content-box;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 30px;
+  cursor: pointer;
+  border: 25px solid white;
+  box-shadow: 12px 12px rgba(0, 0, 0, .5);
+
+  @media screen and (max-width: 450px) {
+    width: 90px;
+    height: 90px;
+    border: 5px solid white;
+    box-shadow: none;
+    margin-bottom: 0px;
+  }
 `;
 
 const EventImg = styled.div`
@@ -137,6 +234,15 @@ const EventImg = styled.div`
   box-shadow: 12px 12px ${(props) => (props.primary ? 'rgba(255, 241, 116, .8)' : 'rgba(0, 0, 0, .5)')};
   margin-bottom: 30px;
   cursor: pointer;
+
+  @media screen and (max-width: 450px) {
+    width: 90px;
+    height: 90px;
+    font-size: .8rem;
+    border: 5px solid ${(props) => (props.primary ? 'lightgrey' : 'white')};
+    box-shadow: none;
+    margin-bottom: 0px;
+  }
 `;
 
 const EventCard = styled.div`
@@ -154,6 +260,11 @@ const EventCard = styled.div`
     flex-direction: column;
     justify-content: space-between;
   }
+
+  @media screen and (max-width: 450px) {
+    height: 100px;
+    box-shadow: none;
+  }
 `;
 
 const EventTitle = styled.div`
@@ -162,10 +273,16 @@ const EventTitle = styled.div`
   font-weight: bold;
   white-space: normal;
   display: inline-block;
+
+  @media screen and (max-width: 450px) {
+    font-size: .85rem;
+  }
 `;
+
 const EventDate = styled.div`
   font-size: .8rem;
 `;
+
 const EventTag = styled.div`
   font-size: .8rem;
 `;
@@ -191,16 +308,13 @@ function DisplayArea({
         {
           currentIndex >= 3
             ? (
-              <img
+              <PrevBatch
                 onClick={prevBatch}
                 src={prev}
                 alt="previous page"
                 aria-hidden="true"
-                style={{
-                  width: '45px', height: '45px', marginTop: '200px', marginLeft: '20px', cursor: 'pointer',
-                }}
               />
-            ) : <div style={{ width: '45px', height: '45px', marginLeft: '20px' }} />
+            ) : <EmptyBatch />
         }
         <Events>
           {
@@ -234,7 +348,7 @@ function DisplayArea({
                   {
                     member
                       ? (
-                        <img
+                        <MemberEventImg
                           // eslint-disable-next-line react/no-array-index-key
                           key={index}
                           src={event.imageUrl
@@ -242,9 +356,6 @@ function DisplayArea({
                           alt={event.title}
                           aria-hidden="true"
                           onClick={() => setShowUid(event.UID)}
-                          style={{
-                            boxSizing: 'content-box', width: '200px', height: '200px', objectFit: 'cover', marginBottom: '30px', cursor: 'pointer', border: '25px solid white', boxShadow: '12px 12px rgba(0, 0, 0, .5)',
-                          }}
                         />
                       ) : (
                         <EventImg
@@ -287,16 +398,13 @@ function DisplayArea({
         {
           currentIndex <= events.length - 4
             ? (
-              <img
+              <NextBatch
                 onClick={nextBatch}
                 src={next}
                 alt="next batch"
                 aria-hidden="true"
-                style={{
-                  width: '45px', height: '45px', marginTop: '200px', cursor: 'pointer',
-                }}
               />
-            ) : <div style={{ width: '45px', height: '45px' }} />
+            ) : <EmptyBatch />
         }
         {
           events?.map((event, index) => (

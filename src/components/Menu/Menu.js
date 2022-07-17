@@ -24,10 +24,31 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 40px 0;
+
+  @media screen and (max-width: 450px) {
+    filter: none;
+  }
 `;
 
 const Copyright = styled.div`
   font-size: .8rem;
+
+  @media screen and (max-width: 450px) {
+    font-size: .6rem;
+  }
+`;
+
+const BarCode = styled.img`
+  width: 200px;
+`;
+
+const MenuTitle = styled.img`
+  width: 200px;
+  margin-top: 80px;
+
+  @media screen and (max-width: 450px) {
+    margin-top: 50px;
+  }
 `;
 
 const MenuLists = styled.ul`
@@ -53,10 +74,14 @@ const MenuLists = styled.ul`
       font-weight: bold;
     }
   }
+
+  @media screen and (max-width: 450px) {
+    font-size: 1rem;
+  }
 `;
 
 function Menu({
-  isOpen, setIsOpen, isFiltered, setScrolled,
+  isOpen, setIsOpen, isFiltered, setScrolled, isMobileScreen,
 }) {
   const currentUser = useContext(UserContext);
   const auth = getAuth();
@@ -64,8 +89,8 @@ function Menu({
   return (
     <Wrapper isOpen={isOpen}>
       <Copyright>Copyright © 2022 Arts Everywhere</Copyright>
-      <img src={barCode} alt="barcode" style={{ width: '200px' }} />
-      <img src={title} alt="arts everywhere" style={{ width: '200px', marginTop: '80px' }} />
+      <BarCode src={barCode} alt="barcode" />
+      <MenuTitle src={title} alt="arts everywhere" />
       <MenuLists>
         {
           (currentUser.userId === '')
@@ -79,29 +104,75 @@ function Menu({
               </li>
             )
         }
-        <li onClick={() => setScrolled(1450)} aria-hidden="true">
-          搜尋結果地圖
-        </li>
         {
-          isFiltered
-          && (
-            <li onClick={() => setScrolled(1960)} aria-hidden="true">
-              篩選活動
+          isMobileScreen ? (
+            <li onClick={() => setScrolled(450)} aria-hidden="true">
+              搜尋結果地圖
+            </li>
+          ) : (
+            <li onClick={() => setScrolled(1450)} aria-hidden="true">
+              搜尋結果地圖
             </li>
           )
         }
-        <li onClick={isFiltered ? () => setScrolled(3320) : () => setScrolled(1960)} aria-hidden="true">
-          近期活動
-        </li>
-        <li onClick={isFiltered ? () => setScrolled(4680) : () => setScrolled(3320)} aria-hidden="true">
-          熱門活動
-        </li>
-        <li onClick={isFiltered ? () => setScrolled(6040) : () => setScrolled(4680)} aria-hidden="true">
-          會員刊登活動
-        </li>
-        <li onClick={isFiltered ? () => setScrolled(7400) : () => setScrolled(6040)} aria-hidden="true">
-          活動刊登編輯區
-        </li>
+        {
+          isFiltered
+          && (
+            isMobileScreen ? (
+              <li onClick={() => setScrolled(900)} aria-hidden="true">
+                篩選活動
+              </li>
+            ) : (
+              <li onClick={() => setScrolled(1960)} aria-hidden="true">
+                篩選活動
+              </li>
+            )
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(1350) : () => setScrolled(900)} aria-hidden="true">
+              近期活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(3320) : () => setScrolled(1960)} aria-hidden="true">
+              近期活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(1800) : () => setScrolled(1350)} aria-hidden="true">
+              熱門活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(4680) : () => setScrolled(3320)} aria-hidden="true">
+              熱門活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(2250) : () => setScrolled(1800)} aria-hidden="true">
+              會員刊登活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(6040) : () => setScrolled(4680)} aria-hidden="true">
+              會員刊登活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(2700) : () => setScrolled(2250)} aria-hidden="true">
+              活動刊登編輯區
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(7400) : () => setScrolled(6040)} aria-hidden="true">
+              活動刊登編輯區
+            </li>
+          )
+        }
         <li onClick={() => setScrolled(0)} aria-hidden="true">
           回首頁
         </li>
@@ -135,6 +206,7 @@ Menu.propTypes = {
   setIsOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool.isRequired,
   setScrolled: PropTypes.func.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default Menu;

@@ -5,6 +5,10 @@ const DropDownContainer = styled.div`
   width: 200px;
   margin: 0 auto;
   position: relative;
+
+  @media screen and (max-width: 425px) {
+    margin: 0;
+  }
 `;
 
 const DropDownHeader = styled.div`

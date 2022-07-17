@@ -19,7 +19,20 @@ const Wrapper = styled.div`
   align-items: flex-start;
   position: absolute;
   top: 45%;
-  margin-left: 220px;
+  left: 220px;
+
+  @media screen and (max-width: 900px) {
+    top: 40%;
+    left: 300px;
+  }
+
+  @media screen and (max-width: 425px) {
+    top: 30%;
+    left: 30px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
 `;
 
 const MainFilter = styled.div`
@@ -28,11 +41,20 @@ const MainFilter = styled.div`
   justify-content: center;
   padding-top: 60px;
   column-gap: 20px;
+
+  @media screen and (max-width: 425px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 `;
 
 const KeywordFilter = styled.div`
   height: 200px;
   overflow: hidden;
+
+  @media screen and (max-width: 425px) {
+    height: 100px;
+  }
 `;
 
 const KeywordInput = styled.input`
@@ -45,6 +67,10 @@ const KeywordInput = styled.input`
   border-bottom: 2px solid black;
   &:focus {
     outline: none;
+  }
+
+  @media screen and (max-width: 425px) {
+    margin: 50px 8px 8px 0px;
   }
 `;
 
@@ -112,6 +138,13 @@ const DatePickerWrapper = styled(({
     cursor: pointer;
     &:focus {
       outline: none;
+    }
+  }
+
+  @media screen and (max-width: 425px) {
+    input {
+      width: 150px;
+      margin-bottom: 50px;
     }
   }
 `;

@@ -15,6 +15,25 @@ const HomeTitle = styled.div`
   position: absolute;
   bottom: 100px;
   left: 45px;
+
+  img {
+    width: 500px;
+  }
+
+  @media screen and (max-width: 900px) {
+    img {
+      width: 400px;
+    }
+  }
+
+  @media screen and (max-width: 450px) {
+    bottom: none;
+    top: 70px;
+    left: 30px;
+    img {
+      width: 300px;
+    }
+  }
 `;
 
 const moveToRight = keyframes`
@@ -41,7 +60,7 @@ function HomeVisual() {
         <img src={visualText} alt="visualText" />
       </AnimationText>
       <HomeTitle>
-        <img src={title} alt="arts everywhere" style={{ width: '500px' }} />
+        <img src={title} alt="arts everywhere" />
       </HomeTitle>
     </Wrapper>
   );

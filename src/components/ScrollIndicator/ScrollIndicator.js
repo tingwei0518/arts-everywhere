@@ -46,6 +46,12 @@ const Wrapper = styled.div`
   bottom: 20px;
   left: 20px;
   z-index: 1;
+
+  @media screen and (max-width: 450px) {
+    bottom: 10px;
+    left: 10px;
+    margin: 0;
+  }
 `;
 
 const MenuBtn = styled.div`
@@ -71,6 +77,10 @@ const ScrollIndicatorWrapper = styled.div`
   align-items: center;
   border-radius: 0 4px 4px 0; 
   width: 100%;
+
+  @media screen and (max-width: 450px) {
+    display: none;
+  }
 `;
 
 const MainScrollIndicator = styled.div`
@@ -149,7 +159,7 @@ const Title = styled.div`
 `;
 
 function ScrollIndicator({
-  isFiltered, scrolled, setScrolled, containerRef, currentUserId,
+  isFiltered, scrolled, setScrolled, containerRef, currentUserId, isMobileScreen,
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -281,6 +291,7 @@ function ScrollIndicator({
         setIsOpen={setIsOpen}
         isFiltered={isFiltered}
         setScrolled={setScrolled}
+        isMobileScreen={isMobileScreen}
       />
       <ScrollIndicatorWrapper>
         <Point style={{ zIndex: '3' }} active={activeIndex === 0} onClick={() => setScrolled(0)}>
@@ -371,6 +382,7 @@ ScrollIndicator.propTypes = {
   setScrolled: PropTypes.func.isRequired,
   containerRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   currentUserId: PropTypes.string.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default ScrollIndicator;
