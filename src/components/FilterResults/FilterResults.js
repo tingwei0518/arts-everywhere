@@ -45,8 +45,15 @@ const AnimationBtn = styled.div`
 
 function FilterResults({
   latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate,
-  searchText, isFiltered, setScrolled, setShowUid, setLatitude, setLongitude,
+  searchText, isFiltered, setScrolled, setShowUid, setLatitude, setLongitude, isMobileScreen,
 }) {
+  const scrollToResults = () => {
+    if (isMobileScreen) {
+      setScrolled(900);
+    } else {
+      setScrolled(1960);
+    }
+  };
   return (
     <Wrapper>
       <Block>
@@ -55,7 +62,7 @@ function FilterResults({
         }}
         >
           <img src={title} alt="arts everywhere" style={{ width: '250px', marginRight: '20px' }} />
-          <AnimationBtn onClick={() => setScrolled(1960)}>
+          <AnimationBtn onClick={scrollToResults}>
             <div style={{ fontSize: '.5rem' }}>go!</div>
             <img src={doubleNext} alt="next page" aria-hidden="true" style={{ width: '30px' }} />
           </AnimationBtn>
@@ -89,7 +96,6 @@ function FilterResults({
         }
       </Block>
       <Map
-        className="map"
         latitude={latitude}
         longitude={longitude}
         showInfo={isFiltered ? filteredShowInfo : recentShowInfo}
@@ -140,6 +146,7 @@ FilterResults.propTypes = {
   setShowUid: PropTypes.func.isRequired,
   setLatitude: PropTypes.func.isRequired,
   setLongitude: PropTypes.func.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default FilterResults;

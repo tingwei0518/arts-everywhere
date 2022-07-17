@@ -362,7 +362,11 @@ function EventDisplay() {
         });
       });
     });
-    setScrolled(600);
+    if (isMobileScreen) {
+      setScrolled(450);
+    } else {
+      setScrolled(600);
+    }
     setIsFiltered(true);
   };
 
@@ -389,7 +393,11 @@ function EventDisplay() {
     });
     setFilteredShowInfo(showInfo);
     setFilteredEvents(keywordEvents);
-    setScrolled(600);
+    if (isMobileScreen) {
+      setScrolled(450);
+    } else {
+      setScrolled(600);
+    }
     setIsFiltered(true);
   }
 
@@ -548,6 +556,7 @@ function EventDisplay() {
               setShowUid={setShowUid}
               setLatitude={setLatitude}
               setLongitude={setLongitude}
+              isMobileScreen={isMobileScreen}
               style={{ padding: '0', flexWrap: 'wrap' }}
             />
           </SubPage>
