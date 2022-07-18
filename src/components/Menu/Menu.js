@@ -85,6 +85,7 @@ function Menu({
 }) {
   const currentUser = useContext(UserContext);
   const auth = getAuth();
+  const screenWidth = window.innerWidth;
 
   return (
     <Wrapper isOpen={isOpen}>
@@ -106,7 +107,7 @@ function Menu({
         }
         {
           isMobileScreen ? (
-            <li onClick={() => setScrolled(450)} aria-hidden="true">
+            <li onClick={() => setScrolled(screenWidth)} aria-hidden="true">
               搜尋結果地圖
             </li>
           ) : (
@@ -119,7 +120,7 @@ function Menu({
           isFiltered
           && (
             isMobileScreen ? (
-              <li onClick={() => setScrolled(900)} aria-hidden="true">
+              <li onClick={() => setScrolled(screenWidth * 2)} aria-hidden="true">
                 篩選活動
               </li>
             ) : (
@@ -131,7 +132,7 @@ function Menu({
         }
         {
           isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(1350) : () => setScrolled(900)} aria-hidden="true">
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 3) : () => setScrolled(screenWidth * 2)} aria-hidden="true">
               近期活動
             </li>
           ) : (
@@ -142,7 +143,7 @@ function Menu({
         }
         {
           isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(1800) : () => setScrolled(1350)} aria-hidden="true">
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 4) : () => setScrolled(screenWidth * 3)} aria-hidden="true">
               熱門活動
             </li>
           ) : (
@@ -153,7 +154,7 @@ function Menu({
         }
         {
           isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(2250) : () => setScrolled(1800)} aria-hidden="true">
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 5) : () => setScrolled(screenWidth * 4)} aria-hidden="true">
               會員刊登活動
             </li>
           ) : (
@@ -164,7 +165,7 @@ function Menu({
         }
         {
           isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(2700) : () => setScrolled(2250)} aria-hidden="true">
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 6) : () => setScrolled(screenWidth * 5)} aria-hidden="true">
               活動刊登編輯區
             </li>
           ) : (

@@ -51,6 +51,10 @@ const AnimationText = styled.div`
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   opacity: .8;
+
+  @media screen and (max-width: 450px) {
+    display: none;
+  }
 `;
 
 function HomeVisual() {

@@ -59,6 +59,7 @@ const eventImageProps = {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: fit-content;
 `;
 
 const PageTitle = styled.div`
@@ -68,8 +69,9 @@ const PageTitle = styled.div`
   color: ${(props) => (props.color)};
 
   @media screen and (max-width: 450px) {
+    width: fit-content;
     font-size: 3rem;
-    padding: 40px 10px 0 70px;
+    padding: 40px 0 0 0;
   }
 `;
 
@@ -106,6 +108,9 @@ const SectionText = styled.div`
 
   @media screen and (max-width: 450px) {
     font-size: .8rem;
+    width: 250px;
+    height: 75px;
+    padding-left: 0;
   }
 `;
 
@@ -118,7 +123,8 @@ const Events = styled.div`
 
   @media screen and (max-width: 450px) {
     flex-direction: column;
-    padding: 0 0 0 70px;
+    width: fit-content;
+    padding: 0;
   }
 `;
 
@@ -128,14 +134,6 @@ const PrevBatch = styled.img`
   margin-top: 200px;
   margin-left: 20px;
   cursor: pointer;
-
-  @media screen and (max-width: 450px) {
-    position: absolute;
-    bottom: 80px;
-    left: 50px;
-    width: 25px;
-    height: 25px;
-  }
 `;
 
 const NextBatch = styled.img`
@@ -143,14 +141,25 @@ const NextBatch = styled.img`
   height: 45px;
   margin-top: 200px;
   cursor: pointer;
+`;
 
-  @media screen and (max-width: 450px) {
-    position: absolute;
-    bottom: 80px;
-    right: 80px;
-    width: 25px;
-    height: 25px;
-  }
+const MobileBatchBtns = styled.div`
+  margin: 20px auto 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const MobilePrevBatch = styled.img`
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+`;
+
+const MobileNextBatch = styled.img`
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
 `;
 
 const EmptyBatch = styled.div`
@@ -158,8 +167,8 @@ const EmptyBatch = styled.div`
   height: 45px;
 
   @media screen and (max-width: 450px) {
-    position: absolute;
-    right: 0;
+    width: 25px;
+    height: 25px;
   }
 `;
 
@@ -173,10 +182,12 @@ const Event = styled.div`
   }
 
   @media screen and (max-width: 450px) {
+    position: relative;
     flex-direction: row;
     margin-left: 0px;
   }
 `;
+
 const shine = keyframes`
   0%   {opacity: 0}
   100% {opacity: 1}
@@ -196,9 +207,9 @@ const HitRate = styled.div`
 
   @media screen and (max-width: 450px) {
     font-size: .7rem;
-    margin-top: -55px;
     position: absolute;
-    right: 90px;
+    top: 20px;
+    right: 0;
     color: red;
   }
 `;
@@ -262,6 +273,7 @@ const EventCard = styled.div`
   }
 
   @media screen and (max-width: 450px) {
+    width: 200px;
     height: 100px;
     box-shadow: none;
   }
@@ -288,7 +300,8 @@ const EventTag = styled.div`
 `;
 
 function DisplayArea({
-  title, color, scrolled, text, events, primary, showUid, setShowUid, member, popular,
+  title, color, scrolled, text, events, primary, showUid,
+  setShowUid, member, popular, isMobileScreen,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -306,15 +319,18 @@ function DisplayArea({
       <EventSection>
         <SectionText primary={primary} color={color}>{text}</SectionText>
         {
-          currentIndex >= 3
-            ? (
-              <PrevBatch
-                onClick={prevBatch}
-                src={prev}
-                alt="previous page"
-                aria-hidden="true"
-              />
-            ) : <EmptyBatch />
+          !isMobileScreen
+          && (
+            currentIndex >= 3
+              ? (
+                <PrevBatch
+                  onClick={prevBatch}
+                  src={prev}
+                  alt="previous page"
+                  aria-hidden="true"
+                />
+              ) : <EmptyBatch />
+          )
         }
         <Events>
           {
@@ -394,17 +410,39 @@ function DisplayArea({
               </Event>
             ))
           }
+          {
+            isMobileScreen
+            && (
+              <MobileBatchBtns>
+                {
+                  currentIndex >= 3
+                    ? (
+                      <MobilePrevBatch src={prev} alt="previous page" onClick={prevBatch} />
+                    ) : <EmptyBatch />
+                }
+                {
+                  currentIndex <= events.length - 4
+                    ? (
+                      <MobileNextBatch src={next} alt="next page" onClick={nextBatch} />
+                    ) : <EmptyBatch />
+                }
+              </MobileBatchBtns>
+            )
+          }
         </Events>
         {
-          currentIndex <= events.length - 4
-            ? (
-              <NextBatch
-                onClick={nextBatch}
-                src={next}
-                alt="next batch"
-                aria-hidden="true"
-              />
-            ) : <EmptyBatch />
+          !isMobileScreen
+          && (
+            currentIndex <= events.length - 4
+              ? (
+                <NextBatch
+                  onClick={nextBatch}
+                  src={next}
+                  alt="next batch"
+                  aria-hidden="true"
+                />
+              ) : <EmptyBatch />
+          )
         }
         {
           events?.map((event, index) => (
@@ -469,6 +507,7 @@ DisplayArea.propTypes = {
   setShowUid: PropTypes.func.isRequired,
   member: PropTypes.bool.isRequired,
   popular: PropTypes.bool.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default DisplayArea;

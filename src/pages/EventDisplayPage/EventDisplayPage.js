@@ -50,8 +50,10 @@ const Page = styled.div`
   scroll-snap-align: start;
 
   @media screen and (max-width: 450px) {
-    width: 450px;
-    min-width: 450px;
+    width: 100vw;
+    min-width: 320px;
+    display: flex;
+    justify-content: center;
   }
 `;
 
@@ -68,8 +70,9 @@ const SubPage = styled.div`
   scroll-snap-align: start;
 
   @media screen and (max-width: 450px) {
-    width: 450px;
-    min-width: 450px;
+    width: 100vw;
+    min-width: 320px;
+    background-size: auto;
   }
 `;
 
@@ -564,18 +567,18 @@ function EventDisplay() {
           {
             (isFiltered) && (
               <Page bg={bg1}>
-                <DisplayArea title="Filtered" events={filteredEvents} color="white" scrolled={scrolled} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} />
+                <DisplayArea title="Filtered" events={filteredEvents} color="white" scrolled={scrolled} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} isMobileScreen={isMobileScreen} />
               </Page>
             )
           }
           <Page bg={bg3}>
-            <DisplayArea title="Recent" events={recentEvents} color="darkgrey" scrolled={scrolled} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} />
+            <DisplayArea title="Recent" events={recentEvents} color="darkgrey" scrolled={scrolled} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} isMobileScreen={isMobileScreen} />
           </Page>
           <Page>
-            <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" scrolled={scrolled} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular />
+            <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" scrolled={scrolled} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular isMobileScreen={isMobileScreen} />
           </Page>
           <Page bg={bg1}>
-            <DisplayArea title="Member" events={memberEvents} color="white" scrolled={scrolled} text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
+            <DisplayArea title="Member" events={memberEvents} color="white" scrolled={scrolled} text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} isMobileScreen={isMobileScreen} />
           </Page>
           <Page bg={bg3}>
             {

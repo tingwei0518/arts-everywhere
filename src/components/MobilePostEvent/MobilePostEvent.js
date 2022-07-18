@@ -22,18 +22,17 @@ const PageTitle = styled.div`
   font-family: Times,sans-serif; 
   color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
   font-size: 3rem;
-  padding: 40px 10px 0 70px;
+  padding: 40px 0 0 0;
 `;
 
 const Editor = styled.form`
-  position: absolute;
   display: flex;
   flex-direction: column;
   letter-spacing: 2px;
-  top: 100px;
-  left: 70px;
   height: 500px;
   overflow-y: auto;
+  align-items: center;
+  margin-top: 20px;
 `;
 
 const FormDetails = styled.div`
@@ -56,6 +55,7 @@ const SessionUl = styled.ul`
   list-style-type: none;
   width: 310px;
   padding: 15px;
+  padding-left: 0;
   border-radius: 3px;
   display: flex;
   flex-direction: column;
@@ -68,13 +68,15 @@ const SessionLi = styled.li`
   flex-direction: column;
   position: relative;
   margin-bottom: 40px;
+  border-left: 1px solid black;
+  padding-left: 20px;
 `;
 
 const SessionNumber = styled.div`
   font-family: Times,sans-serif;
-  font-size: 9rem;
-  color: #FDEF50;
-  opacity: .5;
+  font-size: 7rem;
+  color: grey;
+  opacity: .2;
   margin-bottom: 5px;
   position: absolute;
   bottom: -20px;
@@ -105,6 +107,7 @@ const LabelTitle = styled.label`
     margin-top: 5px;
     border: none;
     background-color: lightgrey;
+    opacity: .6;
     resize: vertical;
     &:focus {
       outline: none;
