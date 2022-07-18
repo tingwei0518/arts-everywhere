@@ -11,7 +11,6 @@ import {
   Button, DropDownContainer, DropDownHeader, DropDownListContainer, DropDownList, ListItem,
 } from '../Units';
 import UploadImage from '../UploadImage';
-import board from '../../assets/board.svg';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const Wrapper = styled.div`
@@ -19,53 +18,38 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const EditorImg = styled.img`
-  width: 80%;
-  align-self: flex-end;
-  margin: 25px 60px 0 0;
+const PageTitle = styled.div`
+  font-family: Times,sans-serif; 
+  color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
+  font-size: 3rem;
+  padding: 40px 10px 0 70px;
 `;
 
 const Editor = styled.form`
   position: absolute;
-  top: 215px;
-  left: 250px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   letter-spacing: 2px;
+  top: 100px;
+  left: 70px;
+  height: 500px;
+  overflow-y: auto;
 `;
 
-const PageTitle = styled.div`
-  font-size: 6rem;
-  font-family: Times,sans-serif; 
-  padding: 40px 10px 0 60px;
-  color: ${(props) => (props.primary ? 'darkgrey' : 'white')};
-  `;
+const FormDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  top: 100px;
+  left: 70px;
+  height: 500px;
+  overflow-y: auto;
+`;
 
 const Step = styled.div`
   font-family: Times,sans-serif;
-  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 15px;
-`;
-
-const BasicInformation = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 330px;
-  height: 375px;
-  overflow-y: auto;
-  margin-right: 20px;
-  border-right: 1px solid grey;
-`;
-
-const SessionWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 330px;
-  height: 375px;
-  overflow-y: auto;
-  margin-right: 20px;
-  border-right: 1px solid grey;
+  font-size: 1.2rem;
 `;
 
 const SessionUl = styled.ul`
@@ -79,12 +63,6 @@ const SessionUl = styled.ul`
   background-color: rgba(255, 255, 255, .5);
 `;
 
-const ImageBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 375px;
-`;
-
 const SessionLi = styled.li`
   display: flex;
   flex-direction: column;
@@ -95,7 +73,8 @@ const SessionLi = styled.li`
 const SessionNumber = styled.div`
   font-family: Times,sans-serif;
   font-size: 9rem;
-  color: white;
+  color: #FDEF50;
+  opacity: .5;
   margin-bottom: 5px;
   position: absolute;
   bottom: -20px;
@@ -125,7 +104,7 @@ const LabelTitle = styled.label`
     min-height: 80px;
     margin-top: 5px;
     border: none;
-    background-color: rgba(255, 255, 255, .5);
+    background-color: lightgrey;
     resize: vertical;
     &:focus {
       outline: none;
@@ -214,7 +193,7 @@ const defaultValues = {
   }],
 };
 
-function PostEvent() {
+function MobilePostEvent() {
   const currentUser = useContext(UserContext);
   const {
     control, register, handleSubmit, reset,
@@ -302,9 +281,9 @@ function PostEvent() {
   return (
     <Wrapper>
       <PageTitle primary>Post Event</PageTitle>
-      <EditorImg src={board} alt="" />
       <Editor onSubmit={handleSubmit(onSubmit)}>
-        <BasicInformation>
+        <FormDetails>
+          {/* <BasicInformation> */}
           <Step>Step 1</Step>
           <LabelTitle htmlFor="title">
             活動名稱
@@ -399,8 +378,8 @@ function PostEvent() {
             活動網站
             <input type="text" name="website" id="website" {...register('website')} />
           </LabelTitle>
-        </BasicInformation>
-        <SessionWrapper>
+          {/* </BasicInformation> */}
+          {/* <SessionWrapper> */}
           <Step>Step 2</Step>
           <LabelTitle htmlFor="session">
             活動場次
@@ -494,25 +473,27 @@ function PostEvent() {
               </Button>
             </SessionUl>
           </LabelTitle>
-        </SessionWrapper>
-        <ImageBlock>
+          {/* </SessionWrapper> */}
+          {/* <ImageBlock> */}
           <Step style={{ marginBottom: '15px' }}>Step 3</Step>
           <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl} />
-          <Button
-            style={{ justifyContent: 'center', marginTop: '25px', borderRadius: '3px' }}
-          >
-            <input
-              type="submit"
-              value="刊登活動資訊"
-              style={{
-                background: 'none', color: 'inherit', border: 'none', padding: '0', font: 'inherit', outline: 'inherit', cursor: 'pointer',
-              }}
-            />
-          </Button>
-        </ImageBlock>
+
+        </FormDetails>
+        <Button
+          style={{ justifyContent: 'center', marginTop: '25px', borderRadius: '3px' }}
+        >
+          <input
+            type="submit"
+            value="刊登活動資訊"
+            style={{
+              background: 'none', color: 'inherit', border: 'none', padding: '0', font: 'inherit', outline: 'inherit', cursor: 'pointer',
+            }}
+          />
+        </Button>
+        {/* </ImageBlock> */}
       </Editor>
     </Wrapper>
   );
 }
 
-export default PostEvent;
+export default MobilePostEvent;

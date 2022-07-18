@@ -12,6 +12,7 @@ import Filter from '../../components/Filter';
 import FilterResults from '../../components/FilterResults';
 import DisplayArea from '../../components/DisplayArea';
 import PostEvent from '../../components/PostEvent';
+import MobilePostEvent from '../../components/MobilePostEvent';
 import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
 import homeBg from '../../assets/background6.svg';
@@ -577,7 +578,9 @@ function EventDisplay() {
             <DisplayArea title="Member" events={memberEvents} color="white" scrolled={scrolled} text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} />
           </Page>
           <Page bg={bg3}>
-            <PostEvent />
+            {
+              isMobileScreen ? <MobilePostEvent /> : <PostEvent />
+            }
           </Page>
         </Container>
       </Wrapper>
