@@ -9,16 +9,31 @@ import close from '../../images/close.png';
 import share from '../../images/share.png';
 import line from '../../images/line.png';
 import fb from '../../images/fb.png';
-import image1 from '../../assets/1-4.jpg';
-import image2 from '../../assets/2-3.jpg';
-import image3 from '../../assets/3-1.jpg';
-import image4 from '../../assets/4-1.jpg';
-import image5 from '../../assets/5-1.jpg';
-import image6 from '../../assets/6-1.jpg';
-import image7 from '../../assets/7-1.jpg';
-import image8 from '../../assets/8-1.jpg';
+import image11 from '../../assets/1-1.jpg';
+import image12 from '../../assets/1-2.jpg';
+import image13 from '../../assets/1-3.jpg';
+import image21 from '../../assets/2-1.jpg';
+import image22 from '../../assets/2-2.jpg';
+import image23 from '../../assets/2-3.jpg';
+import image31 from '../../assets/3-1.jpg';
+import image32 from '../../assets/3-2.jpg';
+import image41 from '../../assets/4-1.jpg';
+import image42 from '../../assets/4-2.jpg';
+import image51 from '../../assets/5-1.jpg';
+import image52 from '../../assets/5-2.jpg';
+import image61 from '../../assets/6-1.jpg';
+import image62 from '../../assets/6-2.jpg';
+import image63 from '../../assets/6-3.jpg';
+import image71 from '../../assets/7-1.jpg';
+import image72 from '../../assets/7-2.jpg';
+import image73 from '../../assets/7-3.jpg';
+import image81 from '../../assets/8-1.jpg';
+import image82 from '../../assets/8-2.jpg';
+import image83 from '../../assets/8-3.jpg';
 import image17 from '../../assets/17-1.jpg';
-import imageOther from '../../assets/1-2.jpg';
+import imageOther1 from '../../assets/o1.jpg';
+import imageOther2 from '../../assets/o2.jpg';
+import imageOther3 from '../../assets/o3.jpg';
 import sunny from '../../images/sunny.png';
 import cloudy from '../../images/cloudy.png';
 import rainy from '../../images/rainy.png';
@@ -29,26 +44,27 @@ const eventCategory = {
   1: '音樂', 2: '戲劇', 3: '舞蹈', 4: '親子', 5: '獨立音樂', 6: '展覽', 7: '講座', 8: '電影', 9: '其他', 10: '其他', 11: '綜藝', 12: '其他', 13: '競賽', 14: '徵選', 15: '其他', 16: '其他', 17: '演唱會', 18: '其他', 19: '研習課程',
 };
 const eventImageProps = {
-  1: image1,
-  2: image2,
-  3: image3,
-  4: image4,
-  5: image5,
-  6: image6,
-  7: image7,
-  8: image8,
-  9: imageOther,
-  10: imageOther,
-  11: imageOther,
-  12: imageOther,
-  13: imageOther,
-  14: imageOther,
-  15: imageOther,
-  16: imageOther,
-  17: image17,
-  18: imageOther,
-  19: imageOther,
+  1: [image11, image12, image13],
+  2: [image21, image22, image23],
+  3: [image31, image32, image31],
+  4: [image41, image42, image41],
+  5: [image51, image52, image51],
+  6: [image61, image62, image63],
+  7: [image71, image72, image73],
+  8: [image81, image82, image83],
+  9: [imageOther1, imageOther2, imageOther3],
+  10: [imageOther1, imageOther2, imageOther3],
+  11: [imageOther1, imageOther2, imageOther3],
+  12: [imageOther1, imageOther2, imageOther3],
+  13: [imageOther1, imageOther2, imageOther3],
+  14: [imageOther1, imageOther2, imageOther3],
+  15: [imageOther1, imageOther2, imageOther3],
+  16: [imageOther1, imageOther2, imageOther3],
+  17: [image17, image17, image17],
+  18: [imageOther1, imageOther2, imageOther3],
+  19: [imageOther1, imageOther2, imageOther3],
 };
+
 const weatherImageProps = [sunny, cloudy, rainy, otherWeather, empty];
 
 const Wrapper = styled.div`
@@ -56,12 +72,16 @@ const Wrapper = styled.div`
   height: 100vh;
   background-color: rgba(0,0,0,.5);
   display: flex;
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 0;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 7;
+  opacity: ${(props) => (props.show ? '1' : '0')};
+  transition-duration: .3s;
+  transition-timing-function: ease-out;
+  pointer-events: ${(props) => (props.show ? 'auto' : 'none')};
+
 `;
 
 const Modal = styled.div`
@@ -70,6 +90,13 @@ const Modal = styled.div`
   background-color: white;
   position: relative;
   text-align: center;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: calc(100% - 80px);
+    align-self: start;
+    overflow-y: auto;
+  }
 `;
 
 const ModalHeader = styled.div`
@@ -78,6 +105,10 @@ const ModalHeader = styled.div`
   width: 100%;
   height: 60px;
   background-color: white;
+
+  @media screen and (max-width: 1000px) {
+    height: 30px;
+  }
 `;
 
 const CloseBtn = styled.div`
@@ -101,17 +132,25 @@ const InfoSection = styled.div`
   white-space: normal;
   flex-direction: row;
   justify-content: space-between;
+
+  @media screen and (max-width: 1000px) {
+    flex-direction: column;
+  }
 `;
 
 const MainInfo = styled.div`
   width: 32%;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+  }
 `;
 
 const Tag = styled.div`
   width: fit-content;
-  font-size: .8rem;
+  font-size: .9rem;
   text-align: left;
   padding: 3px 3px; 
   border: .8px solid black;
@@ -122,36 +161,59 @@ const Title = styled.div`
   text-align: left;
   font-weight: bold;
   margin-top: 10px;
+
+  @media screen and (max-width: 1000px) {
+    font-size: 1.3rem;
+  }
 `;
 
 const Day = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   text-align: left;
   font-weight: bold;
   margin: 10px 0;
   padding-right: 10px;
   display: flex;
   align-items: center;
+
+  @media screen and (max-width: 1000px) {
+    font-size: 1rem;
+  }
 `;
 
 const Description = styled.div`
   border-top: 2px solid black;
   padding: 20px 0;
-  font-size: .9rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
   text-align: left;
   padding-right: 10px;
   overflow-y: auto;
   overflow-x: hidden;
+
+  @media screen and (max-width: 1000px) {
+    max-height: 100px;
+  }
 `;
 
 const Information = styled.div`
   border-top: 2px solid black;
   padding-top: 20px;
-  font-size: .9rem;
+  font-size: 1rem;
   text-align: left;
 `;
 
-const ModalImage = styled.div`
+const ModalImage = styled.img`
+  width: 30%;
+  height: fit-content;
+
+  @media screen and (max-width: 1000px) {
+    margin-top: 20px;
+    width: 100%;
+  }
+`;
+
+const ModalBackgroundImage = styled.div`
   box-sizing: content-box;
   width: 30%;
   height: 95%;
@@ -159,6 +221,14 @@ const ModalImage = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
+  @media screen and (max-width: 1000px) {
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    flex-shrink: 0;
+  }
 `;
 
 const SubInfo = styled.div`
@@ -166,15 +236,27 @@ const SubInfo = styled.div`
   height: 98%;
   display: flex;
   flex-direction: column;
+
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: 160px;
+    margin-top: 20px;
+  }
 `;
 
 const SessionTable = styled.div`
   width: 100%;
   height: ${(props) => (props.week ? '35%' : '90%')};
-`;
+  
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+    height: 80%;
+    margin-top: 20px;
+  }
+  `;
 
 const TableTitle = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   text-align: left;
   padding-bottom: 10px;
@@ -193,7 +275,7 @@ const Session = styled.div`
   margin-top: 10px;
   padding-bottom: 10px;
   text-align: left;
-  font-size: .9rem;
+  font-size: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -212,7 +294,7 @@ const WeatherIconWrapper = styled.div`
     border-radius: 5px;
     padding: 2px 5px;
     color: white;
-    font-size: .6rem;
+    font-size: .9rem;
     opacity: 0;
   }
   &:hover {
@@ -245,22 +327,27 @@ const Button = styled.button`
 `;
 
 const WeatherTable = styled.div`
-  margin-top: 20px;
+  margin-top: 50px;
 `;
 
 const WeatherLists = styled.div`
   display: flex;
   flex-direction: row;
-  font-size: .7rem;
+  font-size: .9rem;
   padding: 10px 0;
   justify-content: space-between;
+
+  @media screen and (max-width: 1400px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
 `;
 
 const Weather = styled.div`
   position: relative;
   span {
     position: absolute;
-    top: 55px;
+    top: 60px;
     left: -10px;
     min-width: 50px;
     text-align: center;
@@ -268,7 +355,7 @@ const Weather = styled.div`
     border-radius: 5px;
     padding: 2px 5px;
     color: white;
-    font-size: .6rem;
+    font-size: .9rem;
     opacity: 0;
   }
   &:hover {
@@ -276,9 +363,19 @@ const Weather = styled.div`
       opacity: 1;
     }
   }
+
+  @media screen and (max-width: 1400px) {
+    margin-right: 15px;
+    span {
+      background-color: rgba(0, 0, 0, 1);
+      z-index: 3;
+    }
+  }
 `;
 
-function EventModal({ event, setShowUid, member }) {
+function EventModal({
+  event, setShowUid, member, idx, show, scrolled,
+}) {
   const [weatherData, setWeatherData] = useState([]);
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
   const [isSharing, setIsSharing] = useState(false);
@@ -398,7 +495,7 @@ function EventModal({ event, setShowUid, member }) {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper show={show} style={{ left: `${scrolled}px` }}>
       <Modal>
         <ModalHeader>
           <Link to="/">
@@ -456,7 +553,6 @@ function EventModal({ event, setShowUid, member }) {
                               }}
                             />
                           </a>
-
                         </div>
                       </>
                     ) : (
@@ -517,19 +613,20 @@ function EventModal({ event, setShowUid, member }) {
           {
             member
               ? (
-                <img
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                <ModalImage
+                  src={event.imageUrl
+                    ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                   alt={event.title}
-                  style={{ width: '30%', height: 'fit-content' }}
                 />
               ) : (
-                <ModalImage
-                  src={event.imageUrl ? event.imageUrl : eventImageProps[Number(event.category)]}
+                <ModalBackgroundImage
+                  src={event.imageUrl
+                    ? event.imageUrl : eventImageProps[Number(event.category)][idx % 3]}
                 />
               )
           }
           <SubInfo>
-            <SessionTable week={weeklyWeatherData.length !== 0}>
+            <SessionTable week={weeklyWeatherData?.length !== 0}>
               <TableTitle>活動場次</TableTitle>
               <SessionLists>
                 {
@@ -538,13 +635,13 @@ function EventModal({ event, setShowUid, member }) {
                     <Session key={index}>
                       <div>
                         <div>
-                          {info.time}
+                          {info.time.slice(0, 16)}
                           {' '}
                           -
                         </div>
                         <div style={{ marginBottom: '10px' }}>
                           {' '}
-                          {info.endTime}
+                          {info.endTime.slice(0, 16)}
                         </div>
                         <Tag>
                           {info?.location.slice(0, 3)}
@@ -567,8 +664,15 @@ function EventModal({ event, setShowUid, member }) {
                               </WeatherIconWrapper>
                             ) : <div style={{ width: '30px', height: '30px' }} />
                         }
-                        <Button>
-                          加入行事曆
+                        <Button style={{ width: '90px', fontSize: '.9rem' }}>
+                          <a
+                            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&details=${event.descriptionFilterHtml}&dates=${dayjs(info.time).format('YYYYMMDDTHHmmss')}/${dayjs(info.endTime).format('YYYYMMDDTHHmmss')}0&location=${info?.location}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                          >
+                            加入行事曆
+                          </a>
                         </Button>
                       </div>
                     </Session>
@@ -644,6 +748,9 @@ EventModal.propTypes = {
     keywords: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   member: PropTypes.bool.isRequired,
+  idx: PropTypes.number.isRequired,
+  show: PropTypes.bool.isRequired,
+  scrolled: PropTypes.number.isRequired,
 };
 
 export default EventModal;

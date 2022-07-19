@@ -19,7 +19,20 @@ const Wrapper = styled.div`
   align-items: flex-start;
   position: absolute;
   top: 45%;
-  margin-left: 220px;
+  left: 220px;
+
+  @media screen and (max-width: 900px) {
+    top: 40%;
+    left: 300px;
+  }
+
+  @media screen and (max-width: 425px) {
+    top: 30%;
+    left: 30px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
 `;
 
 const MainFilter = styled.div`
@@ -28,11 +41,20 @@ const MainFilter = styled.div`
   justify-content: center;
   padding-top: 60px;
   column-gap: 20px;
+
+  @media screen and (max-width: 425px) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 `;
 
 const KeywordFilter = styled.div`
   height: 200px;
-  overflow: scroll; 
+  overflow: hidden;
+
+  @media screen and (max-width: 425px) {
+    height: 100px;
+  }
 `;
 
 const KeywordInput = styled.input`
@@ -45,6 +67,10 @@ const KeywordInput = styled.input`
   border-bottom: 2px solid black;
   &:focus {
     outline: none;
+  }
+
+  @media screen and (max-width: 425px) {
+    margin: 50px 8px 8px 0px;
   }
 `;
 
@@ -61,6 +87,7 @@ const HintButton = styled.button`
   background: transparent;
   border: none;
   color: black;
+  font-size: .9rem;
   text-align: center;
   border-bottom: 1px solid black;
   cursor: pointer;
@@ -113,6 +140,13 @@ const DatePickerWrapper = styled(({
       outline: none;
     }
   }
+
+  @media screen and (max-width: 425px) {
+    input {
+      width: 150px;
+      margin-bottom: 50px;
+    }
+  }
 `;
 
 const Calendar = styled.div`
@@ -129,7 +163,7 @@ const Popper = styled.div`
 `;
 
 function Filter({
-  startDate, endDate, setStartDate, setEndDate, isGeolocation, location,
+  startDate, endDate, setStartDate, setEndDate, location,
   locationHandeler, getFilteredEvents, searchHandeler, getKeywordQuery,
 }) {
   const [isOptionOpen, setIsOptionOpen] = useState(false);
@@ -165,7 +199,7 @@ function Filter({
             </div>
             <DropDownContainer>
               <DropDownHeader onClick={toggling}>
-                {isGeolocation ? location || selectedOption : '自動定位中...'}
+                {location || selectedOption}
               </DropDownHeader>
               {isOptionOpen && (
                 <DropDownListContainer>
@@ -204,7 +238,6 @@ Filter.propTypes = {
   endDate: PropTypes.instanceOf(Date).isRequired,
   setStartDate: PropTypes.func.isRequired,
   setEndDate: PropTypes.func.isRequired,
-  isGeolocation: PropTypes.bool.isRequired,
   location: PropTypes.string.isRequired,
   locationHandeler: PropTypes.func.isRequired,
   getFilteredEvents: PropTypes.func.isRequired,

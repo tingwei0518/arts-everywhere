@@ -2,13 +2,11 @@ import { useContext } from 'react';
 import { getAuth, signOut } from 'firebase/auth';
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
-// import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import UserContext from '../../UserContext';
 import barCode from '../../assets/barcode.svg';
 import title from '../../assets/title.svg';
 import menuBackground from '../../assets/menu.svg';
-// import slash from '../../images/slash.svg';
 
 const Wrapper = styled.div`
   width: 300px;
@@ -26,28 +24,31 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 40px 0;
-`;
 
-// const TodayDate = styled.div`
-//   font-size: 3rem;
-//   font-family: Times,sans-serif;
-//   text-align: right;
-//   color: rgba(255, 255, 255, .8);
-//   background-image: url(${slash});
-//   background-size: cover;
-//   background-position: top 5px;
-//   background-repeat: no-repeat;
-//   position: absolute;
-//   bottom: 4%;
-//   right: 13%;
-//   span {
-//     display: block;
-//     font-size: 2rem;
-//   }
-// `;
+  @media screen and (max-width: 450px) {
+    filter: none;
+  }
+`;
 
 const Copyright = styled.div`
   font-size: .8rem;
+
+  @media screen and (max-width: 450px) {
+    font-size: .6rem;
+  }
+`;
+
+const BarCode = styled.img`
+  width: 200px;
+`;
+
+const MenuTitle = styled.img`
+  width: 200px;
+  margin-top: 80px;
+
+  @media screen and (max-width: 450px) {
+    margin-top: 50px;
+  }
 `;
 
 const MenuLists = styled.ul`
@@ -73,31 +74,24 @@ const MenuLists = styled.ul`
       font-weight: bold;
     }
   }
+
+  @media screen and (max-width: 450px) {
+    font-size: 1rem;
+  }
 `;
 
 function Menu({
-  isOpen, setIsOpen, isFiltered,
-  scrollToElement, homeRef, filteredInfoRef,
-  filteredEventsRef, recentEventsRef, popularEventsRef, userEventsRef, userEventsEditorRef,
+  isOpen, setIsOpen, isFiltered, setScrolled, isMobileScreen,
 }) {
   const currentUser = useContext(UserContext);
   const auth = getAuth();
-  // const monthsName = [
-  // eslint-disable-next-line max-len
-  //   'Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'
-  // ];
-  // const month = monthsName[Number(dayjs().format('M')) - 1];
-  // const day = dayjs().format('DD');
+  const screenWidth = window.innerWidth;
 
   return (
     <Wrapper isOpen={isOpen}>
       <Copyright>Copyright © 2022 Arts Everywhere</Copyright>
-      <img src={barCode} alt="barcode" style={{ width: '200px' }} />
-      <img src={title} alt="arts everywhere" style={{ width: '200px', marginTop: '80px' }} />
-      {/* <TodayDate>
-        {month}
-        <span>{day}</span>
-      </TodayDate> */}
+      <BarCode src={barCode} alt="barcode" />
+      <MenuTitle src={title} alt="arts everywhere" />
       <MenuLists>
         {
           (currentUser.userId === '')
@@ -111,30 +105,76 @@ function Menu({
               </li>
             )
         }
-        <li onClick={() => scrollToElement(filteredInfoRef)} aria-hidden="true">
-          搜尋結果地圖
-        </li>
         {
-          isFiltered
-          && (
-            <li onClick={() => scrollToElement(filteredEventsRef)} aria-hidden="true">
-              篩選活動
+          isMobileScreen ? (
+            <li onClick={() => setScrolled(screenWidth)} aria-hidden="true">
+              搜尋結果地圖
+            </li>
+          ) : (
+            <li onClick={() => setScrolled(1450)} aria-hidden="true">
+              搜尋結果地圖
             </li>
           )
         }
-        <li onClick={() => scrollToElement(recentEventsRef)} aria-hidden="true">
-          近期活動
-        </li>
-        <li onClick={() => scrollToElement(popularEventsRef)} aria-hidden="true">
-          熱門活動
-        </li>
-        <li onClick={() => scrollToElement(userEventsRef)} aria-hidden="true">
-          會員刊登活動
-        </li>
-        <li onClick={() => scrollToElement(userEventsEditorRef)} aria-hidden="true">
-          活動刊登編輯區
-        </li>
-        <li onClick={() => scrollToElement(homeRef)} aria-hidden="true">
+        {
+          isFiltered
+          && (
+            isMobileScreen ? (
+              <li onClick={() => setScrolled(screenWidth * 2)} aria-hidden="true">
+                篩選活動
+              </li>
+            ) : (
+              <li onClick={() => setScrolled(1960)} aria-hidden="true">
+                篩選活動
+              </li>
+            )
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 3) : () => setScrolled(screenWidth * 2)} aria-hidden="true">
+              近期活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(3320) : () => setScrolled(1960)} aria-hidden="true">
+              近期活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 4) : () => setScrolled(screenWidth * 3)} aria-hidden="true">
+              熱門活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(4680) : () => setScrolled(3320)} aria-hidden="true">
+              熱門活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 5) : () => setScrolled(screenWidth * 4)} aria-hidden="true">
+              會員刊登活動
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(6040) : () => setScrolled(4680)} aria-hidden="true">
+              會員刊登活動
+            </li>
+          )
+        }
+        {
+          isMobileScreen ? (
+            <li onClick={isFiltered ? () => setScrolled(screenWidth * 6) : () => setScrolled(screenWidth * 5)} aria-hidden="true">
+              活動刊登編輯區
+            </li>
+          ) : (
+            <li onClick={isFiltered ? () => setScrolled(7400) : () => setScrolled(6040)} aria-hidden="true">
+              活動刊登編輯區
+            </li>
+          )
+        }
+        <li onClick={() => setScrolled(0)} aria-hidden="true">
           回首頁
         </li>
         {
@@ -166,14 +206,8 @@ Menu.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   setIsOpen: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool.isRequired,
-  scrollToElement: PropTypes.func.isRequired,
-  homeRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  filteredInfoRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  popularEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  userEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  userEventsEditorRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  setScrolled: PropTypes.func.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default Menu;

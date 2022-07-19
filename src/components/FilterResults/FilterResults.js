@@ -44,9 +44,17 @@ const AnimationBtn = styled.div`
 `;
 
 function FilterResults({
-  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate, searchText, isFiltered,
-  filteredEventsRef, scrollToElement, setShowUid, setLatitude, setLongitude,
+  latitude, longitude, filteredShowInfo, recentShowInfo, startDate, endDate,
+  searchText, isFiltered, setScrolled, setShowUid, setLatitude, setLongitude, isMobileScreen,
 }) {
+  const scrollToResults = () => {
+    const screenWidth = window.innerWidth;
+    if (isMobileScreen) {
+      setScrolled(screenWidth * 2);
+    } else {
+      setScrolled(1960);
+    }
+  };
   return (
     <Wrapper>
       <Block>
@@ -55,7 +63,7 @@ function FilterResults({
         }}
         >
           <img src={title} alt="arts everywhere" style={{ width: '250px', marginRight: '20px' }} />
-          <AnimationBtn onClick={() => scrollToElement(filteredEventsRef)}>
+          <AnimationBtn onClick={scrollToResults}>
             <div style={{ fontSize: '.5rem' }}>go!</div>
             <img src={doubleNext} alt="next page" aria-hidden="true" style={{ width: '30px' }} />
           </AnimationBtn>
@@ -92,8 +100,6 @@ function FilterResults({
         latitude={latitude}
         longitude={longitude}
         showInfo={isFiltered ? filteredShowInfo : recentShowInfo}
-        eventsRef={filteredEventsRef}
-        scrollToElement={scrollToElement}
         setShowUid={setShowUid}
         setLatitude={setLatitude}
         setLongitude={setLongitude}
@@ -137,12 +143,11 @@ FilterResults.propTypes = {
   startDate: PropTypes.instanceOf(Date).isRequired,
   endDate: PropTypes.instanceOf(Date).isRequired,
   isFiltered: PropTypes.bool.isRequired,
-  filteredEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  // recentEventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
-  scrollToElement: PropTypes.func.isRequired,
+  setScrolled: PropTypes.func.isRequired,
   setShowUid: PropTypes.func.isRequired,
   setLatitude: PropTypes.func.isRequired,
   setLongitude: PropTypes.func.isRequired,
+  isMobileScreen: PropTypes.bool.isRequired,
 };
 
 export default FilterResults;

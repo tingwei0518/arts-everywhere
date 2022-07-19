@@ -19,8 +19,6 @@ const GlobalStyle = createGlobalStyle`
     font-size: 1rem;
     margin: 0;
     padding: 0;
-    overflow-y: hidden;
-    overflow-x: auto;
     overscroll-behavior: none;
     background-color: lightgrey; 
     width:100vw;
@@ -35,7 +33,6 @@ const defaultUser = { email: '', userId: '', userName: '' };
 
 function App() {
   const [userData, setUserData] = useState(defaultUser);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const auth = getAuth();
 
   useEffect(() => {
@@ -64,9 +61,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<EventDisplayPage />} />
-            <Route path="/login" element={<LogInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/profile" element={userData.userId !== '' ? <ProfilePage /> : <LogInPage />} />
+            <Route path="login" element={<LogInPage />} />
+            <Route path="signup" element={<SignUpPage />} />
+            <Route path="profile" element={userData.userId !== '' && <ProfilePage />} />
           </Routes>
         </BrowserRouter>
       </div>

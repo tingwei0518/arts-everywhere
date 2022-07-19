@@ -22,9 +22,15 @@ const HomeBtn = styled.div`
   align-items: center;
   font-family: Times,sans-serif; 
   cursor: pointer;
+  z-index: 2;
   a{
     text-decoration: none;
     color: black;
+  }
+
+  @media screen and (max-width: 800px) {
+    bottom: 10px;
+    left: 10px;
   }
 `;
 
@@ -56,6 +62,13 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   z-index: 1;
+
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    padding: 30px;
+  }
 `;
 
 const UserInfo = styled.div`
@@ -66,6 +79,11 @@ const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 800px) {
+    border-right: none;
+    align-items: flex-start;
+  }
 `;
 
 const BasicInfo = styled.div`
@@ -104,11 +122,22 @@ const Event = styled.div`
 const EventLists = styled.div`
   margin-top: 20px;
   overflow-y: auto;
+
+  @media screen and (max-width: 800px) {
+    margin-top: 10px;
+  }
 `;
+
 const EventDetails = styled.div`
   width: 100%;
   padding: 0 30px;
   overflow-y: auto;
+
+  @media screen and (max-width: 800px) {
+    padding: 0;
+    margin-top: 20px;
+    border-top: 3px solid black;
+  }
 `;
 
 function ProfilePage() {
@@ -204,7 +233,7 @@ function ProfilePage() {
             type="button"
             onClick={() => deleteEvent(userSubmittedEvent[showSubmittedEventIndex].UID)}
             style={{
-              width: '100px', justifyContent: 'center', margin: '10px 0', padding: '2px 7px', backgroundColor: 'lightgrey', borderColor: 'lightgrey', borderRadius: '3px',
+              width: '100px', justifyContent: 'center', margin: '10px 0px 10px auto', padding: '2px 7px', backgroundColor: 'lightgrey', borderColor: 'lightgrey', borderRadius: '3px',
             }}
           >
             刪除活動

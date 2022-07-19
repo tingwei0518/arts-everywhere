@@ -2,10 +2,9 @@
 import { useState, useCallback } from 'react';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import PropTypes from 'prop-types';
-// import EventModal from '../EventModal';
 
 function Map({
-  latitude, longitude, setLatitude, setLongitude, showInfo, setShowUid, scrollToElement, eventsRef,
+  latitude, longitude, setLatitude, setLongitude, showInfo, setShowUid,
 }) {
   const center = {
     lat: latitude,
@@ -14,7 +13,7 @@ function Map({
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.REACT_APP_MAPS_API_KEY,
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
   });
 
   const [map, setMap] = useState(null);
@@ -33,16 +32,17 @@ function Map({
 
   const onClickMarker = (uid) => {
     setShowUid(uid);
-    scrollToElement(eventsRef);
+    console.log(uid);
   };
 
   return (
     isLoaded && (
       <GoogleMap
+        className="map"
         center={center}
         zoom={11}
         options={{ mapId: '5c9ec1165b4386f6' }}
-        mapContainerStyle={{ height: '55%', width: '60%' }}
+        mapContainerStyle={{ height: '55%', width: '65%' }}
         onLoad={onLoad}
         onDragEnd={onDragEnd}
         clickableIcons={false}
@@ -87,8 +87,6 @@ Map.propTypes = {
     }).isRequired,
   })).isRequired,
   setShowUid: PropTypes.func.isRequired,
-  scrollToElement: PropTypes.func.isRequired,
-  eventsRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 export default Map;

@@ -13,8 +13,27 @@ const Wrapper = styled.div`
 
 const HomeTitle = styled.div`
   position: absolute;
-  bottom: 80px;
+  bottom: 100px;
   left: 45px;
+
+  img {
+    width: 500px;
+  }
+
+  @media screen and (max-width: 900px) {
+    img {
+      width: 400px;
+    }
+  }
+
+  @media screen and (max-width: 450px) {
+    bottom: none;
+    top: 70px;
+    left: 30px;
+    img {
+      width: 300px;
+    }
+  }
 `;
 
 const moveToRight = keyframes`
@@ -32,6 +51,10 @@ const AnimationText = styled.div`
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   opacity: .8;
+
+  @media screen and (max-width: 450px) {
+    display: none;
+  }
 `;
 
 function HomeVisual() {
@@ -41,7 +64,7 @@ function HomeVisual() {
         <img src={visualText} alt="visualText" />
       </AnimationText>
       <HomeTitle>
-        <img src={title} alt="arts everywhere" style={{ width: '500px' }} />
+        <img src={title} alt="arts everywhere" />
       </HomeTitle>
     </Wrapper>
   );

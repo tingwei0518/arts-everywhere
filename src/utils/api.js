@@ -1,5 +1,5 @@
 import {
-  collection, query, where, getDocs, doc, onSnapshot,
+  collection, query, where, getDocs, doc, onSnapshot, orderBy,
 } from 'firebase/firestore';
 import { db } from './firebaseInit';
 
@@ -10,7 +10,7 @@ const api = {
   },
   hitRateQuery(num) {
     const artsEventsRef = collection(db, 'artsEvents');
-    const q = query(artsEventsRef, where('hitRate', '>=', Number(num)));
+    const q = query(artsEventsRef, where('hitRate', '>=', Number(num)), orderBy('hitRate', 'desc'));
     return getDocs(q);
   },
   keywordQuery(words) {
@@ -38,7 +38,7 @@ const api = {
       .then((response) => response.json());
   },
   getReverseGeocoding(lat, lon) {
-    return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${process.env.REACT_APP_MAPS_API_KEY}`)
+    return fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`)
       .then((response) => response.json());
   },
   getOneDayWeatherDesc(location, timeFrom, timeTo) {
