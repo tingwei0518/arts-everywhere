@@ -54,6 +54,7 @@ const Page = styled.div`
     min-width: 320px;
     display: flex;
     justify-content: center;
+    background-position: center;
   }
 `;
 
@@ -95,24 +96,23 @@ function EventDisplay() {
   const [longitude, setLongitude] = useState(121.5598);
   const [isFiltered, setIsFiltered] = useState(false);
   const [showUid, setShowUid] = useState('');
+  const screenWidth = window.innerWidth;
   const distance = 10;
   const eventData = [];
   const pageText = {
     filtered: '根據您所選擇的時間與地點，精心為您篩選合適的藝文饗宴，探索各式表演藝術與歷史人文的跨領域展演。',
     recent: '參考這一週內、在您的周遭有哪些精彩的藝文活動，讓藝術成為日常，縮短與藝術的距離。',
-    popular: '搜集目前最受歡迎、點擊率最高的展演活動，或許就有符合您喜好的藝文體驗。',
-    member: '由 Arts Everywhere 的會員好朋友所刊登的藝文活動，分享多樣化的活動新訊。',
+    popular: '搜集目前最受歡迎、點擊率最高的展演活動，或許就有符合您喜好的活動新訊。',
+    member: '由 Arts Everywhere 的會員好朋友所刊登的藝文活動，分享多樣化的藝文體驗。',
   };
   const containerRef = useRef(null);
 
-  const resizeUpdate = () => {
-    const screenWidth = window.innerWidth;
-    if (screenWidth < 450) {
-      setIsMobileScreen(true);
-    }
-  };
   useEffect(() => {
-    const screenWidth = window.innerWidth;
+    const resizeUpdate = () => {
+      if (screenWidth < 450) {
+        setIsMobileScreen(true);
+      }
+    };
     if (screenWidth < 450) {
       setIsMobileScreen(true);
     }
@@ -120,7 +120,7 @@ function EventDisplay() {
     return () => {
       window.removeEventListener('resize', resizeUpdate);
     };
-  }, []);
+  }, [screenWidth]);
 
   const getMaxMinLatLon = (lat, lng) => {
     const r = 6371.393; // 地球半徑公里 // distance是km
@@ -166,7 +166,6 @@ function EventDisplay() {
       });
     });
     setFilteredEvents(eventData);
-    console.log(eventData);
   }
 
   async function getRecentIdQuery(UID) {
@@ -367,7 +366,7 @@ function EventDisplay() {
       });
     });
     if (isMobileScreen) {
-      setScrolled(450);
+      setScrolled(screenWidth);
     } else {
       setScrolled(600);
     }
@@ -398,7 +397,7 @@ function EventDisplay() {
     setFilteredShowInfo(showInfo);
     setFilteredEvents(keywordEvents);
     if (isMobileScreen) {
-      setScrolled(450);
+      setScrolled(screenWidth);
     } else {
       setScrolled(600);
     }

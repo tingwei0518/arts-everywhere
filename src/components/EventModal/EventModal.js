@@ -380,7 +380,6 @@ function EventModal({
   const [weeklyWeatherData, setWeeklyWeatherData] = useState([]);
   const [isSharing, setIsSharing] = useState(false);
   const url = window.location.href;
-  const { gapi } = window;
 
   function getWeatherIcon(desc) {
     if (desc === undefined) {
@@ -494,44 +493,6 @@ function EventModal({
       window.FB.XFBML.parse();
     }
   }, []);
-
-  const CLIENT_ID = '548994073184-t4o8hf7jmk1boqor2jcttvbd0l67a0qd.apps.googleusercontent.com';
-  const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-  const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
-  const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-
-  const handleAuthClick = () => {
-    gapi.load('client:auth2', () => {
-      gapi.client.init({
-        apiKey: API_KEY,
-        clientId: CLIENT_ID,
-        discoveryDocs: DISCOVERY_DOCS,
-        scope: SCOPES,
-      });
-      gapi.client.load('calendar', 'v3', () => console.log('loaded calendar'));
-      gapi.auth2.getAuthInstance().signIn()
-        .then(() => {
-          const insertedEvent = {
-            summary: 'Google I/O 2015',
-            location: '800 Howard St., San Francisco, CA 94103',
-            description: 'A chance to hear more about Google\'s developer products.',
-            start: {
-              dateTime: '2022-07-10T09:00:00-07:00',
-              timeZone: 'America/Los_Angeles',
-            },
-            end: {
-              dateTime: '2022-07-10T17:00:00-07:00',
-              timeZone: 'America/Los_Angeles',
-            },
-          };
-          const request = gapi.client.calendar.events.insert({
-            calendarId: 'primary',
-            resource: insertedEvent,
-          });
-          request.execute();
-        });
-    });
-  };
 
   return (
     <Wrapper show={show} style={{ left: `${scrolled}px` }}>
@@ -703,8 +664,15 @@ function EventModal({
                               </WeatherIconWrapper>
                             ) : <div style={{ width: '30px', height: '30px' }} />
                         }
-                        <Button onClick={handleAuthClick} style={{ width: '90px', fontSize: '.9rem' }}>
-                          加入行事曆
+                        <Button style={{ width: '90px', fontSize: '.9rem' }}>
+                          <a
+                            href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${event.title}&details=${event.descriptionFilterHtml}&dates=${dayjs(info.time).format('YYYYMMDDTHHmmss')}/${dayjs(info.endTime).format('YYYYMMDDTHHmmss')}0&location=${info?.location}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                          >
+                            加入行事曆
+                          </a>
                         </Button>
                       </div>
                     </Session>

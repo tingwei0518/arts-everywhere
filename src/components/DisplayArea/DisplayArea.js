@@ -84,7 +84,7 @@ const Reminder = styled.div`
   @media screen and (max-width: 450px) {
     width: 320px;
     white-space: normal;
-    margin: 0;
+    margin: 50px 0 0 0;
   }
 `;
 

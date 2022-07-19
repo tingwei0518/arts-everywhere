@@ -48,8 +48,9 @@ function FilterResults({
   searchText, isFiltered, setScrolled, setShowUid, setLatitude, setLongitude, isMobileScreen,
 }) {
   const scrollToResults = () => {
+    const screenWidth = window.innerWidth;
     if (isMobileScreen) {
-      setScrolled(900);
+      setScrolled(screenWidth * 2);
     } else {
       setScrolled(1960);
     }
