@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/ANcOW4F.png" height="80px" alt="Arts Everywhere" title="Arts Everywhere">
+<img src="./readme_assets/logo.png" height="80px" alt="Arts Everywhere" title="Arts Everywhere">
 
 [Arts Everywhere](https://arts-everywhere-108b3.web.app/),
 an immersive exhibition website with information of nationwide art events.
@@ -14,20 +14,19 @@ an immersive exhibition website with information of nationwide art events.
 # Features
 
 ##### Horizontal scrolling!
-<img src="https://i.imgur.com/qJQBXiL.gif" height="250px" alt="horizontal scrolling" title="horizontal scrolling">
+![horizontal scrolling](./readme_assets/features_horizontal_scrolling.gif)
 
 ##### Search events by selecting date and location.
-<img src="https://i.imgur.com/7UIN7KG.gif" height="250px" alt="horizontal scrolling" title="horizontal scrolling">
+![search events](./readme_assets/features_search_events.gif)
 
 ##### Discover more events by draging the map!
-<img src="https://i.imgur.com/gwXaxV7.gif" height="250px" alt="events map" title="events map">
+![events map](./readme_assets/features_drag_map.gif)
 
 ##### Read event details.
-<img src="https://i.imgur.com/TsTGBXh.png" height="250px" alt="event details" title="event details">
+![event details](./readme_assets/features_event_details.png)
 
 ##### Post artistic events by writing event details and uploading images.
-<img src="https://i.imgur.com/Fnx7nQj.png" height="250px" alt="event posting" title="event posting">
-
+![event posting](./readme_assets/features_post_events.png)
 
 # Demo link
 
