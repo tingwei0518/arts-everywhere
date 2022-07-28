@@ -79,7 +79,7 @@ const SubPage = styled.div`
 
 function EventDisplay() {
   const [isMobileScreen, setIsMobileScreen] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState();
+  const [currentUserId, setCurrentUserId] = useState('');
   const [scrolled, setScrolled] = useState(0);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [recentEvents, setRecentEvents] = useState([]);
@@ -123,9 +123,9 @@ function EventDisplay() {
   }, [screenWidth]);
 
   const getMaxMinLatLon = (lat, lng) => {
-    const r = 6371.393; // 地球半徑公里 // distance是km
+    const r = 6371.393;
     let dlng = 2 * Math.asin(Math.sin(distance / (2 * r)) / Math.cos((lat * Math.PI) / 180));
-    dlng = (dlng * 180) / Math.PI; // 角度轉為弧度
+    dlng = (dlng * 180) / Math.PI;
     let dlat = distance / r;
     dlat = (dlat * 180) / Math.PI;
     const minLat = lat - dlat;
@@ -203,8 +203,6 @@ function EventDisplay() {
     setIsGeolocation(true);
     setLatitude(position.coords.latitude);
     setLongitude(position.coords.longitude);
-    // latitude = 25.03867955570004;
-    // longitude = 121.53237109734974;
     api.getReverseGeocoding(position.coords.latitude, position.coords.longitude).then((json) => {
       setLocation(json.plus_code.compound_code.split(' ')[1].slice(2, 5));
     });
@@ -317,10 +315,6 @@ function EventDisplay() {
               && todayTimeStamp <= infoEndTimeStamp)
               || (afterSevenDays >= infoStartTimeStamp
                 && afterSevenDays <= infoEndTimeStamp)) {
-              // if ((infoStartTimeStamp >= todayTimeStamp
-              //   && infoStartTimeStamp <= afterSevenDays)
-              //   && (infoEndTimeStamp >= todayTimeStamp
-              //     && infoEndTimeStamp <= afterSevenDays)) {
               if (data.UID !== infoUid) {
                 getRecentIdQuery(data.UID);
               }
@@ -348,10 +342,6 @@ function EventDisplay() {
             && (Number(info.longitude) >= minLng && Number(info.longitude) <= maxLng)) {
             const infoStartTimeStamp = new Date(info.time.slice(0, 10));
             const infoEndTimeStamp = new Date(info.endTime.slice(0, 10));
-            // if ((startDateTimeStamp >= infoStartTimeStamp
-            //   && startDateTimeStamp <= infoEndTimeStamp)
-            //   || (endDateTimeStamp >= infoStartTimeStamp
-            //     && endDateTimeStamp <= infoEndTimeStamp)) {
             if ((infoStartTimeStamp >= startDateTimeStamp
               && infoStartTimeStamp <= endDateTimeStamp)
               && (infoEndTimeStamp >= startDateTimeStamp
@@ -416,7 +406,6 @@ function EventDisplay() {
   useEffect(() => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(success, error);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -432,7 +421,6 @@ function EventDisplay() {
 
   useEffect(() => {
     getHitRateEvents(600);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -445,7 +433,6 @@ function EventDisplay() {
       setMemberEvents(memberEventsData);
     });
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

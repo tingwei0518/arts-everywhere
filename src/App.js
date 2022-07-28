@@ -39,19 +39,16 @@ function App() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
-        console.log(`uid: ${uid}`);
         api.userQuery(uid).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             setUserData(doc.data());
           });
         });
       } else {
-        console.log('User is signed out');
         setUserData(defaultUser);
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth]);
 
   return (
     <UserContext.Provider value={userData}>

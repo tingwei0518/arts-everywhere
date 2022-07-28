@@ -21,18 +21,15 @@ function Map({
   // eslint-disable-next-line no-shadow
   const onLoad = useCallback((map) => {
     setMap(map);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onDragEnd = () => {
     setLatitude(map.getCenter().toJSON().lat);
     setLongitude(map.getCenter().toJSON().lng);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   const onClickMarker = (uid) => {
     setShowUid(uid);
-    console.log(uid);
   };
 
   return (
@@ -50,7 +47,6 @@ function Map({
         {
           showInfo.map((item, index) => (
             <Marker
-              // eslint-disable-next-line react/no-array-index-key
               key={index}
               position={{
                 lat: Number(item.info.latitude),

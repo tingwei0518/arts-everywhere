@@ -284,14 +284,11 @@ function PostEvent() {
     const unsubmittedEventContent = window.localStorage.getItem('event');
     if (!unsubmittedEventContent) return;
     const {
-      title, descriptionFilterHtml, startDate, endDate,
-      masterUnit, showUnit, website, img,
+      title, descriptionFilterHtml, masterUnit, showUnit, website, img,
     } = JSON.parse(unsubmittedEventContent);
     reset({
       title,
       descriptionFilterHtml,
-      startDate,
-      endDate,
       masterUnit,
       showUnit,
       website,

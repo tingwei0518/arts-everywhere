@@ -5,7 +5,6 @@ import { db } from './firebaseInit';
 
 const api = {
   memberEventsSnapshot() {
-    // const memberEventsRef = collection(db, 'memberEvents');
     return onSnapshot(doc(db, 'memberId', 'test'));
   },
   hitRateQuery(num) {

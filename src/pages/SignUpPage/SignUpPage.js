@@ -99,7 +99,6 @@ function SignUpPage() {
           userName,
         });
       })
-      .then(window.location.replace('./'))
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -110,7 +109,7 @@ function SignUpPage() {
         } else if (errorCode === 'auth/weak-password') {
           alert('密碼需要6個字母以上，謝謝～');
         } else {
-          alert({ errorMessage });
+          console.log({ errorMessage });
         }
       });
   }

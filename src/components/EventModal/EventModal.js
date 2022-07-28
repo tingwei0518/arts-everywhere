@@ -398,6 +398,7 @@ function EventModal({
   }
 
   const getWeeklyLocationWeather = (weatherLocation) => {
+    console.log('weatherLocation', weatherLocation);
     switch (weatherLocation) {
       case '台北市':
         return api.getWeatherDesc('臺北市')
@@ -464,8 +465,10 @@ function EventModal({
     const isShowDateOverlap = event.showInfo.some((info) => afterSevenDays >= dayjs(info.time)
       || (afterSevenDays >= dayjs(info.endTime)));
     if (isShowDateOverlap) {
+      console.log('console.log(event.showInfo[0].location.slice(0, 3));', event.showInfo[0].location.slice(0, 3));
       getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
         .then((data) => {
+          console.log('data', data);
           setWeeklyWeatherData(data);
         });
     }
@@ -631,7 +634,6 @@ function EventModal({
               <SessionLists>
                 {
                   event.showInfo.map((info, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <Session key={index}>
                       <div>
                         <div>
@@ -681,16 +683,16 @@ function EventModal({
               </SessionLists>
             </SessionTable>
             {
-              (weeklyWeatherData.length !== 0)
+              (weeklyWeatherData?.length !== 0)
               && (
                 <WeatherTable>
                   <TableTitle>一週天氣</TableTitle>
                   <WeatherLists>
                     {
                       weeklyWeatherData
-                        .filter((_, index) => index % 2 === 0)
-                        .map((data) => (
-                          <Weather>
+                        ?.filter((_, index) => index % 2 === 0)
+                        .map((data, index) => (
+                          <Weather key={index}>
                             <div style={{ marginBottom: '10px' }}>{dayjs(data?.startTime?.split(' ')?.[0]).format('M/D')}</div>
                             <WeatherIcon
                               src={getWeatherIcon(data?.elementValue?.[0]?.value?.split('。')?.[0])}

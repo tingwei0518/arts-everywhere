@@ -216,51 +216,48 @@ function ScrollIndicator({
     return '我想搜尋藝文活動';
   };
 
-  const findActiveIndex = () => {
-    if (scrollLeft < 22) {
-      setActiveIndex(0);
-    } else if (scrollLeft >= 22 && scrollLeft < 31) {
-      setActiveIndex(1);
-    } else if (scrollLeft >= 31 && scrollLeft < 54) {
-      setActiveIndex(2);
-    } else if (scrollLeft >= 54 && scrollLeft < 76) {
-      setActiveIndex(3);
-    } else if (scrollLeft >= 76 && scrollLeft < 99) {
-      setActiveIndex(4);
-    } else {
-      setActiveIndex(5);
-    }
-  };
-
-  const findFilteredActiveIndex = () => {
-    if (scrollLeft < 20) {
-      setActiveIndex(0);
-    } else if (scrollLeft >= 20 && scrollLeft < 26) {
-      setActiveIndex(1);
-    } else if (scrollLeft >= 26 && scrollLeft < 44) {
-      setActiveIndex(2);
-    } else if (scrollLeft >= 44 && scrollLeft < 63) {
-      setActiveIndex(3);
-    } else if (scrollLeft >= 63 && scrollLeft < 81) {
-      setActiveIndex(4);
-    } else if (scrollLeft >= 81 && scrollLeft < 99) {
-      setActiveIndex(5);
-    } else {
-      setActiveIndex(6);
-    }
-  };
-
   useEffect(() => {
+    const findActiveIndex = () => {
+      if (scrollLeft < 22) {
+        setActiveIndex(0);
+      } else if (scrollLeft >= 22 && scrollLeft < 31) {
+        setActiveIndex(1);
+      } else if (scrollLeft >= 31 && scrollLeft < 54) {
+        setActiveIndex(2);
+      } else if (scrollLeft >= 54 && scrollLeft < 76) {
+        setActiveIndex(3);
+      } else if (scrollLeft >= 76 && scrollLeft < 99) {
+        setActiveIndex(4);
+      } else {
+        setActiveIndex(5);
+      }
+    };
+
+    const findFilteredActiveIndex = () => {
+      if (scrollLeft < 20) {
+        setActiveIndex(0);
+      } else if (scrollLeft >= 20 && scrollLeft < 26) {
+        setActiveIndex(1);
+      } else if (scrollLeft >= 26 && scrollLeft < 44) {
+        setActiveIndex(2);
+      } else if (scrollLeft >= 44 && scrollLeft < 63) {
+        setActiveIndex(3);
+      } else if (scrollLeft >= 63 && scrollLeft < 81) {
+        setActiveIndex(4);
+      } else if (scrollLeft >= 81 && scrollLeft < 99) {
+        setActiveIndex(5);
+      } else {
+        setActiveIndex(6);
+      }
+    };
+
     if (isFiltered) {
       findFilteredActiveIndex();
     } else {
       findActiveIndex();
     }
-    if (isOpen) {
-      setIsOpen(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrolled]);
+    setIsOpen(false);
+  }, [isFiltered, scrollLeft, scrolled]);
 
   useEffect(() => {
     const userPositionRef = query(collection(db, 'userPosition'), where('isActive', '==', true), limit(9));
