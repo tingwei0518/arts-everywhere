@@ -1,4 +1,4 @@
-<img src="./readme_assets/logo.png" height="80px" alt="Arts Everywhere" title="Arts Everywhere">
+<img src="./readme_assets/logo.png" height="110px" alt="Arts Everywhere" title="Arts Everywhere">
 
 [Arts Everywhere](https://arts-everywhere-108b3.web.app/),
 an immersive exhibition website with information of nationwide art events.
@@ -13,19 +13,19 @@ an immersive exhibition website with information of nationwide art events.
 
 # Features
 
-##### Horizontal scrolling!
+* Horizontal scrolling!
 ![horizontal scrolling](./readme_assets/features_horizontal_scrolling.gif)
 
-##### Search events by selecting date and location.
+* Search events by selecting date and location.
 ![search events](./readme_assets/features_search_events.gif)
 
-##### Discover more events by draging the map!
+* Discover more events by draging the map!
 ![events map](./readme_assets/features_drag_map.gif)
 
-##### Read event details.
+* Read event details.
 ![event details](./readme_assets/features_event_details.png)
 
-##### Post artistic events by writing event details and uploading images.
+* Post artistic events by writing event details and uploading images.
 ![event posting](./readme_assets/features_post_events.png)
 
 # Demo link
