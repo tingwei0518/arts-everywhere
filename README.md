@@ -14,19 +14,19 @@ an immersive exhibition website with information of nationwide art events.
 # Features
 
 ##### Horizontal scrolling!
-<img src="https://i.imgur.com/fkKVLxM.gif" height="180px" alt="horizontal scrolling" title="horizontal scrolling">
+<img src="https://i.imgur.com/qJQBXiL.gif" height="250px" alt="horizontal scrolling" title="horizontal scrolling">
 
 ##### Search events by selecting date and location.
-<img src="https://i.imgur.com/FYhQlv6.gif" height="180px" alt="horizontal scrolling" title="horizontal scrolling">
+<img src="https://i.imgur.com/7UIN7KG.gif" height="250px" alt="horizontal scrolling" title="horizontal scrolling">
 
 ##### Discover more events by draging the map!
-<img src="https://i.imgur.com/yplau6l.gif" height="200px" alt="events map" title="events map">
+<img src="https://i.imgur.com/gwXaxV7.gif" height="250px" alt="events map" title="events map">
 
 ##### Read event details.
-<img src="https://i.imgur.com/TsTGBXh.png" height="150px" alt="event details" title="event details">
+<img src="https://i.imgur.com/TsTGBXh.png" height="250px" alt="event details" title="event details">
 
 ##### Post artistic events by writing event details and uploading images.
-<img src="https://i.imgur.com/Fnx7nQj.png" height="150px" alt="event posting" title="event posting">
+<img src="https://i.imgur.com/Fnx7nQj.png" height="250px" alt="event posting" title="event posting">
 
 
 # Demo link
