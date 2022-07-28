@@ -170,11 +170,7 @@ function Menu({
                 style={{
                   fontSize: '1rem', padding: '0', border: 'none', background: 'none', cursor: 'pointer',
                 }}
-                onClick={() => signOut(auth).then(() => {
-                  console.log('Sign-out successful.');
-                }).catch((error) => {
-                  console.log(error);
-                })}
+                onClick={() => signOut(auth)}
               >
                 登出
               </button>

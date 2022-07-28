@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 import styled from 'styled-components/macro';
 import { doc, collection, setDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebaseInit';
@@ -271,11 +272,10 @@ function PostEvent() {
         });
         localStorage.removeItem('event');
       } else {
-        alert('填寫標題、場次和日期');
+        toast('填寫標題、場次和日期');
       }
     } else {
       localStorage.setItem('event', JSON.stringify({ ...eventContent }));
-      alert('請先登入，即將跳轉登入頁面');
       window.location.replace('./login');
     }
   };

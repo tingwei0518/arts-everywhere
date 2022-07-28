@@ -4,6 +4,7 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { toast } from 'react-toastify';
 import { Button } from '../../components/Units';
 import background from '../../assets/background7.svg';
 
@@ -91,18 +92,18 @@ function LogInPage() {
     setPersistence(auth, browserSessionPersistence)
       .then(() => signInWithEmailAndPassword(auth, email, password))
       .then((userCredential) => {
-        alert(`目前狀態:${userCredential.operationType}`);
+        toast.info(`目前狀態:${userCredential.operationType}`);
         window.location.replace('./');
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         if (errorCode === 'auth/user-not-found') {
-          alert('找不到帳號，請重新輸入或是註冊新帳號，謝謝～');
+          toast.error('找不到帳號，請重新輸入或是註冊新帳號，謝謝～');
         } else if (errorCode === 'auth/wrong-password') {
-          alert('密碼輸入錯誤，請重新輸入，謝謝～');
+          toast.error('密碼輸入錯誤，請重新輸入，謝謝～');
         } else {
-          alert({ errorMessage });
+          toast.error({ errorMessage });
         }
       });
   }

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ToastContainer } from 'react-toastify';
 import UserContext from './UserContext';
 import api from './utils/api';
 import EventDisplayPage from './pages/EventDisplayPage';
@@ -55,6 +56,17 @@ function App() {
       <div className="App">
         <FontStyles />
         <GlobalStyle />
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<EventDisplayPage />} />

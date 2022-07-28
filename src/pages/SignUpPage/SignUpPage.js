@@ -3,9 +3,11 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
+import { toast } from 'react-toastify';
 import { db } from '../../utils/firebaseInit';
 import { Button } from '../../components/Units';
 import background from '../../assets/background7.svg';
+import 'react-toastify/dist/ReactToastify.css';
 
 const HomeBtn = styled.div`
   position: fixed;
@@ -103,13 +105,13 @@ function SignUpPage() {
         const errorCode = error.code;
         const errorMessage = error.message;
         if (errorCode === 'auth/email-already-in-use') {
-          alert('此帳號已被使用，請更換另一個信箱註冊，謝謝～');
+          toast.error('此帳號已被使用，請更換另一個信箱註冊，謝謝～');
         } else if (errorCode === 'auth/invalid-email') {
-          alert('請確認輸入的信箱格式，謝謝～');
+          toast.error('請確認輸入的信箱格式，謝謝～');
         } else if (errorCode === 'auth/weak-password') {
-          alert('密碼需要6個字母以上，謝謝～');
+          toast.error('密碼需要6個字母以上，謝謝～');
         } else {
-          console.log({ errorMessage });
+          toast.error({ errorMessage });
         }
       });
   }

@@ -398,7 +398,6 @@ function EventModal({
   }
 
   const getWeeklyLocationWeather = (weatherLocation) => {
-    console.log('weatherLocation', weatherLocation);
     switch (weatherLocation) {
       case '台北市':
         return api.getWeatherDesc('臺北市')
@@ -465,17 +464,13 @@ function EventModal({
     const isShowDateOverlap = event.showInfo.some((info) => afterSevenDays >= dayjs(info.time)
       || (afterSevenDays >= dayjs(info.endTime)));
     if (isShowDateOverlap) {
-      console.log('console.log(event.showInfo[0].location.slice(0, 3));', event.showInfo[0].location.slice(0, 3));
       getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
-        .then((data) => {
-          console.log('data', data);
-          setWeeklyWeatherData(data);
-        });
+        .then((data) => setWeeklyWeatherData(data));
     }
   }, [event.showInfo]);
 
   useEffect(() => {
-    window.fbAsyncInit = function () {
+    window.fbAsyncInit = () => {
       window.FB.init({
         xfbml: true,
         version: 'v12.0',
@@ -483,14 +478,15 @@ function EventModal({
       window.FB.XFBML.parse();
     };
 
-    (function (d, s, id) {
+    const loadFbSDK = (d, s, id) => {
       const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) { return; }
       const js = d.createElement(s);
       js.id = id;
       js.src = '//connect.facebook.net/zh_TW/sdk.js';
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    };
+    loadFbSDK(document, 'script', 'facebook-jssdk');
 
     if (window.FB) {
       window.FB.XFBML.parse();
