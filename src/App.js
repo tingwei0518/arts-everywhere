@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ToastContainer } from 'react-toastify';
 import UserContext from './UserContext';
 import api from './utils/api';
 import EventDisplayPage from './pages/EventDisplayPage';
@@ -39,25 +40,33 @@ function App() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid } = user;
-        console.log(`uid: ${uid}`);
         api.userQuery(uid).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             setUserData(doc.data());
           });
         });
       } else {
-        console.log('User is signed out');
         setUserData(defaultUser);
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth]);
 
   return (
     <UserContext.Provider value={userData}>
       <div className="App">
         <FontStyles />
         <GlobalStyle />
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<EventDisplayPage />} />

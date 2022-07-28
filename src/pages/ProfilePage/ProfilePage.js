@@ -144,7 +144,6 @@ function ProfilePage() {
   const [userSubmittedEvent, setUserSubmittedEvent] = useState([]);
   const [showSubmittedEventIndex, setShowSubmittedEventIndex] = useState(0);
   const currentUser = useContext(UserContext);
-  const eventData = [];
 
   const deleteEvent = (uid) => {
     deleteDoc(doc(db, 'memberEvents', uid));
@@ -152,18 +151,19 @@ function ProfilePage() {
     setUserSubmittedEvent(newUserSubmittedEvent);
   };
 
-  async function getUserSubmittedEvents(UID) {
-    const querySnapshot = await api.userSubmittedEventsQuery(UID);
-    querySnapshot.forEach((dataDoc) => {
-      eventData.push(dataDoc.data());
-    });
-    setUserSubmittedEvent(eventData);
-  }
-
   useEffect(() => {
+    const eventData = [];
+
+    async function getUserSubmittedEvents(UID) {
+      const querySnapshot = await api.userSubmittedEventsQuery(UID);
+      querySnapshot.forEach((dataDoc) => {
+        eventData.push(dataDoc.data());
+      });
+      setUserSubmittedEvent(eventData);
+    }
+
     getUserSubmittedEvents(currentUser.userId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentUser.userId]);
 
   return (
     <Background>

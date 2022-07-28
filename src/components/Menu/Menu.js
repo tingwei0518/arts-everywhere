@@ -80,6 +80,14 @@ const MenuLists = styled.ul`
   }
 `;
 
+const FIRST_PAGE_POSITION = 0;
+const SECOND_PAGE_POSITION = 1450;
+const THIRD_PAGE_POSITION = 1960;
+const FOURTH_PAGE_POSITION = 3320;
+const FIFTH_PAGE_POSITION = 4680;
+const SIXTH_PAGE_POSITION = 6040;
+const SEVENTH_PAGE_POSITION = 7400;
+
 function Menu({
   isOpen, setIsOpen, isFiltered, setScrolled, isMobileScreen,
 }) {
@@ -105,76 +113,52 @@ function Menu({
               </li>
             )
         }
-        {
-          isMobileScreen ? (
-            <li onClick={() => setScrolled(screenWidth)} aria-hidden="true">
-              搜尋結果地圖
-            </li>
-          ) : (
-            <li onClick={() => setScrolled(1450)} aria-hidden="true">
-              搜尋結果地圖
-            </li>
-          )
-        }
+        <li onClick={isMobileScreen ? () => setScrolled(screenWidth) : () => setScrolled(SECOND_PAGE_POSITION)} aria-hidden="true">
+          搜尋結果地圖
+        </li>
         {
           isFiltered
           && (
-            isMobileScreen ? (
-              <li onClick={() => setScrolled(screenWidth * 2)} aria-hidden="true">
-                篩選活動
+            <li onClick={isMobileScreen ? () => setScrolled(screenWidth * 2) : () => setScrolled(THIRD_PAGE_POSITION)} aria-hidden="true">
+              篩選活動
+            </li>
+          )
+        }
+
+        {
+          isMobileScreen ? (
+            <>
+              <li onClick={isFiltered ? () => setScrolled(screenWidth * 3) : () => setScrolled(screenWidth * 2)} aria-hidden="true">
+                近期活動
               </li>
-            ) : (
-              <li onClick={() => setScrolled(1960)} aria-hidden="true">
-                篩選活動
+              <li onClick={isFiltered ? () => setScrolled(screenWidth * 4) : () => setScrolled(screenWidth * 3)} aria-hidden="true">
+                熱門活動
               </li>
-            )
-          )
-        }
-        {
-          isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(screenWidth * 3) : () => setScrolled(screenWidth * 2)} aria-hidden="true">
-              近期活動
-            </li>
+              <li onClick={isFiltered ? () => setScrolled(screenWidth * 5) : () => setScrolled(screenWidth * 4)} aria-hidden="true">
+                會員刊登活動
+              </li>
+              <li onClick={isFiltered ? () => setScrolled(screenWidth * 6) : () => setScrolled(screenWidth * 5)} aria-hidden="true">
+                活動刊登編輯區
+              </li>
+            </>
           ) : (
-            <li onClick={isFiltered ? () => setScrolled(3320) : () => setScrolled(1960)} aria-hidden="true">
-              近期活動
-            </li>
+            <>
+              <li onClick={isFiltered ? () => setScrolled(FOURTH_PAGE_POSITION) : () => setScrolled(THIRD_PAGE_POSITION)} aria-hidden="true">
+                近期活動
+              </li>
+              <li onClick={isFiltered ? () => setScrolled(FIFTH_PAGE_POSITION) : () => setScrolled(FOURTH_PAGE_POSITION)} aria-hidden="true">
+                熱門活動
+              </li>
+              <li onClick={isFiltered ? () => setScrolled(SIXTH_PAGE_POSITION) : () => setScrolled(FIFTH_PAGE_POSITION)} aria-hidden="true">
+                會員刊登活動
+              </li>
+              <li onClick={isFiltered ? () => setScrolled(SEVENTH_PAGE_POSITION) : () => setScrolled(SIXTH_PAGE_POSITION)} aria-hidden="true">
+                活動刊登編輯區
+              </li>
+            </>
           )
         }
-        {
-          isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(screenWidth * 4) : () => setScrolled(screenWidth * 3)} aria-hidden="true">
-              熱門活動
-            </li>
-          ) : (
-            <li onClick={isFiltered ? () => setScrolled(4680) : () => setScrolled(3320)} aria-hidden="true">
-              熱門活動
-            </li>
-          )
-        }
-        {
-          isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(screenWidth * 5) : () => setScrolled(screenWidth * 4)} aria-hidden="true">
-              會員刊登活動
-            </li>
-          ) : (
-            <li onClick={isFiltered ? () => setScrolled(6040) : () => setScrolled(4680)} aria-hidden="true">
-              會員刊登活動
-            </li>
-          )
-        }
-        {
-          isMobileScreen ? (
-            <li onClick={isFiltered ? () => setScrolled(screenWidth * 6) : () => setScrolled(screenWidth * 5)} aria-hidden="true">
-              活動刊登編輯區
-            </li>
-          ) : (
-            <li onClick={isFiltered ? () => setScrolled(7400) : () => setScrolled(6040)} aria-hidden="true">
-              活動刊登編輯區
-            </li>
-          )
-        }
-        <li onClick={() => setScrolled(0)} aria-hidden="true">
+        <li onClick={() => setScrolled(FIRST_PAGE_POSITION)} aria-hidden="true">
           回首頁
         </li>
         {
@@ -186,11 +170,7 @@ function Menu({
                 style={{
                   fontSize: '1rem', padding: '0', border: 'none', background: 'none', cursor: 'pointer',
                 }}
-                onClick={() => signOut(auth).then(() => {
-                  console.log('Sign-out successful.');
-                }).catch((error) => {
-                  console.log(error);
-                })}
+                onClick={() => signOut(auth)}
               >
                 登出
               </button>

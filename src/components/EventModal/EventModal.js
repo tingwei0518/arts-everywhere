@@ -465,14 +465,12 @@ function EventModal({
       || (afterSevenDays >= dayjs(info.endTime)));
     if (isShowDateOverlap) {
       getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
-        .then((data) => {
-          setWeeklyWeatherData(data);
-        });
+        .then((data) => setWeeklyWeatherData(data));
     }
   }, [event.showInfo]);
 
   useEffect(() => {
-    window.fbAsyncInit = function () {
+    window.fbAsyncInit = () => {
       window.FB.init({
         xfbml: true,
         version: 'v12.0',
@@ -480,14 +478,15 @@ function EventModal({
       window.FB.XFBML.parse();
     };
 
-    (function (d, s, id) {
+    const loadFbSDK = (d, s, id) => {
       const fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) { return; }
       const js = d.createElement(s);
       js.id = id;
       js.src = '//connect.facebook.net/zh_TW/sdk.js';
       fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    };
+    loadFbSDK(document, 'script', 'facebook-jssdk');
 
     if (window.FB) {
       window.FB.XFBML.parse();
@@ -631,7 +630,6 @@ function EventModal({
               <SessionLists>
                 {
                   event.showInfo.map((info, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <Session key={index}>
                       <div>
                         <div>
@@ -681,16 +679,16 @@ function EventModal({
               </SessionLists>
             </SessionTable>
             {
-              (weeklyWeatherData.length !== 0)
+              (weeklyWeatherData?.length !== 0)
               && (
                 <WeatherTable>
                   <TableTitle>一週天氣</TableTitle>
                   <WeatherLists>
                     {
                       weeklyWeatherData
-                        .filter((_, index) => index % 2 === 0)
-                        .map((data) => (
-                          <Weather>
+                        ?.filter((_, index) => index % 2 === 0)
+                        .map((data, index) => (
+                          <Weather key={index}>
                             <div style={{ marginBottom: '10px' }}>{dayjs(data?.startTime?.split(' ')?.[0]).format('M/D')}</div>
                             <WeatherIcon
                               src={getWeatherIcon(data?.elementValue?.[0]?.value?.split('。')?.[0])}

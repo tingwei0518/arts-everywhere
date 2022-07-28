@@ -345,7 +345,7 @@ function DisplayArea({
           }
           {
             events?.slice(currentIndex, currentIndex + 3).map((event, index) => (
-              <Event>
+              <Event key={event.UID}>
                 {
                   popular
                   && (
@@ -365,8 +365,7 @@ function DisplayArea({
                     member
                       ? (
                         <MemberEventImg
-                          // eslint-disable-next-line react/no-array-index-key
-                          key={index}
+                          // key={index}
                           src={event.imageUrl
                             ? event.imageUrl : eventImageProps[Number(event.category)][index % 3]}
                           alt={event.title}
@@ -449,6 +448,7 @@ function DisplayArea({
             showUid === event.UID
             && (
               <EventModal
+                key={index}
                 event={event}
                 setShowUid={setShowUid}
                 show={showUid === event.UID}
