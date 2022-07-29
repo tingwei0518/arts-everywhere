@@ -139,7 +139,7 @@ const UserMarker = styled.div`
   }
 `;
 
-const Test = styled.div`
+const CurrentUserMarker = styled.div`
   width: 50px;
   height: 60px;
   margin-left: -10px;
@@ -157,6 +157,33 @@ const Title = styled.div`
   margin-top: 20px;
   opacity: 0;
 `;
+
+const scrollPosition = {
+  filtered: [{
+    leftPostion: 22, activeIndex: 1, scrollPosition: 1450, title: 'Search Results',
+  }, {
+    leftPostion: 30, activeIndex: 2, scrollPosition: 1960, title: 'Filtered Events',
+  }, {
+    leftPostion: 48, activeIndex: 3, scrollPosition: 3320, title: 'Recent Events',
+  }, {
+    leftPostion: 65, activeIndex: 4, scrollPosition: 4680, title: 'Popular Events',
+  }, {
+    leftPostion: 83, activeIndex: 5, scrollPosition: 6040, title: 'Member Events',
+  }, {
+    leftPostion: 99, activeIndex: 6, scrollPosition: 7400, title: 'Post Event',
+  }],
+  unfiltered: [{
+    leftPostion: 26, activeIndex: 1, scrollPosition: 1450, title: 'Search Results',
+  }, {
+    leftPostion: 34, activeIndex: 2, scrollPosition: 1960, title: 'Recent Events',
+  }, {
+    leftPostion: 57, activeIndex: 3, scrollPosition: 3320, title: 'Popular Events',
+  }, {
+    leftPostion: 78, activeIndex: 4, scrollPosition: 4680, title: 'Member Events',
+  }, {
+    leftPostion: 99, activeIndex: 5, scrollPosition: 6040, title: 'Post Events',
+  }],
+};
 
 function ScrollIndicator({
   isFiltered, scrolled, setScrolled, containerRef, currentUserId, isMobileScreen,
@@ -268,10 +295,14 @@ function ScrollIndicator({
           userPositionData.push(posDoc.data());
         }
       });
-      setMultipleUserPosition(userPositionData);
+      if (userPositionData.length) {
+        setMultipleUserPosition(userPositionData);
+      }
     });
     return unsubscribe;
   }, [currentUserId]);
+
+  const renderPoints = isFiltered ? scrollPosition.filtered : scrollPosition.unfiltered;
 
   return (
     <Wrapper>
@@ -294,80 +325,26 @@ function ScrollIndicator({
         <Point style={{ zIndex: '3' }} active={activeIndex === 0} onClick={() => setScrolled(0)}>
           <Title>Home</Title>
         </Point>
-        {
-          isFiltered ? (
-            <>
-              <Point style={{ position: 'absolute', left: '22%' }} active={activeIndex === 1} onClick={() => setScrolled(1450)}>
-                <Title>Search Results</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '30%' }} active={activeIndex === 2} onClick={() => setScrolled(1960)}>
-                <Title>Filtered Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '48%' }} active={activeIndex === 3} onClick={() => setScrolled(3320)}>
-                <Title>Recent Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '65%' }} active={activeIndex === 4} onClick={() => setScrolled(4680)}>
-                <Title>Popular Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '83%' }} active={activeIndex === 5} onClick={() => setScrolled(6040)}>
-                <Title>Member Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 6} onClick={() => setScrolled(7400)}>
-                <Title>Post Event</Title>
-              </Point>
-              {
-                multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker
-                    src={userBackProps[index]}
-                    key={userPos.userId}
-                    face={userFaceProps[index % 5]}
-                    style={{ position: 'absolute', left: `${(userPos.position / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100}%` }}
-                  >
-                    <div>
-                      {userPositionText((userPos.position
-                        / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100)}
-                    </div>
-                  </UserMarker>
-                ))
-              }
-            </>
-          ) : (
-            <>
-              <Point style={{ position: 'absolute', left: '26%' }} active={activeIndex === 1} onClick={() => setScrolled(1450)}>
-                <Title>Search Results</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '34%' }} active={activeIndex === 2} onClick={() => setScrolled(1960)}>
-                <Title>Recent Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '57%' }} active={activeIndex === 3} onClick={() => setScrolled(3320)}>
-                <Title>Popular Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '78%' }} active={activeIndex === 4} onClick={() => setScrolled(4680)}>
-                <Title>Member Events</Title>
-              </Point>
-              <Point style={{ position: 'absolute', left: '99%' }} active={activeIndex === 5} onClick={() => setScrolled(6040)}>
-                <Title>Post Event</Title>
-              </Point>
-              {
-                multipleUserPosition?.map((userPos, index) => (
-                  <UserMarker
-                    src={userBackProps[index % 5]}
-                    face={userFaceProps[index % 5]}
-                    key={userPos.userId}
-                    style={{ position: 'absolute', left: `${(userPos.position / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100}%` }}
-                  >
-                    <div>
-                      {userPositionText((userPos.position
-                        / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100)}
-                    </div>
-                  </UserMarker>
-                ))
-              }
-            </>
-          )
-        }
+        <>
+          {renderPoints.map((point) => <Point key={point.leftPostion} style={{ position: 'absolute', left: `${point.leftPostion}%` }} active={activeIndex === point.activeIndex} onClick={() => setScrolled(point.scrollPosition)}><Title>{point.title}</Title></Point>)}
+          {
+            multipleUserPosition.map((userPos, index) => (
+              <UserMarker
+                src={userBackProps[index]}
+                key={userPos.userId}
+                face={userFaceProps[index % 5]}
+                style={{ position: 'absolute', left: `${(userPos.position / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100}%` }}
+              >
+                <div>
+                  {userPositionText((userPos.position
+                    / Math.max(layoutWidth - window.innerWidth, window.innerWidth)) * 100)}
+                </div>
+              </UserMarker>
+            ))
+          }
+        </>
         <MainScrollIndicator style={{ width: `${scrollLeft}%` }} />
-        <Test member={currentMember.userId !== ''} />
+        <CurrentUserMarker member={currentMember.userId !== ''} />
       </ScrollIndicatorWrapper>
     </Wrapper>
   );
