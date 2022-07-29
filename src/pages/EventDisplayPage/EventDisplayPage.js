@@ -15,7 +15,7 @@ import PostEvent from '../../components/PostEvent';
 import MobilePostEvent from '../../components/MobilePostEvent';
 import bg1 from '../../assets/big1.svg';
 import bg3 from '../../assets/big2.svg';
-import homeBg from '../../assets/background6.svg';
+import homeBg from '../../assets/background6.png';
 import filterBg from '../../assets/filter-bg2.svg';
 
 const Wrapper = styled.div`

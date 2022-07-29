@@ -10,7 +10,6 @@ import LogInPage from './pages/LogInPage';
 import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import FontStyles from './fontStyles';
-// import './App.css';
 
 const GlobalStyle = createGlobalStyle`
   * {
