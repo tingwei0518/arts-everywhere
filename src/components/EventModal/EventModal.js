@@ -413,7 +413,7 @@ function EventModal({
           .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
       default:
         return api.getWeatherDesc(weatherLocation)
-          .then((json) => json.records.locations[0].location[0].weatherElement[0].time);
+          .then((json) => json.records.locations[0].location[0]?.weatherElement?.[0]?.time);
     }
   };
 
@@ -465,7 +465,7 @@ function EventModal({
       || (afterSevenDays >= dayjs(info.endTime)));
     if (isShowDateOverlap) {
       getWeeklyLocationWeather(event.showInfo[0].location.slice(0, 3))
-        .then((data) => setWeeklyWeatherData(data));
+        .then((data) => setWeeklyWeatherData(data || []));
     }
   }, [event.showInfo]);
 
@@ -625,7 +625,7 @@ function EventModal({
               )
           }
           <SubInfo>
-            <SessionTable week={weeklyWeatherData?.length !== 0}>
+            <SessionTable week={weeklyWeatherData.length !== 0}>
               <TableTitle>活動場次</TableTitle>
               <SessionLists>
                 {
@@ -679,7 +679,7 @@ function EventModal({
               </SessionLists>
             </SessionTable>
             {
-              (weeklyWeatherData?.length !== 0)
+              (weeklyWeatherData.length !== 0)
               && (
                 <WeatherTable>
                   <TableTitle>一週天氣</TableTitle>
