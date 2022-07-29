@@ -16,6 +16,9 @@ an immersive exhibition website with information of nationwide art events.
 * Horizontal scrolling!
 ![horizontal scrolling](./readme_assets/features_horizontal_scrolling.gif)
 
+* Visit the website with other users.
+![real-time multiple-user interactivity](./readme_assets/features_realtime_user_position.gif)
+
 * Search events by selecting date and location.
 ![search events](./readme_assets/features_search_events.gif)
 
