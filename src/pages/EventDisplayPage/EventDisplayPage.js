@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   doc, setDoc, updateDoc, collection, onSnapshot,
 } from 'firebase/firestore';
