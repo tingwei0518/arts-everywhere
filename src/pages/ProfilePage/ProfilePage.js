@@ -6,7 +6,7 @@ import { db } from '../../utils/firebaseInit';
 import UserContext from '../../UserContext';
 import api from '../../utils/api';
 import { Button } from '../../components/Units';
-import background from '../../assets/background8.svg';
+import background from '../../assets/profile_background.png';
 
 const HomeBtn = styled.div`
   position: fixed;

@@ -6,7 +6,7 @@ import styled from 'styled-components/macro';
 import { toast } from 'react-toastify';
 import { db } from '../../utils/firebaseInit';
 import { Button } from '../../components/Units';
-import background from '../../assets/background7.svg';
+import background from '../../assets/background7.png';
 import 'react-toastify/dist/ReactToastify.css';
 
 const HomeBtn = styled.div`
