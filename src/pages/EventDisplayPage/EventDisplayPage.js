@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
 import {
   doc, setDoc, updateDoc, collection, onSnapshot,
 } from 'firebase/firestore';
 import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import { toast } from 'react-toastify';
 import { db } from '../../utils/firebaseInit';
 import api from '../../utils/api';
 import ScrollIndicator from '../../components/ScrollIndicator';
@@ -13,9 +13,9 @@ import FilterResults from '../../components/FilterResults';
 import DisplayArea from '../../components/DisplayArea';
 import PostEvent from '../../components/PostEvent';
 import MobilePostEvent from '../../components/MobilePostEvent';
-import bg1 from '../../assets/big1.svg';
-import bg3 from '../../assets/big2.svg';
-import homeBg from '../../assets/background6.png';
+import background1 from '../../assets/background_1.svg';
+import background2 from '../../assets/background_2.svg';
+import homeBg from '../../assets/main_background.png';
 import filterBg from '../../assets/filter-bg2.svg';
 
 const Wrapper = styled.div`
@@ -209,7 +209,7 @@ function EventDisplay() {
   };
 
   const error = () => {
-    console.log('Unable to retrieve your location');
+    toast.error('Unable to retrieve your location');
   };
 
   const locationHandeler = (value) => {
@@ -552,21 +552,21 @@ function EventDisplay() {
           </SubPage>
           {
             (isFiltered) && (
-              <Page bg={bg1}>
+              <Page bg={background1}>
                 <DisplayArea title="Filtered" events={filteredEvents} color="white" scrolled={scrolled} text={pageText.filtered} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular={false} isMobileScreen={isMobileScreen} />
               </Page>
             )
           }
-          <Page bg={bg3}>
+          <Page bg={background2}>
             <DisplayArea title="Recent" events={recentEvents} color="darkgrey" scrolled={scrolled} text={pageText.recent} showUid={showUid} setShowUid={setShowUid} location={location} primary member={false} popular={false} isMobileScreen={isMobileScreen} />
           </Page>
           <Page>
             <DisplayArea title="Popular" events={popularEvents} color="#5F5F5F" scrolled={scrolled} text={pageText.popular} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member={false} popular isMobileScreen={isMobileScreen} />
           </Page>
-          <Page bg={bg1}>
+          <Page bg={background1}>
             <DisplayArea title="Member" events={memberEvents} color="white" scrolled={scrolled} text={pageText.member} showUid={showUid} setShowUid={setShowUid} location={location} primary={false} member popular={false} isMobileScreen={isMobileScreen} />
           </Page>
-          <Page bg={bg3}>
+          <Page bg={background2}>
             {
               isMobileScreen ? <MobilePostEvent /> : <PostEvent />
             }
