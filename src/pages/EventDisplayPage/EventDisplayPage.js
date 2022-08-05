@@ -3,6 +3,7 @@ import {
 } from 'firebase/firestore';
 import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import { toast } from 'react-toastify';
 import { db } from '../../utils/firebaseInit';
 import api from '../../utils/api';
 import ScrollIndicator from '../../components/ScrollIndicator';
@@ -208,7 +209,7 @@ function EventDisplay() {
   };
 
   const error = () => {
-    console.log('Unable to retrieve your location');
+    toast.error('Unable to retrieve your location');
   };
 
   const locationHandeler = (value) => {
