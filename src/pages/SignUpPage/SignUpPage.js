@@ -1,7 +1,7 @@
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { toast } from 'react-toastify';
 import { db } from '../../utils/firebaseInit';
@@ -91,15 +91,19 @@ function SignUpPage() {
   const [userName, setUserName] = useState('');
   const auth = getAuth();
 
+  const navigate = useNavigate();
+
   function register(email, password) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        console.log(userCredential);
         const { user } = userCredential;
         setDoc(doc(db, 'users', user.uid), {
           email,
           userId: user.uid,
           userName,
         });
+        navigate('/', { replace: true });
       })
       .catch((error) => {
         const errorCode = error.code;
