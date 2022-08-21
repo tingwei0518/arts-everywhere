@@ -287,7 +287,6 @@ function MobilePostEvent() {
       <PageTitle primary>Post Event</PageTitle>
       <Editor onSubmit={handleSubmit(onSubmit)}>
         <FormDetails>
-          {/* <BasicInformation> */}
           <Step>Step 1</Step>
           <LabelTitle htmlFor="title">
             活動名稱
@@ -382,8 +381,6 @@ function MobilePostEvent() {
             活動網站
             <input type="text" name="website" id="website" {...register('website')} />
           </LabelTitle>
-          {/* </BasicInformation> */}
-          {/* <SessionWrapper> */}
           <Step>Step 2</Step>
           <LabelTitle htmlFor="session">
             活動場次
@@ -477,8 +474,6 @@ function MobilePostEvent() {
               </Button>
             </SessionUl>
           </LabelTitle>
-          {/* </SessionWrapper> */}
-          {/* <ImageBlock> */}
           <Step style={{ marginBottom: '15px' }}>Step 3</Step>
           <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl} />
 
@@ -494,7 +489,6 @@ function MobilePostEvent() {
             }}
           />
         </Button>
-        {/* </ImageBlock> */}
       </Editor>
     </Wrapper>
   );
