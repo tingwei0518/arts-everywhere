@@ -2,7 +2,7 @@ import {
   getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence,
 } from 'firebase/auth';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import { toast } from 'react-toastify';
 import { Button } from '../../components/Units';
@@ -88,12 +88,14 @@ function LogInPage() {
   const [userPassword, setUserPassword] = useState('');
   const auth = getAuth();
 
+  const navigate = useNavigate();
+
   function logIn(email, password) {
     setPersistence(auth, browserSessionPersistence)
       .then(() => signInWithEmailAndPassword(auth, email, password))
       .then((userCredential) => {
         toast.info(`目前狀態:${userCredential.operationType}`);
-        window.location.replace('./');
+        navigate('/', { replace: true });
       })
       .catch((error) => {
         const errorCode = error.code;
